@@ -1,0 +1,14 @@
+{
+    "name": "vendor/skill-tr",
+    "description": "Skill Tree like progress tracker.",
+    "type": "project",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Kubenku",
+            "email": "Kubenku.of@gmail.com"
+        }
+    ],
+    "minimum-stability": "alpha",
+    "require": {}
+}
