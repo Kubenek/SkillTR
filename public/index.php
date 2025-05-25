@@ -4,7 +4,12 @@ require_once __DIR__ . "/../vendor/autoload.php";
 
 $path = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 
-switch($path) {
+$fullStaticPath = __DIR__ . $path;
+if ($path !== '/' && file_exists($fullStaticPath)) {
+    return false;
+}
+
+switch ($path) {
     case "/login":
         App\Controllers\AuthController::showLogin();
         break;

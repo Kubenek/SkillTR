@@ -1,0 +1,39 @@
+@import url("./variables.css");
+
+body {
+    margin: 0; padding: 0; border: 0;
+}
+
+.site-container { 
+    width: 100vw;
+    height: 100vh;
+    border: 0; margin: 0; padding: 0;
+    background-color: #F1F1F1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main-content {
+    width: 55%;
+    height: 60%;
+    border-radius: 15px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.left-box {
+    border-bottom-left-radius: inherit;
+    border-top-left-radius: inherit;
+    height: 100%;
+    width: 35%;
+    background-color: var(--skill-blue);
+}
+
+.right-box {
+    border-bottom-right-radius: inherit;
+    border-top-right-radius: inherit;
+    height: 100%;
+    width: 65%;
+    background-color: #FFFFFF;
+}
