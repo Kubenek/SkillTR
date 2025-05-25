@@ -11,9 +11,15 @@
 
         <section class="main-content">
 
-            <div class="left-box"></div>
+            <div class="left-box">
 
-            <div class="right-box"></div>
+            </div>
+
+            <div class="right-box">
+
+                <h1>Log In</h1>
+
+            </div>
 
         </section>
 
