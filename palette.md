@@ -3,6 +3,7 @@
 | Color Name | Hex Code | Preview |
 |------------|----------|---------|
 | Pink       | `#F72585` | ![#F72585](https://placehold.co/100/F72585/F72585/png) |
+| Soft Purple| `#DDAAFF` | ![#DDAAFF](https://placehold.co/100/DDAAFF/DDAAFF/png) |
 | Magenta    | `#B5179E` | ![#B5179E](https://placehold.co/100/B5179E/B5179E/png) |
 | Purple     | `#7209B7` | ![#7209B7](https://placehold.co/100/7209B7/7209B7/png) |
 | Deep Purple| `#560BAD` | ![#560BAD](https://placehold.co/100/560BAD/560BAD/png) |
