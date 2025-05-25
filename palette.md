@@ -1,4 +1,4 @@
-# 🎨 Skill Tree Palette
+# 🎨 SkillTR Color Palette
 
 | Color Name | Hex Code | Preview |
 |------------|----------|---------|
