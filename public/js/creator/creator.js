@@ -1,12 +1,21 @@
+let nodeClicked = false;
+let nodes = [];
+const NODE_RADIUS = 15;
+const COLLISION_MARGIN = 0;
+const COLLISION_RADIUS = NODE_RADIUS + COLLISION_MARGIN;
+
 document.addEventListener("DOMContentLoaded", () => {
     const creatorArea = document.querySelector(".creator-area");
+    const canvas = document.querySelector(".canvas-content");
     let zoom = 1;
     let panX = 0, panY = 0;
 
     creatorArea.addEventListener("mousedown", (e) => {
         const { x, y } = getClickPosition(panX, panY, zoom, creatorArea, e);
         e.preventDefault();
-        !e.button ? addNodeAtLocation(x, y) : openOptionsMenu(x, y);
+        if(!nodeClicked) {
+            !e.button ? addNodeAtLocation(canvas, x, y) : openOptionsMenu(x, y);
+        }
     });
 });
 
@@ -21,10 +30,45 @@ function getClickPosition(panX, panY, zoom, area, event) {
     return { x, y };
 }
 
-function addNodeAtLocation(x, y) {
-    console.log("L Click location: " + x + " " + y);
+function addNodeAtLocation(canvas, x, y) {
+    const size = 15;
+    const node = document.createElement("div");
+    node.classList.add("node");
+
+    node.style.position = "absolute";
+    node.style.width = size + "px";
+    node.style.height = size + "px";
+
+    node.style.left = (x - size / 2) + "px";
+    node.style.top = (y - size / 2) + "px";
+
+    const nodeData = { elem: node, x, y };
+
+    if(!nodesOverlap(nodeData)) {
+        canvas.appendChild(node);
+        nodes.push(nodeData);
+        node.addEventListener("mousedown", () => {
+            nodeClicked = true;
+        });
+    }
 }
 
-function openOptionsMenu(x, y) {
-    console.log("R Click location: " + x + " " + y);
+
+function nodesOverlap(currentNode) {
+
+    for (const other of nodes) {
+        if (other === currentNode) continue;
+
+        if (circlesOverlap(currentNode.x, currentNode.y, other.x, other.y)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function circlesOverlap(ax, ay, bx, by) {
+    const dx = bx - ax;
+    const dy = by - ay;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    return dist < COLLISION_RADIUS;
 }
