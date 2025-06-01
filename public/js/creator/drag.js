@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
         startY = e.clientY;
 
         canvas.style.transform = `translate(${window.panX}px, ${window.panY}px) scale(${window.zoom})`;
-        creatorArea.style.backgroundPosition = `${window.panX % 50}px ${window.panY % 50}px`;
+        creatorArea.style.backgroundPosition = `${window.panX % 20}px ${window.panY % 20}px`;
     });
 
     document.addEventListener("selectstart", (e) => {
