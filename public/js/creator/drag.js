@@ -1,11 +1,13 @@
+window.panX = 0
+window.panY = 0
+window.zoom = 1
+
 document.addEventListener("DOMContentLoaded", () => {
     const canvas = document.querySelector(".canvas-content");
     const creatorArea = document.querySelector(".creator-area")
 
     let isDragging = false;
     let startX = 0, startY = 0;
-    let panX = 0, panY = 0;
-    let zoom = 1;
 
     document.addEventListener("mousedown", (e) => {
         if (e.button !== 0) return;
@@ -24,14 +26,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const dx = e.clientX - startX;
         const dy = e.clientY - startY;
 
-        panX += dx;
-        panY += dy;
+        window.panX += dx;
+        window.panY += dy;
 
         startX = e.clientX;
         startY = e.clientY;
 
-        canvas.style.transform = `translate(${panX}px, ${panY}px) scale(${zoom})`;
-        creatorArea.style.backgroundPosition = `${panX % 50}px ${panY % 50}px`;
+        canvas.style.transform = `translate(${window.panX}px, ${window.panY}px) scale(${window.zoom})`;
+        creatorArea.style.backgroundPosition = `${window.panX % 50}px ${window.panY % 50}px`;
     });
 
     document.addEventListener("selectstart", (e) => {

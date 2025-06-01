@@ -11,17 +11,15 @@ const CLICK_MOVE_THRESHOLD = 5
 document.addEventListener("DOMContentLoaded", () => {
     const creatorArea = document.querySelector(".creator-area");
     const canvas = document.querySelector(".canvas-content");
-    let zoom = 1;
-    let panX = 0, panY = 0;
 
     creatorArea.addEventListener("mousedown", (e) => {
-        const { x, y } = getClickPosition(panX, panY, zoom, creatorArea, e);
+        const { x, y } = getClickPosition(creatorArea, e);
         clickStartTime = Date.now()
         clickStartPos = { x, y }
     });
 
     creatorArea.addEventListener("mouseup", (e) => {
-        const { x, y } = getClickPosition(panX, panY, zoom, creatorArea, e);
+        const { x, y } = getClickPosition(creatorArea, e);
         const timeDiff = Date.now() - clickStartTime
         const dist = Math.hypot(x - clickStartPos.x, y - clickStartPos.y)
 
@@ -33,13 +31,13 @@ document.addEventListener("DOMContentLoaded", () => {
     })
 });
 
-function getClickPosition(panX, panY, zoom, area, event) {
+function getClickPosition(area, event) {
     const rect = area.getBoundingClientRect();
     const rawX = event.clientX - rect.left;
     const rawY = event.clientY - rect.top;
 
-    const x = (rawX - panX) / zoom;
-    const y = (rawY - panY) / zoom;
+    const x = (rawX - window.panX) / window.zoom;
+    const y = (rawY - window.panY) / window.zoom;
 
     return { x, y };
 }
