@@ -13,6 +13,9 @@ switch ($path) {
     case "/login":
         App\Controllers\AuthController::showLogin();
         break;
+    case "/creator":
+        App\Controllers\CreatorController::showCreator();
+        break;
     default:
         http_response_code(404);
         echo "404 Not Found";
