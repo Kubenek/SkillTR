@@ -60,7 +60,7 @@ function addNodeAtLocation(canvas, x, y) {
         canvas.appendChild(node);
         nodes.push(nodeData);
         node.addEventListener("mousedown", () => {
-            nodeClicked = true;
+            //nodeClicked = true; add later when doing options menu
         });
     }
 }
