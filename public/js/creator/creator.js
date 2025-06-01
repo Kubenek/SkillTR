@@ -3,6 +3,10 @@ let nodes = [];
 const NODE_RADIUS = 15;
 const COLLISION_MARGIN = 0;
 const COLLISION_RADIUS = NODE_RADIUS + COLLISION_MARGIN;
+let clickStartTime = 0;
+let clickStartPos = {x:0, y: 0}
+const CLICK_TIME_THRESHOLD = 200
+const CLICK_MOVE_THRESHOLD = 5
 
 document.addEventListener("DOMContentLoaded", () => {
     const creatorArea = document.querySelector(".creator-area");
@@ -12,11 +16,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     creatorArea.addEventListener("mousedown", (e) => {
         const { x, y } = getClickPosition(panX, panY, zoom, creatorArea, e);
-        e.preventDefault();
-        if(!nodeClicked) {
-            !e.button ? addNodeAtLocation(canvas, x, y) : openOptionsMenu(x, y);
-        }
+        clickStartTime = Date.now()
+        clickStartPos = { x, y }
     });
+
+    creatorArea.addEventListener("mouseup", (e) => {
+        const { x, y } = getClickPosition(panX, panY, zoom, creatorArea, e);
+        const timeDiff = Date.now() - clickStartTime
+        const dist = Math.hypot(x - clickStartPos.x, y - clickStartPos.y)
+
+        e.preventDefault()
+
+        if(timeDiff < CLICK_TIME_THRESHOLD && dist < CLICK_MOVE_THRESHOLD && !nodeClicked) {
+            !e.button ? addNodeAtLocation(canvas, x, y) : alert("xd")
+        }
+    })
 });
 
 function getClickPosition(panX, panY, zoom, area, event) {
