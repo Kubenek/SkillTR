@@ -1,6 +1,6 @@
 function updateZoomTracker() {
     const zoomTR = document.querySelector(".zoom-tracker");
-    const zoom = (window.outerWidth / window.innerHeight).toFixed(1)
+    const zoom = (window.devicePixelRatio / 2).toFixed(2)
     zoomTR.textContent = `${zoom}x`
 }
 
