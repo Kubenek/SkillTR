@@ -1,0 +1,12 @@
+.zoom-tracker {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    color: rgba(0,0,0,0.6);
+    font-family: monospace;
+    padding: 4px 8px;
+    background: transparent;
+    font-size: 14px;
+    z-index: 9999;
+    transform-origin: bottom right;
+}

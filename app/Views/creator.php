@@ -6,8 +6,11 @@
     <title>Tree Creator | SkillTR</title>
     <link rel="stylesheet" href="/styles/creator.css">
     <link rel="stylesheet" href="/styles/node.css">
+    <link rel="stylesheet" href="/styles/zoom.css">
+
     <script src="/js/creator/creator.js" defer></script>
     <script src="/js/creator/drag.js"></script>
+    <script src="/js/zoom.js" defer></script>
 </head>
 <body>
 
@@ -18,6 +21,8 @@
             <div class="canvas-content">
 
             </div>
+
+            <div class="zoom-tracker">1x</div>
 
         </section>
 
