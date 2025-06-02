@@ -1,4 +1,5 @@
 let nodeClicked = false;
+let disableNodePlace = false;
 let nodes = [];
 const NODE_RADIUS = 15;
 const COLLISION_MARGIN = 0;
@@ -11,6 +12,15 @@ const CLICK_MOVE_THRESHOLD = 5
 document.addEventListener("DOMContentLoaded", () => {
     const creatorArea = document.querySelector(".creator-area");
     const canvas = document.querySelector(".canvas-content");
+    const tools = document.querySelector(".nav")
+
+    tools.addEventListener("mouseover", () => {
+        disableNodePlace = true;
+    })
+
+    tools.addEventListener("mouseout", () => {
+        disableNodePlace = false;
+    })
 
     creatorArea.addEventListener("mousedown", (e) => {
         const { x, y } = getClickPosition(creatorArea, e);
@@ -43,6 +53,9 @@ function getClickPosition(area, event) {
 }
 
 function addNodeAtLocation(canvas, x, y) {
+
+    if(disableNodePlace) return
+
     const size = 15;
     const node = document.createElement("div");
     node.classList.add("node");

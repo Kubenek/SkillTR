@@ -1,17 +1,35 @@
 <nav class="nav">
-    <i class="uil uil-bars navOpenBtn"></i>
-    <a href="#" class="logo">CodingLab</a>
-    <ul class="nav-links">
-        <i class="uil uil-times navCloseBtn"></i>
-        <li><a href="#">Home</a></li>
-        <li><a href="#">Services</a></li>
-        <li><a href="#">Products</a></li>
-        <li><a href="#">About Us</a></li>
-        <li><a href="#">Contact Us</a></li>
+    <ul class="nav-content">
+        <li class="nav-list">
+            <a href="#" class="link-item active">
+                <i class='bx bx-plus-medical link-icon'></i>
+                <span class="link-text">Place</span>
+            </a>
+        </li>
+        <li class="nav-list">
+            <a href="#" class="link-item">
+                <i class='bx bx-expand-alt link-icon'></i>
+                <span class="link-text">Move</span>
+            </a>
+        </li>
+        <li class="nav-list">
+            <a href="#" class="link-item">
+                <i class='bx bx-trash link-icon'></i>
+                <span class="link-text">Delete</span>
+            </a>
+        </li>
+        <li class="nav-list">
+            <a href="#" class="link-item">
+                <i class='bx bx-edit-alt link-icon'></i>
+                <span class="link-text">Edit</span>
+            </a>
+        </li>
+        <li class="nav-list">
+            <a href="#" class="link-item">
+                <i class='bx bx-link link-icon'></i>
+                <span class="link-text">Connect</span>
+            </a>
+        </li>
+        <span class="indicator"></span>
     </ul>
-    <i class="uil uil-search search-icon" id="searchIcon"></i>
-    <div class="search-box">
-        <i class="uil uil-search search-icon"></i>
-        <input type="text" placeholder="Search here..." />
-    </div>
 </nav>

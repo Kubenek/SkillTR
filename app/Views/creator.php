@@ -8,24 +8,20 @@
     <link rel="stylesheet" href="/styles/node.css">
     <link rel="stylesheet" href="/styles/zoom.css">
     <link rel="stylesheet" href="/styles/tools.css" />
-    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
+    <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
     
-    <!--<script src="/js/creator/tools.js" defer></script>-->
+    <script src="/js/creator/tools.js" defer></script>
     <script src="/js/creator/creator.js" defer></script>
     <script src="/js/creator/drag.js"></script>
     <script src="/js/zoom.js" defer></script>
 </head>
 <body>
 
-    <?php
-    
-        require_once __DIR__."/Components/creator-tools.php";
-
-    ?>
-
     <main class="site-container">
 
         <section class="creator-area">
+
+            <?php require_once __DIR__."/Components/creator-tools.php"; ?>
 
             <div class="canvas-content">
 
