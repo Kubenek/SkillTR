@@ -7,12 +7,21 @@
     <link rel="stylesheet" href="/styles/creator.css">
     <link rel="stylesheet" href="/styles/node.css">
     <link rel="stylesheet" href="/styles/zoom.css">
-
+    <link rel="stylesheet" href="/styles/tools.css" />
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
+    
+    <!--<script src="/js/creator/tools.js" defer></script>-->
     <script src="/js/creator/creator.js" defer></script>
     <script src="/js/creator/drag.js"></script>
     <script src="/js/zoom.js" defer></script>
 </head>
 <body>
+
+    <?php
+    
+        require_once __DIR__."/Components/creator-tools.php";
+
+    ?>
 
     <main class="site-container">
 
