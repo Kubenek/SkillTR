@@ -29,7 +29,7 @@ nav{
     height: 7rem;
     display: flex;
     justify-content: center;
-    
+
     will-change: transform;
 }
 .nav-content{
