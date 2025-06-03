@@ -14,6 +14,12 @@ body{
 }
 
 nav{
+    position: fixed;
+    bottom: 1rem;
+    left: 50%;
+    transform-origin: bottom center;
+    transform: translateX(-50%);
+
     border-radius: 1rem;
     background: rgba(255, 255, 255, 0.1);
     padding: 0 2rem;
@@ -23,7 +29,8 @@ nav{
     height: 7rem;
     display: flex;
     justify-content: center;
-    margin-bottom: 2rem;
+    
+    will-change: transform;
 }
 .nav-content{
     display: flex;
