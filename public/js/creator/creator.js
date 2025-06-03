@@ -55,6 +55,7 @@ function getClickPosition(area, event) {
 function addNodeAtLocation(canvas, x, y) {
 
     if(disableNodePlace) return
+    if(window.currentItem !== "Place") return
 
     const size = 15;
     const node = document.createElement("div");
