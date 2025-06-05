@@ -1,13 +1,10 @@
 let nodeClicked = false;
 let disableNodePlace = false;
 let nodes = [];
-const NODE_RADIUS = 15;
-const COLLISION_MARGIN = 0;
-const COLLISION_RADIUS = NODE_RADIUS + COLLISION_MARGIN;
 let clickStartTime = 0;
 let clickStartPos = {x:0, y: 0}
-const CLICK_TIME_THRESHOLD = 200
-const CLICK_MOVE_THRESHOLD = 5
+
+import { NODE_RADIUS, COLLISION_RADIUS, CLICK_MOVE_THRESHOLD, CLICK_TIME_THRESHOLD } from '../config.js';
 
 window.isDraggingNode = false;
 let offsetX, offsetY;

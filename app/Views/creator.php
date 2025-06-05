@@ -11,7 +11,7 @@
     <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
     
     <script src="/js/creator/tools.js" defer></script>
-    <script src="/js/creator/creator.js" defer></script>
+    <script src="/js/creator/creator.js" defer type="module"></script>
     <script src="/js/creator/drag.js"></script>
     <script src="/js/zoom.js" defer></script>
 </head>
