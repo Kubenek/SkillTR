@@ -21,6 +21,8 @@
 
         <section class="creator-area">
 
+            <svg class="connection-layer"></svg>
+
             <?php require_once __DIR__."/Components/creator-tools.php"; ?>
 
             <div class="canvas-content">

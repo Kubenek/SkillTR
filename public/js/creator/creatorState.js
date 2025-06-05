@@ -7,5 +7,6 @@ export const creatorState = {
     lastNodeData: null,
     currentItem: "Place",
     nodeOriginalX: 0,
-    nodeOriginalY: 0
+    nodeOriginalY: 0,
+    sourceConnectNode: null
 }

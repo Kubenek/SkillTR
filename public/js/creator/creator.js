@@ -74,14 +74,17 @@ function addNodeAtLocation(canvas, x, y) {
         nodes.push(nodeData);
 
         node.addEventListener("mousedown", (e) => {
-            if(creatorState.currentItem !== "Move") return;
-            creatorState.isDraggingNode = true
-            creatorState.draggingNodeElem = node
-            creatorState.lastNodeData = nodeData
-            creatorState.nodeOriginalX = node.offsetLeft
-            creatorState.nodeOriginalY = node.offsetTop
-            offsetX = e.clientX - node.offsetLeft
-            offsetY = e.clientY - node.offsetTop
+            if(creatorState.currentItem === "Move") {;
+                creatorState.isDraggingNode = true
+                creatorState.draggingNodeElem = node
+                creatorState.lastNodeData = nodeData
+                creatorState.nodeOriginalX = node.offsetLeft
+                creatorState.nodeOriginalY = node.offsetTop
+                offsetX = e.clientX - node.offsetLeft
+                offsetY = e.clientY - node.offsetTop
+            } else if(creatorState.currentItem === "Connect") {
+                node.classList.add("selected")
+            } else return;
         });
 
     }
