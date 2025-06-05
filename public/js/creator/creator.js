@@ -4,9 +4,20 @@ let nodes = [];
 let clickStartTime = 0;
 let clickStartPos = {x:0, y: 0}
 
+window.creatorSharedData ??= {
+    zoom: 1,
+    panX: 0,
+    panY: 0,
+    isDraggingNode: false,
+    draggingNodeElem: null,
+    lastNodeData: null,
+    currentItem: "Place",
+    nodeOriginalX: 0,
+    nodeOriginalY: 0
+}
+
 import { NODE_RADIUS, COLLISION_RADIUS, CLICK_MOVE_THRESHOLD, CLICK_TIME_THRESHOLD } from '../config.js';
 
-window.isDraggingNode = false;
 let offsetX, offsetY;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -36,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault()
 
         if(timeDiff < CLICK_TIME_THRESHOLD && dist < CLICK_MOVE_THRESHOLD && !nodeClicked) {
-            !e.button ? addNodeAtLocation(canvas, x, y) : alert("elo morod wsm to masz trojana xd 404")
+            !e.button ? addNodeAtLocation(canvas, x, y) : alert("unimplemented")
         }
     })
 });
@@ -46,8 +57,8 @@ function getClickPosition(area, event) {
     const rawX = event.clientX - rect.left;
     const rawY = event.clientY - rect.top;
 
-    const x = (rawX - window.panX) / window.zoom;
-    const y = (rawY - window.panY) / window.zoom;
+    const x = (rawX - window.creatorSharedData.panX) / window.creatorSharedData.zoom;
+    const y = (rawY - window.creatorSharedData.panY) / window.creatorSharedData.zoom;
 
     return { x, y };
 }
@@ -55,7 +66,7 @@ function getClickPosition(area, event) {
 function addNodeAtLocation(canvas, x, y) {
 
     if(disableNodePlace) return
-    if(window.currentItem !== "Place") return
+    if(window.creatorSharedData.currentItem !== "Place") return
 
     const size = 15;
     const node = document.createElement("div");
@@ -75,12 +86,12 @@ function addNodeAtLocation(canvas, x, y) {
         nodes.push(nodeData);
 
         node.addEventListener("mousedown", (e) => {
-            if(window.currentItem !== "Move") return;
-            window.isDraggingNode = true
-            window.draggingNodeElem = node
-            window.lastNodeData = nodeData
-            window.originalX = node.offsetLeft
-            window.originalY = node.offsetTop
+            if(window.creatorSharedData.currentItem !== "Move") return;
+            window.creatorSharedData.isDraggingNode = true
+            window.creatorSharedData.draggingNodeElem = node
+            window.creatorSharedData.lastNodeData = nodeData
+            window.creatorSharedData.nodeOriginalX = node.offsetLeft
+            window.creatorSharedData.nodeOriginalY = node.offsetTop
             offsetX = e.clientX - node.offsetLeft
             offsetY = e.clientY - node.offsetTop
         });
@@ -89,31 +100,31 @@ function addNodeAtLocation(canvas, x, y) {
 }
 
 document.addEventListener("mousemove", (e) => {
-    if(!window.isDraggingNode || !window.draggingNodeElem) return;
+    if(!window.creatorSharedData.isDraggingNode || !window.creatorSharedData.draggingNodeElem) return;
     const left = (e.clientX - offsetX) 
     const top = (e.clientY - offsetY) 
 
-    window.draggingNodeElem.style.left = left + 'px'
-    window.draggingNodeElem.style.top = top + 'px'
+    window.creatorSharedData.draggingNodeElem.style.left = left + 'px'
+    window.creatorSharedData.draggingNodeElem.style.top = top + 'px'
 
-    window.lastNodeData.x = left + NODE_RADIUS
-    window.lastNodeData.y = top + NODE_RADIUS
+    window.creatorSharedData.lastNodeData.x = left + NODE_RADIUS
+    window.creatorSharedData.lastNodeData.y = top + NODE_RADIUS
 })
 
 document.addEventListener("mouseup", (e) => {
-    if (!window.isDraggingNode || !window.draggingNodeElem) return;
+    if (!window.creatorSharedData.isDraggingNode || !window.creatorSharedData.draggingNodeElem) return;
 
-    if (nodesOverlap(window.lastNodeData)) {
-        window.draggingNodeElem.style.left = window.originalX + "px";
-        window.draggingNodeElem.style.top = window.originalY + "px";
+    if (nodesOverlap(window.creatorSharedData.lastNodeData)) {
+        window.creatorSharedData.draggingNodeElem.style.left = window.creatorSharedData.nodeOriginalX + "px";
+        window.creatorSharedData.draggingNodeElem.style.top = window.creatorSharedData.nodeOriginalY + "px";
 
-        window.lastNodeData.x = window.originalX + NODE_RADIUS
-        window.lastNodeData.y = window.originalY + NODE_RADIUS
+        window.creatorSharedData.lastNodeData.x = window.creatorSharedData.nodeOriginalX + NODE_RADIUS
+        window.creatorSharedData.lastNodeData.y = window.creatorSharedData.nodeOriginalY + NODE_RADIUS
     }
 
-    window.isDraggingNode = false;
-    window.draggingNodeElem = null;
-    window.lastNodeData = null;
+    window.creatorSharedData.isDraggingNode = false;
+    window.creatorSharedData.draggingNodeElem = null;
+    window.creatorSharedData.lastNodeData = null;
 });
 
 function nodesOverlap(currentNode) {

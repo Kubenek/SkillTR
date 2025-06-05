@@ -1,5 +1,3 @@
-window.currentItem = "Place"
-
 const linkItems = document.querySelectorAll(".link-item");
 linkItems.forEach((linkItem, index) => {
     linkItem.addEventListener("click", () => {
@@ -9,7 +7,7 @@ linkItems.forEach((linkItem, index) => {
         indicator.style.left = `${index * 95 + 48}px`;
 
         const name = linkItem.querySelector(".link-text").textContent
-        window.currentItem = name
+        window.creatorSharedData.currentItem = name
 
     })
 })

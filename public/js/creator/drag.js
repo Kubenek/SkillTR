@@ -1,7 +1,3 @@
-window.panX = 0
-window.panY = 0
-window.zoom = 1
-
 document.addEventListener("DOMContentLoaded", () => {
     const canvas = document.querySelector(".canvas-content");
     const creatorArea = document.querySelector(".creator-area")
@@ -18,28 +14,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.addEventListener("mouseup", () => {
         isDragging = false;
-        window.isDraggingNode = false;
-        window.draggingNodeElem = null;
-
-        
+        window.creatorSharedData.isDraggingNode = false;
+        window.creatorSharedData.draggingNodeElem = null; 
 
     });
 
     document.addEventListener("mousemove", (e) => {
         if (!isDragging) return;
-        if (window.isDraggingNode) return;
+        if (window.creatorSharedData.isDraggingNode) return;
 
         const dx = e.clientX - startX;
         const dy = e.clientY - startY;
 
-        window.panX += dx;
-        window.panY += dy;
+        window.creatorSharedData.panX += dx;
+        window.creatorSharedData.panY += dy;
 
         startX = e.clientX;
         startY = e.clientY;
 
-        canvas.style.transform = `translate(${window.panX}px, ${window.panY}px) scale(${window.zoom})`;
-        creatorArea.style.backgroundPosition = `${window.panX % 20}px ${window.panY % 20}px`;
+        canvas.style.transform = `translate(${window.creatorSharedData.panX}px, ${window.creatorSharedData.panY}px) scale(${window.creatorSharedData.zoom})`;
+        creatorArea.style.backgroundPosition = `${window.creatorSharedData.panX % 20}px ${window.creatorSharedData.panY % 20}px`;
     });
 
     document.addEventListener("selectstart", (e) => {
