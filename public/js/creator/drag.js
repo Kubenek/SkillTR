@@ -18,11 +18,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.addEventListener("mouseup", () => {
         isDragging = false;
+        window.isDraggingNode = false;
+        window.draggingNodeElem = null;
+
+        
+
     });
 
     document.addEventListener("mousemove", (e) => {
         if (!isDragging) return;
-        if (window.isDraggingNode) return;  
+        if (window.isDraggingNode) return;
 
         const dx = e.clientX - startX;
         const dy = e.clientY - startY;

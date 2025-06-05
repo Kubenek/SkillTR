@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault()
 
         if(timeDiff < CLICK_TIME_THRESHOLD && dist < CLICK_MOVE_THRESHOLD && !nodeClicked) {
-            !e.button ? addNodeAtLocation(canvas, x, y) : alert("xd")
+            !e.button ? addNodeAtLocation(canvas, x, y) : alert("elo morod wsm to masz trojana xd 404")
         }
     })
 });
@@ -80,24 +80,44 @@ function addNodeAtLocation(canvas, x, y) {
         node.addEventListener("mousedown", (e) => {
             if(window.currentItem !== "Move") return;
             window.isDraggingNode = true
+            window.draggingNodeElem = node
+            window.lastNodeData = nodeData
+            window.originalX = node.offsetLeft
+            window.originalY = node.offsetTop
             offsetX = e.clientX - node.offsetLeft
             offsetY = e.clientY - node.offsetTop
         });
 
-        document.addEventListener("mousemove", (e) => {
-            if(!window.isDraggingNode) return;
-            node.style.left = (e.clientX - offsetX) + 'px'
-            node.style.top = (e.clientY - offsetY) + 'px'
-
-        })
-
-        document.addEventListener("mouseup", () => {
-            window.isDraggingNode = false
-        })
-
     }
 }
 
+document.addEventListener("mousemove", (e) => {
+    if(!window.isDraggingNode || !window.draggingNodeElem) return;
+    const left = (e.clientX - offsetX) 
+    const top = (e.clientY - offsetY) 
+
+    window.draggingNodeElem.style.left = left + 'px'
+    window.draggingNodeElem.style.top = top + 'px'
+
+    window.lastNodeData.x = left + NODE_RADIUS
+    window.lastNodeData.y = top + NODE_RADIUS
+})
+
+document.addEventListener("mouseup", (e) => {
+    if (!window.isDraggingNode || !window.draggingNodeElem) return;
+
+    if (nodesOverlap(window.lastNodeData)) {
+        window.draggingNodeElem.style.left = window.originalX + "px";
+        window.draggingNodeElem.style.top = window.originalY + "px";
+
+        window.lastNodeData.x = window.originalX + NODE_RADIUS
+        window.lastNodeData.y = window.originalY + NODE_RADIUS
+    }
+
+    window.isDraggingNode = false;
+    window.draggingNodeElem = null;
+    window.lastNodeData = null;
+});
 
 function nodesOverlap(currentNode) {
 
