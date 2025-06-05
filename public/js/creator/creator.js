@@ -9,6 +9,9 @@ let clickStartPos = {x:0, y: 0}
 const CLICK_TIME_THRESHOLD = 200
 const CLICK_MOVE_THRESHOLD = 5
 
+window.isDraggingNode = false;
+let offsetX, offsetY;
+
 document.addEventListener("DOMContentLoaded", () => {
     const creatorArea = document.querySelector(".creator-area");
     const canvas = document.querySelector(".canvas-content");
@@ -73,9 +76,25 @@ function addNodeAtLocation(canvas, x, y) {
     if(!nodesOverlap(nodeData)) {
         canvas.appendChild(node);
         nodes.push(nodeData);
-        node.addEventListener("mousedown", () => {
-            //nodeClicked = true; add later when doing options menu
+
+        node.addEventListener("mousedown", (e) => {
+            if(window.currentItem !== "Move") return;
+            window.isDraggingNode = true
+            offsetX = e.clientX - node.offsetLeft
+            offsetY = e.clientY - node.offsetTop
         });
+
+        document.addEventListener("mousemove", (e) => {
+            if(!window.isDraggingNode) return;
+            node.style.left = (e.clientX - offsetX) + 'px'
+            node.style.top = (e.clientY - offsetY) + 'px'
+
+        })
+
+        document.addEventListener("mouseup", () => {
+            window.isDraggingNode = false
+        })
+
     }
 }
 
