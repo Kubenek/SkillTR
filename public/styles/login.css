@@ -1,6 +1,6 @@
 @import url("./variables.css");
 
-body {
+body { 
     margin: 0; padding: 0; border: 0;
 }
 
@@ -36,4 +36,5 @@ body {
     border-top-right-radius: inherit;
     height: 100%;
     width: 50%;
+    color: white;
 }
