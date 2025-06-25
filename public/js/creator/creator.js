@@ -85,8 +85,14 @@ function addNodeAtLocation(canvas, x, y) {
             } else if(creatorState.currentItem === "Connect") {
                 node.classList.add("selected")
             } else if(creatorState.currentItem === "Delete") {
-                // popup for confirmation
-                node.remove()
+                
+                var popup = document.createElement('div')
+                var content = document.createElement('div')
+                popup.classList.add("popupContainer")
+                popup.appendChild(content)
+
+                canvas.appendChild(popup)
+                
             } else return
         });
 
