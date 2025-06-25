@@ -95,6 +95,7 @@ function addNodeAtLocation(canvas, x, y) {
                     creatorState.selectNodeSecond.classList.remove("selected")
                     creatorState.selectNodeFirst = null
                     creatorState.selectNodeSecond = null
+                    creatorState.selectedCount = 0
                 }
             } else if(creatorState.currentItem === "Delete") {
 
