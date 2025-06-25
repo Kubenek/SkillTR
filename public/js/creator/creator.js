@@ -102,6 +102,15 @@ function addNodeAtLocation(canvas, x, y) {
                 yBtn.classList.add("yBtn"); nBtn.classList.add("nBtn")
 
                 yBtn.innerText = "Yes"; nBtn.innerText = "No"
+                
+                yBtn.addEventListener("click", () => {
+                    node.remove();
+                    popup.remove();
+                    //remove from local node list
+                })
+                nBtn.addEventListener("click", () => {
+                    popup.remove();
+                })
 
                 var popupButtons = document.createElement("div")
 
