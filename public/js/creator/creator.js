@@ -90,9 +90,26 @@ function addNodeAtLocation(canvas, x, y) {
                 
                 var popup = document.createElement('div')
                 var content = document.createElement('div')
-                popup.classList.add("popupContainer")
-                popup.appendChild(content)
 
+                popup.classList.add("popupContainer")
+                content.classList.add("popupBody")
+
+                var p = document.createElement("p")
+                p.innerText = "Delete Node?"
+
+                var yBtn = document.createElement("button")
+                var nBtn = document.createElement("button")
+                yBtn.classList.add("yBtn"); nBtn.classList.add("nBtn")
+
+                yBtn.innerText = "Yes"; nBtn.innerText = "No"
+
+                var popupButtons = document.createElement("div")
+
+                popupButtons.appendChild(yBtn); popupButtons.appendChild(nBtn)
+
+                content.appendChild(p); content.appendChild(popupButtons)
+
+                popup.appendChild(content)
                 canvas.appendChild(popup)
                 
             } else return
