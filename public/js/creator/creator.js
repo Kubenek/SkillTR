@@ -84,6 +84,18 @@ function addNodeAtLocation(canvas, x, y) {
                 offsetY = e.clientY - node.offsetTop
             } else if(creatorState.currentItem === "Connect") {
                 node.classList.add("selected")
+                var slCount = creatorState.selectedCount + 1
+                creatorState.selectedCount = slCount
+                if(slCount == 1) {
+                    creatorState.selectNodeFirst = node
+                } else if(slCount == 2) {
+                    creatorState.selectNodeSecond = node
+                    // add create connection between nodes
+                    creatorState.selectNodeFirst.classList.remove("selected")
+                    creatorState.selectNodeSecond.classList.remove("selected")
+                    creatorState.selectNodeFirst = null
+                    creatorState.selectNodeSecond = null
+                }
             } else if(creatorState.currentItem === "Delete") {
 
                 creatorState.isPopupActive = true;
@@ -106,10 +118,12 @@ function addNodeAtLocation(canvas, x, y) {
                 yBtn.addEventListener("click", () => {
                     node.remove();
                     popup.remove();
-                    //remove from local node list
+                    console.log(nodes)
+                    //find index of deleted node -> replace its index with last node and do the same for the last node using an aux variable -> pop the list
                 })
                 nBtn.addEventListener("click", () => {
                     popup.remove();
+                    console.log(nodes)
                 })
 
                 var popupButtons = document.createElement("div")

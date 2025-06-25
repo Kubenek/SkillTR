@@ -9,5 +9,8 @@ export const creatorState = {
     nodeOriginalX: 0,
     nodeOriginalY: 0,
     sourceConnectNode: null,
-    isPopupActive: false
+    isPopupActive: false,
+    selectedCount: 0,
+    selectNodeFirst: null,
+    selectNodeSecond: null
 }
