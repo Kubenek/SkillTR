@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.addEventListener("mousemove", (e) => {
         if (!isDragging) return;
         if (creatorState.isDraggingNode) return;
+        if (creatorState.isPopupActive) return
 
         const dx = e.clientX - startX;
         const dy = e.clientY - startY;

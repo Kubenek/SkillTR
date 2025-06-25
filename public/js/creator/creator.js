@@ -85,6 +85,8 @@ function addNodeAtLocation(canvas, x, y) {
             } else if(creatorState.currentItem === "Connect") {
                 node.classList.add("selected")
             } else if(creatorState.currentItem === "Delete") {
+
+                creatorState.isPopupActive = true;
                 
                 var popup = document.createElement('div')
                 var content = document.createElement('div')
