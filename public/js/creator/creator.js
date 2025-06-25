@@ -84,7 +84,10 @@ function addNodeAtLocation(canvas, x, y) {
                 offsetY = e.clientY - node.offsetTop
             } else if(creatorState.currentItem === "Connect") {
                 node.classList.add("selected")
-            } else return;
+            } else if(creatorState.currentItem === "Delete") {
+                // popup for confirmation
+                node.remove()
+            } else return
         });
 
     }
