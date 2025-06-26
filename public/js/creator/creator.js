@@ -119,12 +119,12 @@ function addNodeAtLocation(canvas, x, y) {
                 yBtn.addEventListener("click", () => {
                     node.remove();
                     popup.remove();
-                    console.log(nodes)
+                    creatorState.isPopupActive = false;
                     //find index of deleted node -> replace its index with last node and do the same for the last node using an aux variable -> pop the list
                 })
                 nBtn.addEventListener("click", () => {
                     popup.remove();
-                    console.log(nodes)
+                    creatorState.isPopupActive = false;
                 })
 
                 var popupButtons = document.createElement("div")
