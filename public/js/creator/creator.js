@@ -108,7 +108,7 @@ function addNodeAtLocation(canvas, x, y) {
                 content.classList.add("popupBody")
 
                 var p = document.createElement("p")
-                p.innerText = "Delete Node?"
+                p.innerText = "Confirm delete?"
 
                 var yBtn = document.createElement("button")
                 var nBtn = document.createElement("button")
@@ -128,6 +128,7 @@ function addNodeAtLocation(canvas, x, y) {
                 })
 
                 var popupButtons = document.createElement("div")
+                popupButtons.classList.add("popupBtn")
 
                 popupButtons.appendChild(yBtn); popupButtons.appendChild(nBtn)
 
