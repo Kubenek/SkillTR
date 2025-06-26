@@ -14,5 +14,6 @@ export const creatorState = {
     selectNodeFirst: null,
     selectNodeSecond: null,
     activeLine: null,
-    mouseMoveHandler: null
+    mouseMoveHandler: null,
+    connections: []
 }

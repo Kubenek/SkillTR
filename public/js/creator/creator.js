@@ -141,6 +141,12 @@ function addNodeAtLocation(canvas, x, y) {
                     line.classList.remove("active-line");
                     line.classList.add("permanent-line");
 
+                    creatorState.connections.push({
+                        fromNode: creatorState.selectNodeFirst,
+                        toNode: creatorState.selectNodeSecond,
+                        line: creatorState.activeLine
+                    })
+
                     creatorState.selectNodeFirst.classList.remove("selected")
                     creatorState.selectNodeSecond.classList.remove("selected")
                     creatorState.selectNodeFirst = null
@@ -204,11 +210,14 @@ function addNodeAtLocation(canvas, x, y) {
 
 document.addEventListener("mousemove", (e) => {
     if(!creatorState.isDraggingNode || !creatorState.draggingNodeElem) return;
+
     const left = (e.clientX - offsetX) 
     const top = (e.clientY - offsetY) 
 
     creatorState.draggingNodeElem.style.left = left + 'px'
     creatorState.draggingNodeElem.style.top = top + 'px'
+
+    updateConnectedLines(creatorState.draggingNodeElem)
 
     creatorState.lastNodeData.x = left + NODE_RADIUS
     creatorState.lastNodeData.y = top + NODE_RADIUS
@@ -247,4 +256,28 @@ function circlesOverlap(ax, ay, bx, by) {
     const dy = by - ay;
     const dist = Math.sqrt(dx * dx + dy * dy);
     return dist < COLLISION_RADIUS;
+}
+
+function updateConnectedLines(movedNode) {
+    for(const conn of creatorState.connections) {
+        if(conn.fromNode === movedNode || conn.toNode === movedNode) {
+            const rect1 = conn.fromNode.getBoundingClientRect();
+            const rect2 = conn.toNode.getBoundingClientRect();
+
+            const x1 = rect1.left + rect1.width / 2;
+            const y1 = rect1.top + rect1.height / 2;
+            const x2 = rect2.left + rect2.width / 2;
+            const y2 = rect2.top + rect2.height / 2;
+
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+            const length = Math.sqrt(dx * dx + dy * dy);
+            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+            conn.line.style.width = `${length}px`;
+            conn.line.style.left = `${x1}px`;
+            conn.line.style.top = `${y1}px`;
+            conn.line.style.transform = `rotate(${angle}deg)`;
+        }
+    }
 }
