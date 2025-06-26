@@ -1,0 +1,11 @@
+.active-line {
+    position: absolute;
+    height: 2px;
+    background: black;
+    transform-origin: 0 0;
+    z-index: 0;
+}
+
+.active-line {
+    background: yellow;
+}

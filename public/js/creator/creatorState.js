@@ -12,5 +12,7 @@ export const creatorState = {
     isPopupActive: false,
     selectedCount: 0,
     selectNodeFirst: null,
-    selectNodeSecond: null
+    selectNodeSecond: null,
+    activeLine: null,
+    mouseMoveHandler: null
 }

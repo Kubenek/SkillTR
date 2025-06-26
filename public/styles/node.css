@@ -13,6 +13,7 @@
     color: #333;
     transition: none;
     box-sizing: content-box;
+    z-index: 1;
 }
 
 .node::after {

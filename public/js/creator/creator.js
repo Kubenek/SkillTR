@@ -88,6 +88,32 @@ function addNodeAtLocation(canvas, x, y) {
                 creatorState.selectedCount = slCount
                 if(slCount == 1) {
                     creatorState.selectNodeFirst = node
+
+                    const line = document.createElement("div")
+                    line.classList.add("active-line")
+                    canvas.append(line)
+                    creatorState.activeLine = line
+
+                    creatorState.mouseMoveHandler = function (e) {
+                        const rect = creatorState.selectNodeFirst.getBoundingClientRect();
+                        const x1 = rect.left + rect.width / 2;
+                        const y1 = rect.top + rect.height / 2;
+                        const x2 = e.clientX;
+                        const y2 = e.clientY;
+
+                        const dx = x2 - x1;
+                        const dy = y2 - y1;
+                        const length = Math.sqrt(dx * dx + dy * dy);
+                        const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+                        line.style.width = `${length}px`;
+                        line.style.left = `${x1}px`;
+                        line.style.top = `${y1}px`;
+                        line.style.transform = `rotate(${angle}deg)`;
+                    };
+
+                    document.addEventListener("mousemove", creatorState.mouseMoveHandler);
+
                 } else if(slCount == 2) {
                     creatorState.selectNodeSecond = node
                     // add create connection between nodes
