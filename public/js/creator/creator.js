@@ -134,7 +134,7 @@ function addNodeAtLocation(canvas, x, y) {
                 content.appendChild(p); content.appendChild(popupButtons)
 
                 popup.appendChild(content)
-                canvas.appendChild(popup)
+                document.body.appendChild(popup)
                 
             } else return
         });
