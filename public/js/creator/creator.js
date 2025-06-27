@@ -73,6 +73,24 @@ function addNodeAtLocation(canvas, x, y) {
         canvas.appendChild(node);
         nodes.push(nodeData);
 
+        node.addEventListener("mouseover", () => {
+            creatorState.connections.forEach(elem => {
+                if(elem.fromNode === node) {
+                    elem.line.classList.remove("permanent-line")
+                    elem.line.classList.add("highlighted-line")
+                }
+            })
+        })
+
+        node.addEventListener("mouseout", () => {
+            creatorState.connections.forEach(elem => {
+                if(elem.fromNode === node) {
+                    elem.line.classList.add("permanent-line")
+                    elem.line.classList.remove("highlighted-line")
+                }
+            })
+        })
+
         node.addEventListener("mousedown", (e) => {
             if(creatorState.currentItem === "Move") {;
                 creatorState.isDraggingNode = true
@@ -307,4 +325,5 @@ function resetSelectData() {
     creatorState.selectNodeFirst = null
     creatorState.selectNodeSecond = null
     creatorState.selectedCount = 0
+    creatorState.activeLine = null
 }
