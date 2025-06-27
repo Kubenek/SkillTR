@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.addEventListener("mousedown", (e) => {
         if (e.button !== 0) return;
+        if (creatorState.disableDrag) return;
         isDragging = true;
         startX = e.clientX;
         startY = e.clientY;

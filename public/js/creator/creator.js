@@ -74,6 +74,7 @@ function addNodeAtLocation(canvas, x, y) {
         nodes.push(nodeData);
 
         node.addEventListener("mouseover", () => {
+            creatorState.disableDrag = true
             creatorState.connections.forEach(elem => {
                 if(elem.fromNode === node) {
                     elem.line.classList.remove("permanent-line")
@@ -83,6 +84,7 @@ function addNodeAtLocation(canvas, x, y) {
         })
 
         node.addEventListener("mouseout", () => {
+            creatorState.disableDrag = false
             creatorState.connections.forEach(elem => {
                 if(elem.fromNode === node) {
                     elem.line.classList.add("permanent-line")
