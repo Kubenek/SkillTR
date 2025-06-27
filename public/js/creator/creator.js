@@ -121,14 +121,7 @@ function addNodeAtLocation(canvas, x, y) {
                     document.removeEventListener("mousemove", creatorState.mouseMoveHandler)
                     creatorState.mouseMoveHandler = null
 
-                    if(creatorState.selectNodeFirst === creatorState.selectNodeSecond) {
-                        creatorState.selectNodeFirst.classList.remove("selected")
-                        creatorState.selectNodeSecond.classList.remove("selected")
-                        creatorState.selectNodeFirst = null
-                        creatorState.selectNodeSecond = null
-                        creatorState.selectedCount = 0
-                        return;
-                    }
+                    if(creatorState.selectNodeFirst === creatorState.selectNodeSecond) { resetSelectData(); return; }
 
                     const line = creatorState.activeLine;
                     const rect1 = creatorState.selectNodeFirst.getBoundingClientRect();
@@ -157,11 +150,7 @@ function addNodeAtLocation(canvas, x, y) {
                         line: creatorState.activeLine
                     })
 
-                    creatorState.selectNodeFirst.classList.remove("selected")
-                    creatorState.selectNodeSecond.classList.remove("selected")
-                    creatorState.selectNodeFirst = null
-                    creatorState.selectNodeSecond = null
-                    creatorState.selectedCount = 0
+                    resetSelectData()
                 }
             } else if(creatorState.currentItem === "Delete") {
 
@@ -290,4 +279,12 @@ function updateConnectedLines(movedNode) {
             conn.line.style.transform = `rotate(${angle}deg)`;
         }
     }
+}
+
+function resetSelectData() {
+    creatorState.selectNodeFirst.classList.remove("selected")
+    creatorState.selectNodeSecond.classList.remove("selected")
+    creatorState.selectNodeFirst = null
+    creatorState.selectNodeSecond = null
+    creatorState.selectedCount = 0
 }
