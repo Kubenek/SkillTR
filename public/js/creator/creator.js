@@ -83,6 +83,7 @@ function addNodeAtLocation(canvas, x, y) {
                 offsetX = e.clientX - node.offsetLeft
                 offsetY = e.clientY - node.offsetTop
             } else if(creatorState.currentItem === "Connect") {
+                console.log(creatorState.connections)
                 node.classList.add("selected")
                 var slCount = creatorState.selectedCount + 1
                 creatorState.selectedCount = slCount
@@ -119,6 +120,15 @@ function addNodeAtLocation(canvas, x, y) {
                     
                     document.removeEventListener("mousemove", creatorState.mouseMoveHandler)
                     creatorState.mouseMoveHandler = null
+
+                    if(creatorState.selectNodeFirst === creatorState.selectNodeSecond) {
+                        creatorState.selectNodeFirst.classList.remove("selected")
+                        creatorState.selectNodeSecond.classList.remove("selected")
+                        creatorState.selectNodeFirst = null
+                        creatorState.selectNodeSecond = null
+                        creatorState.selectedCount = 0
+                        return;
+                    }
 
                     const line = creatorState.activeLine;
                     const rect1 = creatorState.selectNodeFirst.getBoundingClientRect();
