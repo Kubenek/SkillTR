@@ -121,7 +121,11 @@ function addNodeAtLocation(canvas, x, y) {
                     document.removeEventListener("mousemove", creatorState.mouseMoveHandler)
                     creatorState.mouseMoveHandler = null
 
-                    if(creatorState.selectNodeFirst === creatorState.selectNodeSecond) { resetSelectData(); return; }
+                    if(creatorState.selectNodeFirst === creatorState.selectNodeSecond) { 
+                        creatorState.activeLine.remove();
+                        creatorState.activeLine = null
+                        resetSelectData(); return; 
+                    }
 
                     const a = creatorState.selectNodeFirst;
                     const b = creatorState.selectNodeSecond;
@@ -133,6 +137,8 @@ function addNodeAtLocation(canvas, x, y) {
                     });
 
                     if (found) {
+                        creatorState.activeLine.remove();
+                        creatorState.activeLine = null
                         resetSelectData();
                         return;
                     }
