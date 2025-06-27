@@ -123,6 +123,20 @@ function addNodeAtLocation(canvas, x, y) {
 
                     if(creatorState.selectNodeFirst === creatorState.selectNodeSecond) { resetSelectData(); return; }
 
+                    const a = creatorState.selectNodeFirst;
+                    const b = creatorState.selectNodeSecond;
+
+                    const found = creatorState.connections.some(elem => {
+                        const x = elem.fromNode;
+                        const y = elem.toNode;
+                        return (a === x && b === y) || (a === y && b === x);
+                    });
+
+                    if (found) {
+                        resetSelectData();
+                        return;
+                    }
+
                     const line = creatorState.activeLine;
                     const rect1 = creatorState.selectNodeFirst.getBoundingClientRect();
                     const rect2 = creatorState.selectNodeSecond.getBoundingClientRect();
