@@ -1,4 +1,5 @@
 import { creatorState } from './creatorState.js'
+import { updateConnectionLinesPositions } from './creator.js'
 
 document.addEventListener("DOMContentLoaded", () => {
     const canvas = document.querySelector(".canvas-content");
@@ -38,6 +39,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         canvas.style.transform = `translate(${creatorState.panX}px, ${creatorState.panY}px) scale(${creatorState.zoom})`;
         creatorArea.style.backgroundPosition = `${creatorState.panX % 20}px ${creatorState.panY % 20}px`;
+
+        updateConnectionLinesPositions()
     });
 
     document.addEventListener("selectstart", (e) => {
