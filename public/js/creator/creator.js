@@ -94,7 +94,8 @@ function addNodeAtLocation(canvas, x, y) {
         })
 
         node.addEventListener("mousedown", (e) => {
-            if(creatorState.currentItem === "Move") {;
+            if(creatorState.currentItem === "Move") {
+                updateConnectionLinesPositions()
                 creatorState.isDraggingNode = true
                 creatorState.draggingNodeElem = node
                 creatorState.lastNodeData = nodeData
@@ -258,6 +259,8 @@ document.addEventListener("mousemove", (e) => {
 
     updateConnectedLines(creatorState.draggingNodeElem)
 
+    updateConnectionLinesPositions()
+
     creatorState.lastNodeData.x = left + NODE_RADIUS
     creatorState.lastNodeData.y = top + NODE_RADIUS
 })
@@ -331,15 +334,19 @@ function resetSelectData() {
 }
 
 export function updateConnectionLinesPositions() {
-    const canvasRect = canvas.getBoundingClientRect();
     for (const conn of creatorState.connections)  {
-        const rect1 = conn.fromNode.getBoundingClientRect();
-        const rect2 = conn.toNode.getBoundingClientRect();
+        const nodeA = conn.fromNode;
+        const nodeB = conn.toNode;
 
-        const x1 = rect1.left + rect1.width / 2 - canvasRect.left
-        const y1 = rect1.top + rect1.height / 2 - canvasRect.top
-        const x2 = rect2.left + rect2.width / 2 - canvasRect.left
-        const y2 = rect2.top + rect2.height / 2 - canvasRect.top
+        const ax = nodeA.offsetLeft + nodeA.offsetWidth / 2;
+        const ay = nodeA.offsetTop + nodeA.offsetHeight / 2;
+        const bx = nodeB.offsetLeft + nodeB.offsetWidth / 2;
+        const by = nodeB.offsetTop + nodeB.offsetHeight / 2;
+
+        const x1 = ax;
+        const y1 = ay;
+        const x2 = bx;
+        const y2 = by;
 
         const dx = x2 - x1;
         const dy = y2 - y1;
@@ -352,3 +359,4 @@ export function updateConnectionLinesPositions() {
         conn.line.style.transform = `rotate(${angle}deg)`;
     }
 }
+
