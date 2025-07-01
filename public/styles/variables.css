@@ -1,13 +1,4 @@
 :root {
-  --skill-pink:        #F72585;
-  --skill-magenta:     #B5179E;
-  --skill-soft-purple: #DDAAFF;
-  --skill-purple:      #7209B7;
-  --skill-deep-purple: #560BAD;
-  --skill-indigo:      #480CA8;
-  --skill-violet:      #3A0CA3;
-  --skill-blue-violet: #3F37C9;
-  --skill-royal-blue:  #4361EE;
-  --skill-blue:        #4895EF;
-  --skill-sky-blue:    #4CC9F0;
+  --beige: #D8C3BA;
+  --dark-purple: #2B1C34;
 }

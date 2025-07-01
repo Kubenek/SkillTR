@@ -1,8 +1,7 @@
-@font-face {
-    font-family: 'Cyber';
-    src: url("../fonts/Cyber.otf") format('opentype');
-}
+@import url('https://fonts.googleapis.com/css2?family=Inknut+Antiqua:wght@300;400;500;600;700;800;900&display=swap');
 
 * {
-    font-family: 'Cyber', sans-serif;
+    font-family: "Inknut Antiqua", serif;
+    font-weight: 700;
+    font-style: normal;
 }

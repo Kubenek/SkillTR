@@ -8,5 +8,13 @@ export const creatorState = {
     currentItem: "Place",
     nodeOriginalX: 0,
     nodeOriginalY: 0,
-    sourceConnectNode: null
+    sourceConnectNode: null,
+    isPopupActive: false,
+    selectedCount: 0,
+    selectNodeFirst: null,
+    selectNodeSecond: null,
+    activeLine: null,
+    mouseMoveHandler: null,
+    connections: [],
+    disableDrag: false
 }

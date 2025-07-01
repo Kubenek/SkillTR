@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="/styles/zoom.css">
     <link rel="stylesheet" href="/styles/tools.css" />
     <link rel="stylesheet" href="/styles/basics.css">
+    <link rel="stylesheet" href="/styles/deletePopup.css"/>
+    <link rel="stylesheet" href="/styles/lines.css"/>
+
     <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
     
     <script src="/js/creator/tools.js" defer type="module"></script>
