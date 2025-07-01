@@ -202,6 +202,7 @@ function addNodeAtLocation(canvas, x, y) {
                 yBtn.innerText = "Yes"; nBtn.innerText = "No"
                 
                 yBtn.addEventListener("click", () => {
+                    deleteConnections(node)
                     node.remove();
                     popup.remove();
                     creatorState.isPopupActive = false;
@@ -379,5 +380,15 @@ function getMousePosRelativeToCanvas(e, canvas) {
     };
 }
 
+function deleteConnections(deletedNode) {
+    creatorState.connections.forEach(conn => {
+        if (conn.fromNode === deletedNode || conn.toNode === deletedNode) {
+            conn.line.remove();
+        }
+    });
+    creatorState.connections = creatorState.connections.filter(conn => 
+        conn.fromNode !== deletedNode && conn.toNode !== deletedNode
+    );
+}
 
 
