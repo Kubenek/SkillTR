@@ -116,22 +116,9 @@ function addNodeAtLocation(canvas, x, y) {
                     canvas.append(line)
                     creatorState.activeLine = line
 
-                    creatorState.mouseMoveHandler = function (e) {
-                        const rect = creatorState.selectNodeFirst.getBoundingClientRect();
-                        const x1 = rect.left + rect.width / 2;
-                        const y1 = rect.top + rect.height / 2;
-                        const x2 = e.clientX;
-                        const y2 = e.clientY;
-
-                        const dx = x2 - x1;
-                        const dy = y2 - y1;
-                        const length = Math.sqrt(dx * dx + dy * dy);
-                        const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-
-                        line.style.width = `${length}px`;
-                        line.style.left = `${x1}px`;
-                        line.style.top = `${y1}px`;
-                        line.style.transform = `rotate(${angle}deg)`;
+                    creatorState.mouseMoveHandler = function(e) {   
+                        const mousePos = getMousePosRelativeToCanvas(e, canvas);
+                        updateActiveLinePos(mousePos.x, mousePos.y);
                     };
 
                     document.addEventListener("mousemove", creatorState.mouseMoveHandler);
@@ -190,6 +177,8 @@ function addNodeAtLocation(canvas, x, y) {
                         toNode: creatorState.selectNodeSecond,
                         line: creatorState.activeLine
                     })
+
+                    updateConnectionLinesPositions()
 
                     resetSelectData()
                 }
@@ -359,4 +348,36 @@ export function updateConnectionLinesPositions() {
         conn.line.style.transform = `rotate(${angle}deg)`;
     }
 }
+
+function updateActiveLinePos(mouseX, mouseY) {
+    if (!creatorState.activeLine || !creatorState.selectNodeFirst) return;
+
+    const fromNode = creatorState.selectNodeFirst;
+    const x1 = fromNode.offsetLeft + fromNode.offsetWidth / 2;
+    const y1 = fromNode.offsetTop + fromNode.offsetHeight / 2;
+
+    const x2 = mouseX;
+    const y2 = mouseY;
+
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const length = Math.sqrt(dx * dx + dy * dy);
+    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+    const line = creatorState.activeLine;
+    line.style.width = `${length}px`;
+    line.style.left = `${x1}px`;
+    line.style.top = `${y1}px`;
+    line.style.transform = `rotate(${angle}deg)`;
+}
+
+function getMousePosRelativeToCanvas(e, canvas) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+    };
+}
+
+
 
