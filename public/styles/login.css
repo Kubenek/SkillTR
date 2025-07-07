@@ -13,3 +13,22 @@ body {
     align-items: center;
     background-image: radial-gradient(ellipse farthest-side, var(--soft-purple), var(--obsidian));
 }
+
+.login-body {
+    width: 30%;
+    height: 65%;
+    background-color: var(--dark-purple);
+    border-radius: 20px;
+    box-shadow: 10px 10px 5px rgba(0,0,0,0.2);
+}
+
+.upper-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.upper-text > p {
+    color: var(--beige);
+}

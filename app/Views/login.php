@@ -10,7 +10,14 @@
 <body>
     <main class="site-container">
 
-    
+        <section class="login-body">
+
+            <div class="upper-text">
+                <p class="main">Welcome Back!</p>
+                <p class="secondary">Let's get you back in...</p>
+            </div>
+
+        </section>
 
     </main>
 </body>
