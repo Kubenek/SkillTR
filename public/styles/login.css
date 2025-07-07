@@ -20,6 +20,13 @@ body {
     background-color: var(--dark-purple);
     border-radius: 20px;
     box-shadow: 10px 10px 5px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.content-wrapper {
+    width: 70%;
 }
 
 .upper-text {
@@ -31,4 +38,30 @@ body {
 
 .upper-text > p {
     color: var(--beige);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+.socials {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.social-box {
+    width: 90px;
+    height: 70px;
+    background-color: rgba(217, 217, 217, 0.2);
+    border-radius: 15px;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
 }

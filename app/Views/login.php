@@ -12,10 +12,31 @@
 
         <section class="login-body">
 
-            <div class="upper-text">
-                <p class="main">Welcome Back!</p>
-                <p class="secondary">Let's get you back in...</p>
-            </div>
+            <section class="content-wrapper">
+
+                <div class="upper-text">
+                    <p class="main">Welcome Back!</p>
+                    <p class="secondary">Let's get you back in...</p>
+                </div>
+
+                <div class="input-fields">
+                    <input type="text" class="email-input"/>
+                    <input type="password" class="pass-input"/>
+
+                    <a href="..." class="forgot-password">Forgot password</a>
+
+                    <button class="submit-login">Sign In</button> 
+                </div>
+
+                <hr>
+
+                <div class="socials">
+                    <div class="social-box"></div>
+                    <div class="social-box"></div>
+                    <div class="social-box"></div>
+                </div>
+
+            </section>
 
         </section>
 
