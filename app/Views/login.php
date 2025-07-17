@@ -20,8 +20,13 @@
                 </div>
 
                 <div class="input-fields">
-                    <input type="text" class="email-input"/>
-                    <input type="password" class="pass-input"/>
+                    <div class="inputBox email">
+                        <input type="text" class="email-input"/>
+                    </div>
+        
+                    <div class="inputBox password">
+                        <input type="password" class="pass-input"/>
+                    </div>
 
                     <a href="..." class="forgot-password">Forgot password</a>
 

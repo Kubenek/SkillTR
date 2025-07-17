@@ -37,17 +37,38 @@ body {
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    gap: 0;
+    margin-bottom: 15px;
 }
 
 .upper-text > p {
     color: var(--beige);
 }
 
+.upper-text .main {
+    font-size: 32px;
+    margin-bottom: 0;
+}
 
+.upper-text .secondary {
+    margin-top: 0;
+    font-size: 13px;
+}
 
+.input-fields {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
 
+.inputBox {
+    width: 100%;
+}
 
-
+.inputBox input {
+    width: 100%;
+}
 
 
 
