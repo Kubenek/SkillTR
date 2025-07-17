@@ -21,11 +21,13 @@
 
                 <div class="input-fields">
                     <div class="inputBox email">
-                        <input type="text" class="email-input"/>
+                        <img src="/../images/icons/bx-envelope-alt.png" class="icon">
+                        <input type="text" class="email-input" placeholder="Email"/>
                     </div>
         
                     <div class="inputBox password">
-                        <input type="password" class="pass-input"/>
+                        <img src="/../images/icons/bx-lock.png" class="icon">
+                        <input type="password" class="pass-input" placeholder="Password"/>
                     </div>
 
                     <a href="..." class="forgot-password">Forgot password</a>
