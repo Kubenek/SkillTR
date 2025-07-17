@@ -27,6 +27,9 @@ body {
 
 .content-wrapper {
     width: 70%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
 }
 
 .upper-text {
@@ -49,7 +52,22 @@ body {
 
 
 
+.socials-hr {
+    width: 80%;
+    display: flex;
+    align-items: center;
+    color: var(--beige);
+    margin: 20px 0;
+    font-size: 10px;
+}
 
+.socials-hr::before,
+.socials-hr::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid var(--beige);
+    margin: 0 15px;
+}
 
 .socials {
     width: 100%;
@@ -60,8 +78,10 @@ body {
 
 .social-box {
     width: 90px;
-    height: 70px;
+    height: 65px;
     background-color: rgba(217, 217, 217, 0.2);
     border-radius: 15px;
-    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 
+        5px 5px 5px rgba(0, 0, 0, 0.2), 
+        inset 5px 5px 5px rgba(255, 255, 255, 0.1);
 }

@@ -28,7 +28,9 @@
                     <button class="submit-login">Sign In</button> 
                 </div>
 
-                <hr>
+                <div class="socials-hr">
+                    <span>or sign in with</span>
+                </div>
 
                 <div class="socials">
                     <div class="social-box"></div>
