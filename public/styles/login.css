@@ -153,6 +153,9 @@ body {
 .social-box {
     width: 90px;
     height: 65px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background-color: rgba(217, 217, 217, 0.2);
     border-radius: 15px;
     box-shadow: 
@@ -163,4 +166,9 @@ body {
 
 .social-box:hover {
     transform: scale(1.05);
+}
+
+.social-icon {
+    width: 25px;
+    height: 25px;
 }

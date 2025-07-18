@@ -40,9 +40,15 @@
                 </div>
 
                 <div class="socials">
-                    <div class="social-box"></div>
-                    <div class="social-box"></div>
-                    <div class="social-box"></div>
+                    <div class="social-box">
+                        <img src="../images/icons/facebook.png" class="social-icon">
+                    </div>
+                    <div class="social-box">
+                        <img src="../images/icons/google.png" class="social-icon">
+                    </div>
+                    <div class="social-box">
+                        <img src="../images/icons/github.png" class="social-icon">
+                    </div>
                 </div>
 
             </section>
