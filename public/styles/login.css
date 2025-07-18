@@ -118,6 +118,11 @@ body {
     display: flex;
     color: var(--linen);
     border: none;
+    transition: transform 0.15s ease-in-out;
+}
+
+.submit-login:hover {
+    transform: scale(1.02);
 }
 
 .socials-hr {
@@ -153,4 +158,9 @@ body {
     box-shadow: 
         5px 5px 5px rgba(0, 0, 0, 0.2), 
         inset 5px 5px 5px rgba(255, 255, 255, 0.1);
+    transition: transform 0.15s ease-in-out;
+}
+
+.social-box:hover {
+    transform: scale(1.05);
 }
