@@ -1,5 +1,5 @@
 import { creatorState } from './creatorState.js'
-import { updateConnectionLinesPositions } from './creator.js'
+import { updateConnectionLinesPositions } from './functions.js'
 
 document.addEventListener("DOMContentLoaded", () => {
     const canvas = document.querySelector(".canvas-content");
