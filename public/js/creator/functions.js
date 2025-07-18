@@ -141,4 +141,53 @@ export function getClickPosition(area, event) {
     return { x, y };
 }
 
+export function createDeletePopup(node) {
+    creatorState.isPopupActive = true
 
+    var popup = document.createElement('div')
+    var content = document.createElement('div')
+
+    popup.classList.add("popupContainer")
+    content.classList.add("popupBody")
+
+    var p = document.createElement("p")
+    p.innerText = "Confirm delete?"
+
+    var yBtn = document.createElement("button")
+    var nBtn = document.createElement("button")
+    yBtn.classList.add("yBtn"); nBtn.classList.add("nBtn")
+
+    yBtn.innerText = "Yes"; nBtn.innerText = "No"
+    
+    yBtn.addEventListener("click", () => {
+        deleteConnections(node)
+        node.remove();
+        popup.remove();
+        creatorState.isPopupActive = false;
+        
+        const index = creatorState.nodes.findIndex(n => n.elem === node) 
+        if(index !== -1) {
+            var lastIndex = creatorState.nodes.length - 1
+            if(lastIndex !== index) {
+                creatorState.nodes[index] = creatorState.nodes[lastIndex]
+            }
+            creatorState.nodes.pop()
+        }
+
+    })
+    nBtn.addEventListener("click", () => {
+        popup.remove();
+        creatorState.isPopupActive = false;
+    })
+
+    var popupButtons = document.createElement("div")
+    popupButtons.classList.add("popupBtn")
+
+    popupButtons.appendChild(yBtn); popupButtons.appendChild(nBtn)
+
+    content.appendChild(p); content.appendChild(popupButtons)
+
+    popup.appendChild(content)
+    document.body.appendChild(popup)
+}
+ 
