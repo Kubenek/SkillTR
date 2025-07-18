@@ -3,94 +3,172 @@
 body { 
     margin: 0; padding: 0; border: 0;
 }
-
+ 
 .site-container { 
     width: 100vw;
     height: 100vh;
     border: 0; margin: 0; padding: 0;
-    background-color: #4c4f66;
     display: flex;
     justify-content: center;
     align-items: center;
+    background-image: radial-gradient(ellipse farthest-side, var(--soft-purple), var(--obsidian));
 }
 
-.main-content {
-    width: 55%;
+.login-body {
+    width: 30%;
     height: 70%;
-    border-radius: 15px;
+    background-color: var(--dark-purple);
+    border-radius: 20px;
+    box-shadow: 10px 10px 5px rgba(0,0,0,0.2);
     display: flex;
-    justify-content: flex-start;
-    box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.2);
-    background-color: #261c36;
-}
-
-.right-box {
-    border-bottom-right-radius: inherit;
-    border-top-right-radius: inherit;
-    height: 100%;
-    width: 50%;
-}
-
-.left-box {
-    border-bottom-left-radius: inherit;
-    border-top-left-radius: inherit;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    flex-direction: column;
-    height: 100%;
-    width: 50%;
-    color: white;
-    gap: 20px;
-}
-
-.left-box .top-text {
-    display: flex;
-    justify-content: center;
-    width: 100%;
     align-items: center;
     flex-direction: column;
-    gap:0;
 }
 
-.left-box .top-text .lg, .sm {
-    margin-bottom: 3px;
+.content-wrapper {
+    width: 70%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
 }
 
-.lg {
-    font-size: 33px;
+.upper-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 15px;
 }
 
-.sm {
-    font-size: 15px;
+.upper-text > p {
+    color: var(--beige);
+}
+
+.upper-text .main {
+    font-size: 32px;
+    margin-bottom: 0;
+}
+
+.upper-text .secondary {
+    margin-top: 0;
+    font-size: 13px;
 }
 
 .input-fields {
     width: 100%;
     display: flex;
-    justify-content: center;
     align-items: center;
     flex-direction: column;
-    gap:10px;
 }
 
-.input-box input {
+.inputBox {
     width: 100%;
-    height: 30px;
+    background-color: var(--snow-white);
+    opacity: 0.6;
+    height: 47px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    box-shadow: inset 5px 5px 5px rgba(0,0,0,0.25), 5px 5px 5px rgba(0,0,0,0.25);
+    justify-content: center;
+    align-items: center;
+    display: flex;
 }
 
-.input-box {
-    width: 60%;
+.inputBox input {
+    width: auto;
+    height: 100%;
+    font-size: 17px;
+    background-color: transparent;
+    border: none;
+}
+
+.inputBox input:focus {
+    outline: none
+}
+
+.icon {
+    width: 30px;
+    height: 30px;
+    opacity: 0.65;
+    margin-right: 5px;
+}
+
+.password {
+    margin-bottom: 0;
+}
+
+.input-fields a {
+    text-decoration: none;
+    color: var(--snow-white);
+    opacity: 50%;
+    font-size: 13px;
+    margin-left: auto;
+}
+
+.submit-login {
+    width: 100%;
+    background-color: rgba(128, 83, 154, 0.6);
+    height: 47px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    box-shadow: 5px 5px 5px rgba(0,0,0,0.25);
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    color: var(--linen);
+    border: none;
+    transition: transform 0.15s ease-in-out;
+}
+
+.submit-login:hover {
+    transform: scale(1.02);
+}
+
+.socials-hr {
+    width: 80%;
+    display: flex;
+    align-items: center;
+    color: var(--beige);
+    margin: 20px 0;
+    font-size: 10px;
+    margin-top: 0; margin-bottom: 7px;
+}
+
+.socials-hr::before,
+.socials-hr::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid var(--beige);
+    margin: 0 15px;
+}
+
+.socials {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.social-box {
+    width: 90px;
+    height: 65px;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    flex-direction: column;
+    align-items: center;
+    background-color: rgba(217, 217, 217, 0.2);
+    border-radius: 15px;
+    box-shadow: 
+        5px 5px 5px rgba(0, 0, 0, 0.2), 
+        inset 5px 5px 5px rgba(255, 255, 255, 0.1);
+    transition: transform 0.15s ease-in-out;
 }
 
-.rememberBox {
-    width: 60%;
-    display: flex;
-    justify-content: start;
-    align-items: center;
-    gap: 2px;
+.social-box:hover {
+    transform: scale(1.05);
+}
+
+.social-icon {
+    width: 25px;
+    height: 25px;
 }

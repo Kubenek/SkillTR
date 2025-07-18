@@ -10,39 +10,48 @@
 <body>
     <main class="site-container">
 
-        <section class="main-content">
+        <section class="login-body">
 
-            <div class="left-box">
+            <section class="content-wrapper">
 
-                <div class="top-text">
-                    <p class="lg">Login</p>
-                    <p class="sm">Enter your credasentials to sign in</p>
+                <div class="upper-text">
+                    <p class="main">Welcome Back!</p>
+                    <p class="secondary">Let's get you back in...</p>
                 </div>
 
                 <div class="input-fields">
-
-                    <div class="input-box">
-                        <label for="mail-input">Email</label>
-                        <input type="text" id="mail-input">
+                    <div class="inputBox email">
+                        <img src="/../images/icons/bx-envelope-alt.png" class="icon">
+                        <input type="text" class="email-input" placeholder="Email"/>
+                    </div>
+        
+                    <div class="inputBox password">
+                        <img src="/../images/icons/bx-lock.png" class="icon">
+                        <input type="password" class="pass-input" placeholder="Password"/>
                     </div>
 
-                    <div class="input-box">
-                        <label for="pass-input">Password</label>
-                        <input type="password" id="pass-input">
-                    </div>
+                    <a href="..." class="forgot-password">Forgot password</a>
 
-                    <div class="rememberBox">
-                        <input type="checkbox" id="remember">
-                        <label for="remember">Remember me</label>
-                    </div>
-
+                    <button class="submit-login">Sign In</button> 
                 </div>
 
-            </div>
+                <div class="socials-hr">
+                    <span>or sign in with</span>
+                </div>
 
-            <div class="right-box">
+                <div class="socials">
+                    <div class="social-box">
+                        <img src="../images/icons/facebook.png" class="social-icon">
+                    </div>
+                    <div class="social-box">
+                        <img src="../images/icons/google.png" class="social-icon">
+                    </div>
+                    <div class="social-box">
+                        <img src="../images/icons/github.png" class="social-icon">
+                    </div>
+                </div>
 
-            </div>
+            </section>
 
         </section>
 
