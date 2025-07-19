@@ -95,12 +95,18 @@ export function updateLinePosition(line, objA, objB) {
 
 // * Misc Functions
 export function resetSelectData() {
-    creatorState.selectNodeFirst.classList.remove("selected")
-    creatorState.selectNodeSecond.classList.remove("selected")
-    creatorState.selectNodeFirst = null
-    creatorState.selectNodeSecond = null
-    creatorState.selectedCount = 0
-    creatorState.activeLine = null
+
+    [creatorState.selectNodeFirst, creatorState.selectNodeSecond].forEach(node => {
+        node.classList.remove("selected")
+    })
+
+    Object.assign(creatorState, {
+        selectNodeFirst: null,
+        selectNodeSecond: null,
+        selectedCount: 0,
+        activeLine: null
+
+    })
 }
 
 export function getMousePosRelativeToCanvas(e, canvas) {
