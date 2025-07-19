@@ -1,6 +1,6 @@
 import { creatorState } from './creatorState.js'
 import { COLLISION_RADIUS } from '../config.js';
-import { removeElementFromList } from '../QoL.js'
+import { removeElementFromList, initializeElement } from '../QoL.js'
 
 // * Overlap Logic
 export function nodesOverlap(currentNode) {
@@ -139,43 +139,39 @@ export function getClickPosition(area, event) {
     return { x, y };
 }
 
-export function createDeletePopup(node) {
+export function createDeletePopup() {
     creatorState.isPopupActive = true
 
-    var popup = document.createElement('div')
-    var content = document.createElement('div')
+    var popup = initializeElement("div", "popupContainer")
+    var content = initializeElement("div", "popupBody")
+    var p = initializeElement("p", null, "Confirm delete?")
 
-    popup.classList.add("popupContainer")
-    content.classList.add("popupBody")
-
-    var p = document.createElement("p")
-    p.innerText = "Confirm delete?"
-
-    var yBtn = document.createElement("button")
-    var nBtn = document.createElement("button")
-    yBtn.classList.add("yBtn"); nBtn.classList.add("nBtn")
-
-    yBtn.innerText = "Yes"; nBtn.innerText = "No"
+    var yBtn = initializeElement("button", "yBtn", "Yes")
+    var nBtn = initializeElement("button", "nBtn", "No")
     
-    yBtn.addEventListener("click", () => {
-        deleteConnections(node)
-        node.remove(); popup.remove();
-        creatorState.isPopupActive = false;
-        removeElementFromList(creatorState.nodes, node)
-    })
-    nBtn.addEventListener("click", () => {
-        popup.remove();
-        creatorState.isPopupActive = false;
-    })
+    yBtn.addEventListener("click", handleConfirmDelete);
+    nBtn.addEventListener("click", handleCancelDelete);
 
-    var popupButtons = document.createElement("div")
-    popupButtons.classList.add("popupBtn")
+    var popupButtons = initializeElement("div", "popupBtn")
 
-    popupButtons.appendChild(yBtn); popupButtons.appendChild(nBtn)
-
-    content.appendChild(p); content.appendChild(popupButtons)
+    popupButtons.appendChild(yBtn, nBtn);
+    content.appendChild(p, popupButtons);
 
     popup.appendChild(content)
     document.body.appendChild(popup)
 }
+
+function handleConfirmDelete() {
+    deleteConnections(node);
+    node.remove();
+    popup.remove();
+    creatorState.isPopupActive = false;
+    removeElementFromList(creatorState.nodes, node);
+}
+
+function handleCancelDelete() {
+    popup.remove();
+    creatorState.isPopupActive = false;
+}
+
  

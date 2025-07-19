@@ -167,7 +167,7 @@ function addNodeAtLocation(canvas, x, y) {
             }
         } else if(creatorState.currentItem === "Delete") {
 
-            createDeletePopup(node)
+            createDeletePopup()
             
         } else return
     });
