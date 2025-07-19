@@ -1,5 +1,6 @@
 import { creatorState } from './creatorState.js'
 import { COLLISION_RADIUS } from '../config.js';
+import { removeElementFromList } from '../QoL.js'
 
 // * Overlap Logic
 export function nodesOverlap(currentNode) {
@@ -161,19 +162,9 @@ export function createDeletePopup(node) {
     
     yBtn.addEventListener("click", () => {
         deleteConnections(node)
-        node.remove();
-        popup.remove();
+        node.remove(); popup.remove();
         creatorState.isPopupActive = false;
-        
-        const index = creatorState.nodes.findIndex(n => n.elem === node) 
-        if(index !== -1) {
-            var lastIndex = creatorState.nodes.length - 1
-            if(lastIndex !== index) {
-                creatorState.nodes[index] = creatorState.nodes[lastIndex]
-            }
-            creatorState.nodes.pop()
-        }
-
+        removeElementFromList(creatorState.nodes, node)
     })
     nBtn.addEventListener("click", () => {
         popup.remove();
