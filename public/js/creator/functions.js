@@ -32,20 +32,7 @@ export function updateConnectedLines(movedNode) {
             const rect1 = conn.fromNode.getBoundingClientRect();
             const rect2 = conn.toNode.getBoundingClientRect();
 
-            const x1 = rect1.left + rect1.width / 2;
-            const y1 = rect1.top + rect1.height / 2;
-            const x2 = rect2.left + rect2.width / 2;
-            const y2 = rect2.top + rect2.height / 2;
-
-            const dx = x2 - x1;
-            const dy = y2 - y1;
-            const length = Math.sqrt(dx * dx + dy * dy);
-            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-
-            conn.line.style.width = `${length}px`;
-            conn.line.style.left = `${x1}px`;
-            conn.line.style.top = `${y1}px`;
-            conn.line.style.transform = `rotate(${angle}deg)`;
+            updateLinePosition(conn.line, rect1, rect2)
         }
     }
 }
@@ -55,25 +42,7 @@ export function updateConnectionLinesPositions() {
         const nodeA = conn.fromNode;
         const nodeB = conn.toNode;
 
-        const ax = nodeA.offsetLeft + nodeA.offsetWidth / 2;
-        const ay = nodeA.offsetTop + nodeA.offsetHeight / 2;
-        const bx = nodeB.offsetLeft + nodeB.offsetWidth / 2;
-        const by = nodeB.offsetTop + nodeB.offsetHeight / 2;
-
-        const x1 = ax;
-        const y1 = ay;
-        const x2 = bx;
-        const y2 = by;
-
-        const dx = x2 - x1;
-        const dy = y2 - y1;
-        const length = Math.sqrt(dx * dx + dy * dy);
-        const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-
-        conn.line.style.width = `${length}px`;
-        conn.line.style.left = `${x1}px`;
-        conn.line.style.top = `${y1}px`;
-        conn.line.style.transform = `rotate(${angle}deg)`;
+        updateLinePosition(conn.line, nodeA, nodeB)
     }
 }
 
@@ -81,21 +50,43 @@ export function updateActiveLinePos(mouseX, mouseY) { // ? Active Lines
     if (!creatorState.activeLine || !creatorState.selectNodeFirst) return;
 
     const fromNode = creatorState.selectNodeFirst;
-    const x1 = fromNode.offsetLeft + fromNode.offsetWidth / 2;
-    const y1 = fromNode.offsetTop + fromNode.offsetHeight / 2;
 
-    const x2 = mouseX;
-    const y2 = mouseY;
+    updateLinePosition(creatorState.activeLine, fromNode, {x: mouseX, y: mouseY})
+}
 
-    const dx = x2 - x1;
-    const dy = y2 - y1;
+function getCenter(obj) {
+    if ("offsetLeft" in obj && "offsetWidth" in obj) {
+        return {
+            x: obj.offsetLeft + obj.offsetWidth / 2,
+            y: obj.offsetTop + obj.offsetHeight / 2
+        };
+    } else if ("left" in obj && "width" in obj) {
+        return {
+            x: obj.left + obj.width / 2,
+            y: obj.top + obj.height / 2
+        };
+    } else if ("x" in obj && "y" in obj) {
+        return { x: obj.x, y: obj.y };
+    } else {
+        throw new Error("Invalid object passed to getCenter");
+    }
+}
+
+
+export function updateLinePosition(line, objA, objB) {
+
+    let p1 = getCenter(objA)
+    let p2 = getCenter(objB)
+
+    const dx = p2.x - p1.x;
+    const dy = p2.y - p1.y;
+
     const length = Math.sqrt(dx * dx + dy * dy);
     const angle = Math.atan2(dy, dx) * 180 / Math.PI;
 
-    const line = creatorState.activeLine;
     line.style.width = `${length}px`;
-    line.style.left = `${x1}px`;
-    line.style.top = `${y1}px`;
+    line.style.left = `${p1.x}px`;
+    line.style.top = `${p1.y}px`;
     line.style.transform = `rotate(${angle}deg)`;
 }
 
