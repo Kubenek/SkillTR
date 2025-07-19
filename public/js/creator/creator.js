@@ -3,10 +3,8 @@ import { creatorState } from './creatorState.js'
 import { nodesOverlap, updateConnectedLines, updateConnectionLinesPositions, updateActiveLinePos, resetSelectData, getMousePosRelativeToCanvas, createDeletePopup, getClickPosition } from './functions.js';
 
 let offsetX, offsetY;
-let nodeClicked = false;
-let disableNodePlace = false;
-let clickStartTime = 0;
-let clickStartPos = {x:0, y: 0}
+let nodeClicked = false; let disableNodePlace = false;
+let clickStartTime = 0; let clickStartPos = {x:0, y: 0}
 
 document.addEventListener("DOMContentLoaded", () => {
     const creatorArea = document.querySelector(".creator-area");
@@ -41,9 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function addNodeAtLocation(canvas, x, y) {
-
-    if(disableNodePlace) return
-    if(creatorState.currentItem !== "Place") return
+    if(disableNodePlace || creatorState.currentItem !== "Place") return
 
     const size = 15;
     const node = document.createElement("div");
@@ -52,7 +48,6 @@ function addNodeAtLocation(canvas, x, y) {
     node.style.position = "absolute";
     node.style.width = size + "px";
     node.style.height = size + "px";
-
     node.style.left = (x - size / 2) + "px";
     node.style.top = (y - size / 2) + "px";
 
@@ -64,22 +59,20 @@ function addNodeAtLocation(canvas, x, y) {
 
         node.addEventListener("mouseover", () => {
             creatorState.disableDrag = true
-            creatorState.connections.forEach(elem => {
-                if(elem.fromNode === node) {
-                    elem.line.classList.remove("permanent-line")
-                    elem.line.classList.add("highlighted-line")
-                }
-            })
+            creatorState.connections
+                .filter(elem => elem.fromNode === node)
+                .forEach(elem => {
+                    elem.line.classList.replace("permanent-line", "highlighted-line")
+                })
         })
 
         node.addEventListener("mouseout", () => {
             creatorState.disableDrag = false
-            creatorState.connections.forEach(elem => {
-                if(elem.fromNode === node) {
-                    elem.line.classList.add("permanent-line")
-                    elem.line.classList.remove("highlighted-line")
-                }
-            })
+             creatorState.connections
+                .filter(elem => elem.fromNode === node)
+                .forEach(elem => {
+                    elem.line.classList.replace("highlighted-line", "permanent-line")
+                })
         })
 
         node.addEventListener("mousedown", (e) => {
