@@ -183,16 +183,24 @@ document.addEventListener("mouseup", (e) => {
     if (!creatorState.isDraggingNode || !creatorState.draggingNodeElem) return;
 
     if (nodesOverlap(creatorState.lastNodeData)) {
-        creatorState.draggingNodeElem.style.left = creatorState.nodeOriginalX + "px";
-        creatorState.draggingNodeElem.style.top = creatorState.nodeOriginalY + "px";
 
-        creatorState.lastNodeData.x = creatorState.nodeOriginalX + NODE_RADIUS
-        creatorState.lastNodeData.y = creatorState.nodeOriginalY + NODE_RADIUS
+        Object.assign(creatorState.draggingNodeElem.style, {
+            left: `${creatorState.nodeOriginalX}px`,
+            top: `${creatorState.nodeOriginalY}px`
+        })
+
+        Object.assign(creatorState.lastNodeData, {
+            x: creatorState.nodeOriginalX + NODE_RADIUS,
+            y: creatorState.nodeOriginalY + NODE_RADIUS,
+        });
+        
     }
 
-    creatorState.isDraggingNode = false;
-    creatorState.draggingNodeElem = null;
-    creatorState.lastNodeData = null;
+    Object.assign(creatorState, {
+        isDraggingNode: false,
+        draggingNodeElem: null,
+        lastNodeData: null
+    })
 });
 
 
