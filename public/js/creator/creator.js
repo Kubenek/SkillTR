@@ -45,11 +45,13 @@ function addNodeAtLocation(canvas, x, y) {
     const node = document.createElement("div");
     node.classList.add("node");
 
-    node.style.position = "absolute";
-    node.style.width = size + "px";
-    node.style.height = size + "px";
-    node.style.left = (x - size / 2) + "px";
-    node.style.top = (y - size / 2) + "px";
+    Object.assign(node.style, {
+        position: "absolute",
+        width: `${size}px`,
+        height: `${size}px`,
+        left: `${x - size / 2}px`,
+        top: `${y - size/2}px`
+    })
 
     const nodeData = { elem: node, x, y };
 
@@ -152,31 +154,29 @@ function addNodeAtLocation(canvas, x, y) {
                 updateConnectionLinesPositions()
                 resetSelectData()
             }
-        } else if(creatorState.currentItem === "Delete") {
-
-            createDeletePopup()
-            
-        } else return
+        } else if(creatorState.currentItem === "Delete") createDeletePopup(); else return;
     });
 
 }
 
-
 document.addEventListener("mousemove", (e) => {
     if(!creatorState.isDraggingNode || !creatorState.draggingNodeElem) return;
 
-    const left = (e.clientX - offsetX) 
-    const top = (e.clientY - offsetY) 
+    const left = (e.clientX - offsetX); const top = (e.clientY - offsetY);
 
-    creatorState.draggingNodeElem.style.left = left + 'px'
-    creatorState.draggingNodeElem.style.top = top + 'px'
+    Object.assign(creatorState.draggingNodeElem.style, {
+        left: `${left}px`,
+        top: `${top}px`
+    });
 
     updateConnectedLines(creatorState.draggingNodeElem)
-
     updateConnectionLinesPositions()
 
-    creatorState.lastNodeData.x = left + NODE_RADIUS
-    creatorState.lastNodeData.y = top + NODE_RADIUS
+    Object.assign(creatorState.lastNodeData, {
+        x: left + NODE_RADIUS,
+        y: top + NODE_RADIUS
+    });
+
 })
 
 document.addEventListener("mouseup", (e) => {
@@ -193,7 +193,7 @@ document.addEventListener("mouseup", (e) => {
             x: creatorState.nodeOriginalX + NODE_RADIUS,
             y: creatorState.nodeOriginalY + NODE_RADIUS,
         });
-        
+
     }
 
     Object.assign(creatorState, {
@@ -202,5 +202,3 @@ document.addEventListener("mouseup", (e) => {
         lastNodeData: null
     })
 });
-
-
