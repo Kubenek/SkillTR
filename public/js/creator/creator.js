@@ -154,7 +154,7 @@ function addNodeAtLocation(canvas, x, y) {
                 updateConnectionLinesPositions()
                 resetSelectData()
             }
-        } else if(creatorState.currentItem === "Delete") createDeletePopup(); else return;
+        } else if(creatorState.currentItem === "Delete") createDeletePopup(node); else return;
     });
 
 }

@@ -139,7 +139,7 @@ export function getClickPosition(area, event) {
     return { x, y };
 }
 
-export function createDeletePopup() {
+export function createDeletePopup(node) {
     creatorState.isPopupActive = true
 
     var popup = initializeElement("div", "popupContainer")
@@ -149,19 +149,19 @@ export function createDeletePopup() {
     var yBtn = initializeElement("button", "yBtn", "Yes")
     var nBtn = initializeElement("button", "nBtn", "No")
     
-    yBtn.addEventListener("click", handleConfirmDelete);
+    yBtn.addEventListener("click", () => handleConfirmDelete(node, popup));
     nBtn.addEventListener("click", handleCancelDelete);
 
     var popupButtons = initializeElement("div", "popupBtn")
 
-    popupButtons.appendChild(yBtn, nBtn);
-    content.appendChild(p, popupButtons);
+    popupButtons.append(yBtn, nBtn);
+    content.append(p, popupButtons);
 
     popup.appendChild(content)
     document.body.appendChild(popup)
 }
 
-function handleConfirmDelete() {
+function handleConfirmDelete(node, popup) {
     deleteConnections(node);
     node.remove();
     popup.remove();
