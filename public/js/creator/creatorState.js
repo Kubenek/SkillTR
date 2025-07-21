@@ -16,5 +16,6 @@ export const creatorState = {
     activeLine: null,
     mouseMoveHandler: null,
     connections: [],
-    disableDrag: false
+    disableDrag: false,
+    nodes: []
 }
