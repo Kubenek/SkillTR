@@ -151,7 +151,7 @@ function addNodeAtLocation(canvas, x, y) {
                     line: creatorState.activeLine
                 })
 
-                updateConnectionLinesPositions()
+                updateConnectedLines(a)
                 resetSelectData()
             }
         } else if(creatorState.currentItem === "Delete") createDeletePopup(node); else return;
@@ -170,7 +170,6 @@ document.addEventListener("mousemove", (e) => {
     });
 
     updateConnectedLines(creatorState.draggingNodeElem)
-    updateConnectionLinesPositions()
 
     Object.assign(creatorState.lastNodeData, {
         x: left + NODE_RADIUS,

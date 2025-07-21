@@ -27,14 +27,14 @@ export function circlesOverlap(ax, ay, bx, by) {
 
 // * Connection lines position logic
 export function updateConnectedLines(movedNode) {
-    for(const conn of creatorState.connections) {
-        if(conn.fromNode === movedNode || conn.toNode === movedNode) {
-            const rect1 = conn.fromNode.getBoundingClientRect();
-            const rect2 = conn.toNode.getBoundingClientRect();
+    const { connections } = creatorState;
 
-            updateLinePosition(conn.line, rect1, rect2)
-        }
-    }
+    for(const conn of connections) {
+        const { fromNode, toNode } = conn;
+        if (fromNode !== movedNode && toNode !== movedNode) continue;
+
+        updateLinePosition(conn.line, fromNode, toNode)
+     }
 }
 
 export function updateConnectionLinesPositions() {

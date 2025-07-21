@@ -1,5 +1,8 @@
+import { PAN_UPDATE_INTERVAL } from '../config.js';
 import { creatorState } from './creatorState.js'
 import { updateConnectionLinesPositions } from './functions.js'
+
+let lastUpdateTime = 0
 
 document.addEventListener("DOMContentLoaded", () => {
     const canvas = document.querySelector(".canvas-content");
@@ -24,9 +27,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     document.addEventListener("mousemove", (e) => {
-        if (!isDragging) return;
-        if (creatorState.isDraggingNode) return;
-        if (creatorState.isPopupActive) return
+        if (!isDragging || creatorState.isDraggingNode || creatorState.isPopupActive) return;
+
+        const now = performance.now()
+        if(now - lastUpdateTime < PAN_UPDATE_INTERVAL) return;
+        lastUpdateTime = now
 
         const dx = e.clientX - startX;
         const dy = e.clientY - startY;
