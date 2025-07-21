@@ -84,10 +84,12 @@ export function updateLinePosition(line, objA, objB) {
     const length = Math.sqrt(dx * dx + dy * dy);
     const angle = Math.atan2(dy, dx) * 180 / Math.PI;
 
-    line.style.width = `${length}px`;
-    line.style.left = `${p1.x}px`;
-    line.style.top = `${p1.y}px`;
-    line.style.transform = `rotate(${angle}deg)`;
+    Object.assign(line.style, {
+        width: `${length}px`,
+        left: `${p1.x}px`,
+        top: `${p1.y}px`,
+        transform: `rotate(${angle}deg)`
+    })
 }
 
 // * =========================================
