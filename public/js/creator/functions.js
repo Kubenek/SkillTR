@@ -18,11 +18,10 @@ export function nodesOverlap(currentNode) {
 export function circlesOverlap(ax, ay, bx, by) {
     const dx = bx - ax;
     const dy = by - ay;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    return dist < COLLISION_RADIUS;
+    const dist = dx * dx + dy * dy
+    return dist < COLLISION_RADIUS * COLLISION_RADIUS;
 }
 // * ===========================
-
 
 
 // * Connection lines position logic
@@ -107,7 +106,6 @@ export function resetSelectData() {
         selectNodeSecond: null,
         selectedCount: 0,
         activeLine: null
-
     })
 }
 
@@ -131,12 +129,11 @@ export function deleteConnections(deletedNode) {
 }
 
 export function getClickPosition(area, event) {
-    const rect = area.getBoundingClientRect();
-    const rawX = event.clientX - rect.left;
-    const rawY = event.clientY - rect.top;
+    const { left, top } = area.getBoundingClientRect();
+    const { panX, panY, zoom } = creatorState;
 
-    const x = (rawX - creatorState.panX) / creatorState.zoom;
-    const y = (rawY - creatorState.panY) / creatorState.zoom;
+    const x = (event.clientX - left - panX) / zoom;
+    const y = (event.clientY - top - panY) / zoom;
 
     return { x, y };
 }
@@ -150,15 +147,15 @@ export function createDeletePopup(node) {
 
     var yBtn = initializeElement("button", "yBtn", "Yes")
     var nBtn = initializeElement("button", "nBtn", "No")
-    
-    yBtn.addEventListener("click", () => handleConfirmDelete(node, popup));
-    nBtn.addEventListener("click", handleCancelDelete);
+
+
+    yBtn.onclick = () => handleConfirmDelete(node, popup);
+    nBtn.onclick = () => handleCancelDelete(popup);
 
     var popupButtons = initializeElement("div", "popupBtn")
-
     popupButtons.append(yBtn, nBtn);
-    content.append(p, popupButtons);
 
+    content.append(p, popupButtons);
     popup.appendChild(content)
     document.body.appendChild(popup)
 }
@@ -171,7 +168,7 @@ function handleConfirmDelete(node, popup) {
     removeElementFromList(creatorState.nodes, node);
 }
 
-function handleCancelDelete() {
+function handleCancelDelete(popup) {
     popup.remove();
     creatorState.isPopupActive = false;
 }
