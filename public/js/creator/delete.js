@@ -2,27 +2,27 @@ import { creatorState } from './creatorState.js'
 
 document.addEventListener("keydown", (e) => {
 
-    const { indicator, linkIcon, linkText } = getConsts()
-
     if(e.shiftKey && creatorState.currentItem === "Delete") {
-        creatorState.disableDrag = true;
-        indicator.style.border = "0.4rem solid #FFA500";
-        linkIcon.style.color = "#FFA500";
-        linkText.style.color = "#FFA500";
+        updateStyles("#FFA500", true)
     }
 })
 
 document.addEventListener("keyup", (e) => {
 
-    const { indicator, linkIcon, linkText } = getConsts()
-
     if(!e.shiftKey && creatorState.currentItem === "Delete") {
-        creatorState.disableDrag = false
-        indicator.style.border = "0.4rem solid #4070F4";
-        linkIcon.style.color = "#4070F4";
-        linkText.style.color = "#4070F4";
+        updateStyles("#4070F4", false)
     }
 })
+
+function updateStyles(color, disableDrag) {
+
+    const { indicator, linkIcon, linkText } = getConsts();
+
+    creatorState.disableDrag = disableDrag;
+    indicator.style.border = `0.4rem solid ${color}`;
+    linkIcon.style.color = color;
+    linkText.style.color = color;
+}
 
 function getConsts() {
     const indicator = document.querySelector(".indicator");
