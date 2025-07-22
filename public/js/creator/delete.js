@@ -6,19 +6,18 @@ let startX, startY, selectionBox;
 document.addEventListener("keydown", (e) => {
 
     if(e.shiftKey && creatorState.currentItem === "Delete") {
-        updateStyles("#FFA500", true)
-    }
-})
-
-document.addEventListener("keyup", (e) => {
-
-    if(!e.shiftKey && creatorState.currentItem === "Delete") {
-        updateStyles("#4070F4", false)
+        if(isSelecting) {
+            updateStyles("#4070F4", false)
+            isSelecting = false;
+        } else {
+            updateStyles("#FFA500", true)
+            isSelecting = true;
+        }
     }
 })
 
 document.addEventListener("mousedown", (e) => {
-    if(e.shiftKey && e.button === 0 && creatorState.currentItem === "Delete") {
+    if(isSelecting) {
         isSelecting = true;
         startX = e.clientX; startY = e.clientY;
 
@@ -60,9 +59,8 @@ function onMouseMove(e) {
 
 function onMouseUp(e) {
     if (isSelecting) {
-        isSelecting = false;
 
-        if (selectionBox) selectionBox.remove(); selectionBox = null;
+        //if (selectionBox) selectionBox.remove(); selectionBox = null;
 
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
