@@ -18,6 +18,7 @@
     <script src="/js/creator/creator.js" defer type="module"></script>
     <script src="/js/creator/drag.js" type="module"></script>
     <script src="/js/creator/zoom.js" defer></script>
+    <script src="/js/creator/delete.js" defer type="module"></script>
 </head>
 <body>
 
