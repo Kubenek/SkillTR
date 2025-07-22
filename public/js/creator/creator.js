@@ -80,7 +80,6 @@ function addNodeAtLocation(canvas, x, y) {
 
     node.addEventListener("mousedown", (e) => {
         if(creatorState.currentItem === "Move") {
-            updateConnectionLinesPositions()
 
             Object.assign(creatorState, {
                 isDraggingNode: true,
