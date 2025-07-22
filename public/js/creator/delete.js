@@ -9,6 +9,7 @@ document.addEventListener("keydown", (e) => {
         if(isSelecting) {
             updateStyles("#4070F4", false)
             isSelecting = false;
+            if (selectionBox) selectionBox.remove(); selectionBox = null;
         } else {
             updateStyles("#FFA500", true)
             isSelecting = true;
@@ -18,7 +19,7 @@ document.addEventListener("keydown", (e) => {
 
 document.addEventListener("mousedown", (e) => {
     if(isSelecting) {
-        isSelecting = true;
+       if (selectionBox) selectionBox.remove(); selectionBox = null;
         startX = e.clientX; startY = e.clientY;
 
         selectionBox = document.createElement('div');
@@ -59,8 +60,6 @@ function onMouseMove(e) {
 
 function onMouseUp(e) {
     if (isSelecting) {
-
-        //if (selectionBox) selectionBox.remove(); selectionBox = null;
 
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
