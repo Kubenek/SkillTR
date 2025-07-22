@@ -2,9 +2,7 @@ import { creatorState } from './creatorState.js'
 
 document.addEventListener("keydown", (e) => {
 
-    const indicator = document.querySelector(".indicator");
-    const linkText = (document.querySelectorAll(".link-text"))[2]
-    const linkIcon = (document.querySelectorAll(".link-icon"))[2]
+    const { indicator, linkIcon, linkText } = getConsts()
 
     if(e.shiftKey && creatorState.currentItem === "Delete") {
         creatorState.disableDrag = true;
@@ -16,9 +14,7 @@ document.addEventListener("keydown", (e) => {
 
 document.addEventListener("keyup", (e) => {
 
-    const indicator = document.querySelector(".indicator");
-    const linkIcon = (document.querySelectorAll(".link-icon"))[2]
-    const linkText = (document.querySelectorAll(".link-text"))[2]
+    const { indicator, linkIcon, linkText } = getConsts()
 
     if(!e.shiftKey && creatorState.currentItem === "Delete") {
         creatorState.disableDrag = false
@@ -27,3 +23,11 @@ document.addEventListener("keyup", (e) => {
         linkText.style.color = "#4070F4";
     }
 })
+
+function getConsts() {
+    const indicator = document.querySelector(".indicator");
+    const linkIcon = (document.querySelectorAll(".link-icon"))[2]
+    const linkText = (document.querySelectorAll(".link-text"))[2]
+
+    return { indicator, linkIcon, linkText }
+}
