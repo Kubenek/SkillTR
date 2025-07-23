@@ -39,6 +39,13 @@ document.addEventListener("mousedown", (e) => {
     }
 })
 
+function checkCollisions(selectBox) {
+    const rect = selectBox.getBoundingClientRect();
+    const allElem = document.querySelectorAll("*")
+    const collidingElem = []
+
+}
+
 function onMouseMove(e) {
     if (!isSelecting) return;
 
