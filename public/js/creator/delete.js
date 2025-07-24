@@ -21,6 +21,12 @@ document.addEventListener("keydown", (e) => {
 document.addEventListener("mousedown", (e) => {
     if(creatorState.isSelecting) {
        if (creatorState.selectionBox) creatorState.selectionBox.remove(); creatorState.selectionBox = null;
+
+        const selectedNodes = document.querySelectorAll(".select-del")
+        selectedNodes.forEach(node => {
+            node.classList.remove("select-del") 
+        })
+
         startX = e.clientX; startY = e.clientY;
 
         creatorState.selectionBox = document.createElement('div');
