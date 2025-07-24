@@ -43,7 +43,18 @@ function checkCollisions(selectBox) { //* In progress ==========================
     const rect = selectBox.getBoundingClientRect();
     const allElem = document.querySelectorAll("*")
     const collidingElem = []
-}
+
+    allElem.forEach(el => {
+        const eRect = el.getBoundingClientRect();
+
+        const isOverlap = rect.left < eRect.right && rect.right > eRect.left && rect.top < eRect.bottom && rect.bottom > eRect.top;
+        
+        if(isOverlap) {
+            collidingElem.push(el)
+        }
+    })
+
+}   
 
 function onMouseMove(e) {
     if (!isSelecting) return;
@@ -62,6 +73,8 @@ function onMouseMove(e) {
         width: `${rectWidth}px`,
         height: `${rectHeight}px`
     })
+
+    checkCollisions(selectionBox)
 }
 
 function onMouseUp(e) {
