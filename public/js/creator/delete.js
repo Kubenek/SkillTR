@@ -1,4 +1,5 @@
 import { creatorState } from './creatorState.js'
+import { initializeElement } from '../QoL.js';
 
 let isSelecting = false;
 let startX, startY, selectionBox;
@@ -13,6 +14,7 @@ document.addEventListener("keydown", (e) => {
         } else {
             updateStyles("#FFA500", true)
             isSelecting = true;
+            //addButtons()
         }
     }
 })
@@ -37,11 +39,10 @@ document.addEventListener("mousedown", (e) => {
     }
 })
 
-function checkCollisions(selectBox) {
+function checkCollisions(selectBox) { //* In progress ================================================================
     const rect = selectBox.getBoundingClientRect();
     const allElem = document.querySelectorAll("*")
     const collidingElem = []
-
 }
 
 function onMouseMove(e) {
@@ -65,7 +66,6 @@ function onMouseMove(e) {
 
 function onMouseUp(e) {
     if (isSelecting) {
-
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
     }
@@ -89,3 +89,8 @@ function getConsts() {
     return { indicator, linkIcon, linkText }
 }
 //* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+function addButtons() {
+    var delBtn = initializeElement("button", "delAll", "Delete")
+    document.body.appendChild(delBtn)
+}
