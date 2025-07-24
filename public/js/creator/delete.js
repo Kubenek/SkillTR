@@ -42,18 +42,15 @@ document.addEventListener("mousedown", (e) => {
 function checkCollisions(selectBox) { //* In progress ================================================================
     const rect = selectBox.getBoundingClientRect();
     const allElem = document.querySelectorAll("*")
-    const collidingElem = []
+    const collidingNodes = []
 
     allElem.forEach(el => {
         const eRect = el.getBoundingClientRect();
-
-        const isOverlap = rect.left < eRect.right && rect.right > eRect.left && rect.top < eRect.bottom && rect.bottom > eRect.top;
-        
-        if(isOverlap) {
-            collidingElem.push(el)
-        }
+        const isOverlap = rect.left < eRect.right && rect.right > eRect.left && rect.top < eRect.bottom && rect.bottom > eRect.top;   
+        if(isOverlap && el.classList.contains("node")) collidingNodes.push(el)
     })
 
+    return collidingNodes;
 }   
 
 function onMouseMove(e) {
@@ -74,7 +71,11 @@ function onMouseMove(e) {
         height: `${rectHeight}px`
     })
 
-    checkCollisions(selectionBox)
+    const collNodes = checkCollisions(selectionBox)
+
+    collNodes.forEach(node => {
+        node.classList.add("select-del")
+    })
 }
 
 function onMouseUp(e) {

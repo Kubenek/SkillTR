@@ -30,3 +30,7 @@
     background-color: yellow;
 }
 
+.node.select-del {
+    background-color: #FFA500;
+}
+
