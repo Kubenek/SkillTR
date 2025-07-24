@@ -1,26 +1,25 @@
 import { creatorState } from './creatorState.js'
 import { initializeElement } from '../QoL.js';
 
-let isSelecting = false;
 let startX, startY
 
 document.addEventListener("keydown", (e) => {
 
     if(e.shiftKey && creatorState.currentItem === "Delete") {
-        if(isSelecting) {
+        if(creatorState.isSelecting) {
             updateStyles("#4070F4", false)
-            isSelecting = false;
+            creatorState.isSelecting = false;
             if (creatorState.selectionBox) creatorState.selectionBox.remove(); creatorState.selectionBox = null;
         } else {
             updateStyles("#FFA500", true)
-            isSelecting = true;
+            creatorState.isSelecting = true;
             //addButtons()
         }
     }
 })
 
 document.addEventListener("mousedown", (e) => {
-    if(isSelecting) {
+    if(creatorState.isSelecting) {
        if (creatorState.selectionBox) creatorState.selectionBox.remove(); creatorState.selectionBox = null;
         startX = e.clientX; startY = e.clientY;
 
@@ -54,7 +53,7 @@ function checkCollisions(selectBox) { //* In progress ==========================
 }   
 
 function onMouseMove(e) {
-    if (!isSelecting) return;
+    if (!creatorState.isSelecting) return;
 
     const currentX = e.clientX;
     const currentY = e.clientY;
@@ -79,14 +78,14 @@ function onMouseMove(e) {
 }
 
 function onMouseUp(e) {
-    if (isSelecting) {
+    if (creatorState.isSelecting) {
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
     }
 }
 
 //* Change Colors
-function updateStyles(color, disableDrag) {
+export function updateStyles(color, disableDrag) {
     const { indicator, linkIcon, linkText } = getConsts();
 
     creatorState.disableDrag = disableDrag;

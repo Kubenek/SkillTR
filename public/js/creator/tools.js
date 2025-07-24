@@ -1,4 +1,5 @@
 import { creatorState } from './creatorState.js'
+import { updateStyles } from './delete.js';
 
 const linkItems = document.querySelectorAll(".link-item");
 linkItems.forEach((linkItem, index) => {
@@ -10,6 +11,12 @@ linkItems.forEach((linkItem, index) => {
 
         const name = linkItem.querySelector(".link-text").textContent
         creatorState.currentItem = name
+
+        if(creatorState.isSelecting) {
+            updateStyles("#4070F4", false)
+            creatorState.isSelecting = false;
+            if (creatorState.selectionBox) creatorState.selectionBox.remove(); creatorState.selectionBox = null;
+        }
 
     })
 })

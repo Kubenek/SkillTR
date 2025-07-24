@@ -18,5 +18,6 @@ export const creatorState = {
     connections: [],
     disableDrag: false,
     nodes: [],
-    selectionBox: null
+    selectionBox: null,
+    isSelecting: false
 }
