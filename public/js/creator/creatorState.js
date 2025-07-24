@@ -17,5 +17,6 @@ export const creatorState = {
     mouseMoveHandler: null,
     connections: [],
     disableDrag: false,
-    nodes: []
+    nodes: [],
+    selectionBox: null
 }

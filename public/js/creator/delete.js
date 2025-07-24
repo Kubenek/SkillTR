@@ -2,7 +2,7 @@ import { creatorState } from './creatorState.js'
 import { initializeElement } from '../QoL.js';
 
 let isSelecting = false;
-let startX, startY, selectionBox;
+let startX, startY
 
 document.addEventListener("keydown", (e) => {
 
@@ -10,7 +10,7 @@ document.addEventListener("keydown", (e) => {
         if(isSelecting) {
             updateStyles("#4070F4", false)
             isSelecting = false;
-            if (selectionBox) selectionBox.remove(); selectionBox = null;
+            if (creatorState.selectionBox) creatorState.selectionBox.remove(); creatorState.selectionBox = null;
         } else {
             updateStyles("#FFA500", true)
             isSelecting = true;
@@ -21,19 +21,19 @@ document.addEventListener("keydown", (e) => {
 
 document.addEventListener("mousedown", (e) => {
     if(isSelecting) {
-       if (selectionBox) selectionBox.remove(); selectionBox = null;
+       if (creatorState.selectionBox) creatorState.selectionBox.remove(); creatorState.selectionBox = null;
         startX = e.clientX; startY = e.clientY;
 
-        selectionBox = document.createElement('div');
+        creatorState.selectionBox = document.createElement('div');
 
-        Object.assign(selectionBox.style, {
+        Object.assign(creatorState.selectionBox.style, {
             left: `${startX}px`,
             top: `${startY}px`
         })
 
-        selectionBox.classList.add("selectBox")
+        creatorState.selectionBox.classList.add("selectBox")
 
-        document.body.appendChild(selectionBox);
+        document.body.appendChild(creatorState.selectionBox);
         document.addEventListener('mousemove', onMouseMove);
         document.addEventListener('mouseup', onMouseUp);
     }
@@ -64,14 +64,14 @@ function onMouseMove(e) {
     const rectWidth = Math.abs(currentX - startX);
     const rectHeight = Math.abs(currentY - startY);
 
-    Object.assign(selectionBox.style, {
+    Object.assign(creatorState.selectionBox.style, {
         left: `${rectX}px`,
         top: `${rectY}px`,
         width: `${rectWidth}px`,
         height: `${rectHeight}px`
     })
 
-    const collNodes = checkCollisions(selectionBox)
+    const collNodes = checkCollisions(creatorState.selectionBox)
 
     collNodes.forEach(node => {
         node.classList.add("select-del")

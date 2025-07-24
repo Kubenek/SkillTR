@@ -11,13 +11,5 @@ linkItems.forEach((linkItem, index) => {
         const name = linkItem.querySelector(".link-text").textContent
         creatorState.currentItem = name
 
-        const Nodes = document.querySelectorAll(".node")
-        
-        if(name === "Connect") {
-            Nodes.forEach(node => node.classList.add("yl"))
-        } else {
-            Nodes.forEach(node => node.classList.remove("yl"))
-        }
-
     })
 })
