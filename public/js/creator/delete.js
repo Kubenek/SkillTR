@@ -25,13 +25,11 @@ document.addEventListener("mousedown", (e) => {
         selectionBox = document.createElement('div');
 
         Object.assign(selectionBox.style, {
-            position: "fixed",
-            border: "2px dashed #FFA500",
-            backgroundColor: "rgba(255, 165, 0, 0.2)",
             left: `${startX}px`,
-            top: `${startY}px`,
-            pointerEvents: "none"
+            top: `${startY}px`
         })
+
+        selectionBox.classList.add("selectBox")
 
         document.body.appendChild(selectionBox);
         document.addEventListener('mousemove', onMouseMove);

@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/styles/basics.css">
     <link rel="stylesheet" href="/styles/deletePopup.css"/>
     <link rel="stylesheet" href="/styles/lines.css"/>
+    <link rel="stylesheet" href="/styles/selectBox.css"/>
 
     <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
     
