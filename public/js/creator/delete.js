@@ -11,6 +11,10 @@ document.addEventListener("keydown", (e) => {
             updateStyles("#4070F4", false)
             creatorState.isSelecting = false;
             if (creatorState.selectionBox) creatorState.selectionBox.remove(); creatorState.selectionBox = null;
+            const selectedNodes = document.querySelectorAll(".select-del")
+            selectedNodes.forEach(node => {
+                node.classList.remove("select-del") 
+            })
         } else {
             updateStyles("#FFA500", true)
             creatorState.isSelecting = true;
