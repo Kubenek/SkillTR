@@ -4,6 +4,7 @@
     background: #444;
     transform-origin: 0 0;
     z-index: 0;
+    pointer-events: all;
 }
 
 .active-line {

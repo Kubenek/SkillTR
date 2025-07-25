@@ -154,6 +154,25 @@ function addNodeAtLocation(canvas, x, y) {
 
                 line.classList.replace("active-line", "permanent-line")
 
+                line.addEventListener("mousedown", () => {
+                    if(creatorState.currentItem === "Delete") {
+                        line.remove()
+                        creatorState.connections = creatorState.connections.filter(conn => conn.line !== line)
+                    }
+                })
+
+                line.addEventListener("mouseover", () => {
+                    if(creatorState.currentItem === "Delete") {
+                        line.style.background = "#6c1818ff";
+                    }
+                })
+
+                line.addEventListener("mouseout", () => {
+                    if(creatorState.currentItem === "Delete") {
+                        line.style.background = "#444";
+                    }
+                })
+
                 creatorState.connections.push({
                     fromNode: creatorState.selectNodeFirst,
                     toNode: creatorState.selectNodeSecond,
