@@ -2,6 +2,7 @@ import { creatorState } from './creatorState.js'
 import { initializeElement } from '../QoL.js';
 
 let startX, startY
+let hasMoved = false
 
 document.addEventListener("keydown", (e) => {
 
@@ -28,6 +29,7 @@ document.addEventListener("mousedown", (e) => {
         })
 
         startX = e.clientX; startY = e.clientY;
+        hasMoved = false;
 
         creatorState.selectionBox = document.createElement('div');
 
@@ -36,9 +38,6 @@ document.addEventListener("mousedown", (e) => {
             top: `${startY}px`
         })
 
-        creatorState.selectionBox.classList.add("selectBox")
-
-        document.body.appendChild(creatorState.selectionBox);
         document.addEventListener('mousemove', onMouseMove);
         document.addEventListener('mouseup', onMouseUp);
     }
@@ -63,6 +62,15 @@ function onMouseMove(e) {
 
     const currentX = e.clientX;
     const currentY = e.clientY;
+
+    const dx = Math.abs(currentX - startX)
+    const dy = Math.abs(currentY - startY)
+
+    if(!hasMoved && (dx > 1 || dy > 1)) {
+        hasMoved = true
+        creatorState.selectionBox.classList.add("selectBox")
+        document.body.appendChild(creatorState.selectionBox);
+    }
 
     const rectX = Math.min(currentX, startX);
     const rectY = Math.min(currentY, startY);
