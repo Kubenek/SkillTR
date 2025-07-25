@@ -1,6 +1,6 @@
 import { NODE_RADIUS, CLICK_MOVE_THRESHOLD, CLICK_TIME_THRESHOLD } from '../config.js';
 import { creatorState } from './creatorState.js'
-import { nodesOverlap, updateConnectedLines, updateConnectionLinesPositions, updateActiveLinePos, resetSelectData, getMousePosRelativeToCanvas, createDeletePopup, getClickPosition, updateLinePosition } from './functions.js';
+import { nodesOverlap, updateConnectedLines, updateActiveLinePos, resetSelectData, getMousePosRelativeToCanvas, createDeletePopup, getClickPosition, updateLinePosition } from './functions.js';
 
 let offsetX, offsetY;
 let nodeClicked = false; let disableNodePlace = false;
@@ -109,6 +109,16 @@ function addNodeAtLocation(canvas, x, y) {
                     updateActiveLinePos(mousePos.x, mousePos.y);
                 };
 
+                creatorState.emptyConnectHandler = (e) => {
+                    const target = e.target;
+
+                    if(!target.classList.contains('node') && !target.closest('.node')) {
+                        if(creatorState.activeLine) { creatorState.activeLine.remove(); creatorState.activeLine = null; }
+                        resetSelectData();
+                    }
+                }
+
+                document.addEventListener("click", creatorState.emptyConnectHandler)
                 document.addEventListener("mousemove", creatorState.mouseMoveHandler);
 
             } else if(slCount == 2) {

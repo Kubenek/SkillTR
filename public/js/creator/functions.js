@@ -98,7 +98,9 @@ export function updateLinePosition(line, objA, objB) {
 export function resetSelectData() {
 
     [creatorState.selectNodeFirst, creatorState.selectNodeSecond].forEach(node => {
-        node.classList.remove("selected")
+        if (node && node.classList.contains("selected")) {
+            node.classList.remove("selected");
+        }
     })
 
     Object.assign(creatorState, {
