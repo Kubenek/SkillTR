@@ -18,7 +18,6 @@ document.addEventListener("keydown", (e) => {
         } else {
             updateStyles(true)
             creatorState.isSelecting = true;
-            //addButtons()
         }
     }
 })

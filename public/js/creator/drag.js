@@ -23,11 +23,10 @@ document.addEventListener("DOMContentLoaded", () => {
         isDragging = false;
         creatorState.isDraggingNode = false;
         creatorState.draggingNodeElem = null; 
-
     });
 
     document.addEventListener("mousemove", (e) => {
-        if (!isDragging || creatorState.isDraggingNode || creatorState.isPopupActive) return;
+        if (!isDragging || creatorState.isDraggingNode || creatorState.isPopupActive || creatorState.isSelecting) return;
 
         const now = performance.now()
         if(now - lastUpdateTime < PAN_UPDATE_INTERVAL) return;
