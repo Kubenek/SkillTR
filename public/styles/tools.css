@@ -59,6 +59,11 @@ nav{
 .link-item.active .link-icon{
     color: #4070F4;
 }
+
+.link-item.del-active .link-icon, .link-item.del-active .link-text {
+    color: #FFA500;
+}
+
 .link-text{
     position: absolute;
     font-size: 0.75rem;
@@ -82,6 +87,9 @@ nav{
     border-radius: 50%;
     transform: translateX(-50%);
     transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+.indicator.del-active {
+    border: 0.4rem solid #FFA500;
 }
 .indicator::before,
 .indicator::after{

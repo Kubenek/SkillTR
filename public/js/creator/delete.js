@@ -8,7 +8,7 @@ document.addEventListener("keydown", (e) => {
 
     if(e.shiftKey && creatorState.currentItem === "Delete") {
         if(creatorState.isSelecting) {
-            updateStyles("#4070F4", false)
+            updateStyles(false)
             creatorState.isSelecting = false;
             if (creatorState.selectionBox) creatorState.selectionBox.remove(); creatorState.selectionBox = null;
             const selectedNodes = document.querySelectorAll(".select-del")
@@ -16,7 +16,7 @@ document.addEventListener("keydown", (e) => {
                 node.classList.remove("select-del") 
             })
         } else {
-            updateStyles("#FFA500", true)
+            updateStyles(true)
             creatorState.isSelecting = true;
             //addButtons()
         }
@@ -102,24 +102,13 @@ function onMouseUp(e) {
     }
 }
 
-//* Change Colors
-export function updateStyles(color, disableDrag) {
-    const { indicator, linkIcon, linkText } = getConsts();
+function updateStyles(status) {
+    const indicator = document.querySelector(".indicator")
+    const linkItem = document.querySelectorAll(".link-item")[2]
 
-    creatorState.disableDrag = disableDrag;
-    indicator.style.border = `0.4rem solid ${color}`;
-    linkIcon.style.color = color;
-    linkText.style.color = color;
+    if(status) { linkItem.classList.add("del-active"); indicator.classList.add("del-active") }
+    else { linkItem.classList.remove("del-active"); indicator.classList.remove("del-active") }
 }
-
-function getConsts() {
-    const indicator = document.querySelector(".indicator");
-    const linkIcon = (document.querySelectorAll(".link-icon"))[2]
-    const linkText = (document.querySelectorAll(".link-text"))[2]
-
-    return { indicator, linkIcon, linkText }
-}
-//* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 function addButtons() {
     var delBtn = initializeElement("button", "delAll", "Delete")

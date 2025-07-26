@@ -1,5 +1,4 @@
 import { creatorState } from './creatorState.js'
-import { updateStyles } from './delete.js';
 
 const linkItems = document.querySelectorAll(".link-item");
 linkItems.forEach((linkItem, index) => {
@@ -13,7 +12,10 @@ linkItems.forEach((linkItem, index) => {
         creatorState.currentItem = name
 
         if(creatorState.isSelecting) {
-            updateStyles("#4070F4", false)
+            const linkItem = document.querySelectorAll(".link-item")[2]
+            if(linkItem.classList.contains("active")) linkItem.classList.remove("active")
+            else { linkItem.classList.remove("del-active"); indicator.classList.remove("del-active") }
+        
             creatorState.isSelecting = false;
             if (creatorState.selectionBox) creatorState.selectionBox.remove(); creatorState.selectionBox = null;
         }
