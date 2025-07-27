@@ -3,8 +3,10 @@ import { initializeElement } from '../QoL.js';
 
 let startX, startY
 let hasMoved = false
+let isDraggingBox = false
+let offsetX, offsetY
 
-document.addEventListener("keydown", (e) => {
+document.addEventListener("keydown", (e) => { //* Toggle Alt Delete
 
     if(e.shiftKey && creatorState.currentItem === "Delete") {
         if(creatorState.isSelecting) {
@@ -24,7 +26,7 @@ document.addEventListener("keydown", (e) => {
 
 document.addEventListener("mousedown", (e) => {
     if(creatorState.isSelecting) {
-       if (creatorState.selectionBox) creatorState.selectionBox.remove(); creatorState.selectionBox = null;
+       if (creatorState.selectionBox && !isDraggingBox) creatorState.selectionBox.remove(); creatorState.selectionBox = null;
 
         const selectedNodes = document.querySelectorAll(".select-del")
         selectedNodes.forEach(node => {
@@ -39,6 +41,16 @@ document.addEventListener("mousedown", (e) => {
         Object.assign(creatorState.selectionBox.style, {
             left: `${startX}px`,
             top: `${startY}px`
+        })
+
+        creatorState.selectionBox.classList.add("selectBox")
+        document.body.appendChild(creatorState.selectionBox);
+
+        creatorState.selectionBox.addEventListener('mousedown', () => {
+            const rect = creatorState.selectionBox.getBoundingClientRect();
+            offsetX = e.clientX - rect.left;
+            offsetY = e.clientY - rect.top;
+            isDraggingBox = true;
         })
 
         document.addEventListener('mousemove', onMouseMove);
@@ -63,6 +75,18 @@ function checkCollisions(selectBox) { //* In progress ==========================
 function onMouseMove(e) {
     if (!creatorState.isSelecting) return;
 
+    if(isDraggingBox) {
+
+        const left = (e.clientX - offsetX); const top = (e.clientY - offsetY);
+        
+        Object.assign(creatorState.selectionBox.style, {
+            left: `${left}px`,
+            top: `${top}px`
+        });
+
+        return
+    }
+
     const currentX = e.clientX;
     const currentY = e.clientY;
 
@@ -71,8 +95,6 @@ function onMouseMove(e) {
 
     if(!hasMoved && (dx > 1 || dy > 1)) {
         hasMoved = true
-        creatorState.selectionBox.classList.add("selectBox")
-        document.body.appendChild(creatorState.selectionBox);
     }
 
     const rectX = Math.min(currentX, startX);
@@ -98,6 +120,7 @@ function onMouseUp(e) {
     if (creatorState.isSelecting) {
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
+        isDraggingBox = false
     }
 }
 
