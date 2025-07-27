@@ -25,6 +25,7 @@ document.addEventListener("keydown", (e) => { //* Toggle Alt Delete
 })
 
 document.addEventListener("mousedown", (e) => {
+
     if(creatorState.isSelecting) {
        if (creatorState.selectionBox && !isDraggingBox) creatorState.selectionBox.remove(); creatorState.selectionBox = null;
 
@@ -46,19 +47,14 @@ document.addEventListener("mousedown", (e) => {
         creatorState.selectionBox.classList.add("selectBox")
         document.body.appendChild(creatorState.selectionBox);
 
-        creatorState.selectionBox.addEventListener('mousedown', () => {
-            const rect = creatorState.selectionBox.getBoundingClientRect();
-            offsetX = e.clientX - rect.left;
-            offsetY = e.clientY - rect.top;
-            isDraggingBox = true;
-        })
+        enableDragging(creatorState.selectionBox)
 
         document.addEventListener('mousemove', onMouseMove);
         document.addEventListener('mouseup', onMouseUp);
     }
 })
 
-function checkCollisions(selectBox) { //* In progress ================================================================
+function checkCollisions(selectBox) {
     const rect = selectBox.getBoundingClientRect();
     const allElem = document.querySelectorAll("*")
     const collidingNodes = []
@@ -135,4 +131,17 @@ function updateStyles(status) {
 function addButtons() {
     var delBtn = initializeElement("button", "delAll", "Delete")
     document.body.appendChild(delBtn)
+}
+
+function enableDragging(box) {
+    box.addEventListener('mousedown', (e) => {
+        const rect = box.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+        isDraggingBox = true;
+        e.stopPropagation();
+
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+    });
 }
