@@ -20,5 +20,6 @@ export const creatorState = {
     disableDrag: false,
     nodes: [],
     selectionBox: null,
-    isSelecting: false
+    isSelecting: false,
+    selectCollidingNodes: []
 }

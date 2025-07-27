@@ -71,7 +71,7 @@ function checkCollisions(selectBox) {
 function onMouseMove(e) {
     if (!creatorState.isSelecting) return;
 
-    if(isDraggingBox) {
+    if(isDraggingBox) {//* drag functionality
 
         const left = (e.clientX - offsetX); const top = (e.clientY - offsetY);
         
@@ -80,7 +80,22 @@ function onMouseMove(e) {
             top: `${top}px`
         });
 
-        return
+        const collNodesNew = checkCollisions(creatorState.selectionBox)
+
+        const prevSet = new Set(creatorState.selectCollidingNodes)
+        const newSet = new Set(collNodesNew)
+
+        for(const node of prevSet) {
+            if(!newSet.has(node)) node.classList.remove("select-del")
+        }
+
+        for(const node of newSet) {
+            if(!node.classList.contains("select-del")) node.classList.add("select-del")
+        }
+
+        creatorState.selectCollidingNodes = newSet
+
+        return;
     }
 
     const currentX = e.clientX;
@@ -105,9 +120,9 @@ function onMouseMove(e) {
         height: `${rectHeight}px`
     })
 
-    const collNodes = checkCollisions(creatorState.selectionBox)
+    creatorState.selectCollidingNodes = checkCollisions(creatorState.selectionBox)
 
-    collNodes.forEach(node => {
+    creatorState.selectCollidingNodes.forEach(node => {
         node.classList.add("select-del")
     })
 }
