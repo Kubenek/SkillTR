@@ -27,6 +27,7 @@ document.addEventListener("keydown", (e) => { //* Toggle Alt Delete
 document.addEventListener("mousedown", (e) => {
 
     if(creatorState.isSelecting) {
+
        if (creatorState.selectionBox && !isDraggingBox) creatorState.selectionBox.remove(); creatorState.selectionBox = null;
 
         const selectedNodes = document.querySelectorAll(".select-del")
@@ -45,7 +46,6 @@ document.addEventListener("mousedown", (e) => {
         })
 
         creatorState.selectionBox.classList.add("selectBox")
-        document.body.appendChild(creatorState.selectionBox);
 
         enableDragging(creatorState.selectionBox)
 
@@ -125,6 +125,7 @@ function onMouseMove(e) {
     creatorState.selectCollidingNodes.forEach(node => {
         node.classList.add("select-del")
     })
+    document.body.appendChild(creatorState.selectionBox);
 }
 
 function onMouseUp(e) {
