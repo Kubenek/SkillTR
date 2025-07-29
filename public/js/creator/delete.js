@@ -28,6 +28,8 @@ document.addEventListener("mousedown", (e) => {
 
     if(creatorState.isSelecting) {
 
+       if(e.target.closest(".nav")) return;
+
        if (creatorState.selectionBox && !isDraggingBox) creatorState.selectionBox.remove(); creatorState.selectionBox = null;
 
         const selectedNodes = document.querySelectorAll(".select-del")
