@@ -28,16 +28,13 @@ document.addEventListener("mousedown", (e) => {
 
     if(creatorState.isSelecting) {
 
-       if(e.target.closest(".nav")) return;
-
-       if (creatorState.selectionBox && !isDraggingBox) creatorState.selectionBox.remove(); creatorState.selectionBox = null;
+        if(e.target.closest(".nav")) return;
+        if (creatorState.selectionBox && !isDraggingBox) creatorState.selectionBox.remove(); creatorState.selectionBox = null;
 
         const selectedNodes = document.querySelectorAll(".select-del")
-        selectedNodes.forEach(node => {
-            node.classList.remove("select-del") 
-        })
+        selectedNodes.forEach(node => node.classList.remove("select-del"))
 
-        startX = e.clientX; startY = e.clientY;
+        const { clientX: startX, clientY: startY } = e
         hasMoved = false;
 
         creatorState.selectionBox = document.createElement('div');
@@ -48,11 +45,9 @@ document.addEventListener("mousedown", (e) => {
         })
 
         creatorState.selectionBox.classList.add("selectBox")
-
         enableDragging(creatorState.selectionBox)
 
-        document.addEventListener('mousemove', onMouseMove);
-        document.addEventListener('mouseup', onMouseUp);
+        document.addEventListener('mousemove', onMouseMove); document.addEventListener('mouseup', onMouseUp);
     }
 })
 
@@ -74,59 +69,43 @@ function onMouseMove(e) {
     if (!creatorState.isSelecting) return;
 
     if(isDraggingBox) {//* drag functionality
-
-        const left = (e.clientX - offsetX); const top = (e.clientY - offsetY);
-        
+        const { clientX, clientY } = e;
         Object.assign(creatorState.selectionBox.style, {
-            left: `${left}px`,
-            top: `${top}px`
+            left: `${clientX - offsetX}px`,
+            top: `${clientY - offsetY}px`
         });
 
-        const collNodesNew = checkCollisions(creatorState.selectionBox)
+        const newSet = new Set(checkCollisions(creatorState.selectionBox)); const prevSet = creatorState.selectCollidingNodes;
 
-        const prevSet = new Set(creatorState.selectCollidingNodes)
-        const newSet = new Set(collNodesNew)
-
-        for(const node of prevSet) {
-            if(!newSet.has(node)) node.classList.remove("select-del")
-        }
-
-        for(const node of newSet) {
-            if(!node.classList.contains("select-del")) node.classList.add("select-del")
-        }
+        for(const node of prevSet) if(!newSet.has(node)) node.classList.remove("select-del")
+        for(const node of newSet) if(!node.classList.contains("select-del")) node.classList.add("select-del")
 
         creatorState.selectCollidingNodes = newSet
-
         return;
     }
 
-    const currentX = e.clientX;
-    const currentY = e.clientY;
+    const { clinetX: x, clientY: y } = e;
+    const dx = Math.abs(x - startX)
+    const dy = Math.abs(y - startY)
 
-    const dx = Math.abs(currentX - startX)
-    const dy = Math.abs(currentY - startY)
+    if(!hasMoved && (dx > 1 || dy > 1)) hasMoved = true
 
-    if(!hasMoved && (dx > 1 || dy > 1)) {
-        hasMoved = true
-    }
-
-    const rectX = Math.min(currentX, startX);
-    const rectY = Math.min(currentY, startY);
-    const rectWidth = Math.abs(currentX - startX);
-    const rectHeight = Math.abs(currentY - startY);
+    const left = Math.min(currentX, startX);
+    const top = Math.min(currentY, startY);
+    const width = dx;
+    const height = dy;
 
     Object.assign(creatorState.selectionBox.style, {
-        left: `${rectX}px`,
-        top: `${rectY}px`,
-        width: `${rectWidth}px`,
-        height: `${rectHeight}px`
+        left: `${left}px`,
+        top: `${top}px`,
+        width: `${width}px`,
+        height: `${height}px`
     })
 
-    creatorState.selectCollidingNodes = checkCollisions(creatorState.selectionBox)
+    const colliding = checkCollisions(creatorState.selectionBox)
+    colliding.forEach(node => node.classList.add("select-del"))
 
-    creatorState.selectCollidingNodes.forEach(node => {
-        node.classList.add("select-del")
-    })
+    creatorState.selectCollidingNodes = colliding
     document.body.appendChild(creatorState.selectionBox);
 }
 
