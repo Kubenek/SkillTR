@@ -6,6 +6,8 @@
     <title>Login | SkillTR</title>
     <link rel="stylesheet" href="/styles/login.css">
     <link rel="stylesheet" href="/styles/basics.css">
+
+    <script src="/js/login.js" type="module" defer></script>
 </head>
 <body>
     <main class="site-container">
@@ -28,6 +30,7 @@
                     <div class="inputBox password">
                         <img src="/../images/icons/bx-lock.png" class="icon">
                         <input type="password" class="pass-input" placeholder="Password"/>
+                        <img src="/../images/icons/bx-eye-alt.png" id="eyeIcon" class="iconSmall">
                     </div>
 
                     <a href="..." class="forgot-password">Forgot password</a>
