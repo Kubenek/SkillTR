@@ -135,6 +135,7 @@ body {
 
 .submit-login:hover {
     transform: scale(1.02);
+    cursor: pointer;
 }
 
 .socials-hr {
@@ -178,6 +179,7 @@ body {
 
 .social-box:hover {
     transform: scale(1.05);
+    cursor: pointer;
 }
 
 .social-icon {
