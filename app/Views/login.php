@@ -30,7 +30,7 @@
                     <div class="inputBox password">
                         <img src="/../images/icons/bx-lock.png" class="icon">
                         <input type="password" class="pass-input" placeholder="Password"/>
-                        <img src="/../images/icons/bx-eye-alt.png" id="eyeIcon" class="iconSmall">
+                        <img src="/../images/icons/bx-eye-alt.png" id="eyeIcon" class="iconSmall" data-icon="0">
                     </div>
 
                     <a href="..." class="forgot-password">Forgot password</a>
