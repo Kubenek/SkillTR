@@ -34,7 +34,8 @@ document.addEventListener("mousedown", (e) => {
         const selectedNodes = document.querySelectorAll(".select-del")
         selectedNodes.forEach(node => node.classList.remove("select-del"))
 
-        const { clientX: startX, clientY: startY } = e
+        startX = e.clientX
+        startY = e.clientY
         hasMoved = false;
 
         creatorState.selectionBox = document.createElement('div');
@@ -47,7 +48,10 @@ document.addEventListener("mousedown", (e) => {
         creatorState.selectionBox.classList.add("selectBox")
         enableDragging(creatorState.selectionBox)
 
-        document.addEventListener('mousemove', onMouseMove); document.addEventListener('mouseup', onMouseUp);
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+
+        document.body.appendChild(creatorState.selectionBox);
     }
 })
 
@@ -84,16 +88,16 @@ function onMouseMove(e) {
         return;
     }
 
-    const { clinetX: x, clientY: y } = e;
+    const { clientX: x, clientY: y } = e;
     const dx = Math.abs(x - startX)
     const dy = Math.abs(y - startY)
 
     if(!hasMoved && (dx > 1 || dy > 1)) hasMoved = true
 
-    const left = Math.min(currentX, startX);
-    const top = Math.min(currentY, startY);
-    const width = dx;
-    const height = dy;
+    const left = Math.min(x, startX);
+    const top = Math.min(y, startY);
+    const width = Math.abs(x - startX)
+    const height = Math.abs(y - startY);
 
     Object.assign(creatorState.selectionBox.style, {
         left: `${left}px`,
@@ -106,7 +110,6 @@ function onMouseMove(e) {
     colliding.forEach(node => node.classList.add("select-del"))
 
     creatorState.selectCollidingNodes = colliding
-    document.body.appendChild(creatorState.selectionBox);
 }
 
 function onMouseUp(e) {
