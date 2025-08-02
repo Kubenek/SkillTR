@@ -20,22 +20,22 @@
                     <p class="secondary">Let's get you back in...</p>
                 </div>
 
-                <div class="input-fields">
+                <form method="POST" action="/login" class="input-fields">
                     <div class="inputBox email">
                         <img src="/../images/icons/bx-envelope-alt.png" class="icon">
-                        <input type="text" class="email-input" placeholder="Email"/>
+                        <input type="text" class="email-input" name="email-input" placeholder="Email"/>
                     </div>
         
                     <div class="inputBox password">
                         <img src="/../images/icons/bx-lock.png" class="icon">
-                        <input type="password" class="pass-input" placeholder="Password"/>
+                        <input type="password" class="pass-input" name="pass-input" placeholder="Password"/>
                         <img src="/../images/icons/bx-eye-closed.png" id="eyeIcon" class="iconSmall" data-icon="1">
                     </div>
 
                     <a href="..." class="forgot-password">Forgot password</a>
 
                     <button class="submit-login">Sign In</button> 
-                </div>
+                </form>
 
                 <div class="socials-hr">
                     <span>or sign in with</span>
