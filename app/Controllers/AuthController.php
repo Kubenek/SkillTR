@@ -7,6 +7,7 @@ class AuthController {
         require_once __DIR__ . "/../Views/login.php";
     }
     public static function login() {
-        
+        $mail = $_POST['email-input'];
+        $pass = $_POST['pass-input'];
     }
 }
