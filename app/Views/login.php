@@ -53,6 +53,8 @@
                     </div>
                 </div>
 
+                <div class="accC"> <p>Don't have an account?</p> <a>Create one!</a></div>
+
             </section>
 
         </section>

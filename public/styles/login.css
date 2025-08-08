@@ -16,7 +16,7 @@ body {
 
 .login-body {
     width: 30%;
-    height: 70%;
+    height: 72%;
     background-color: var(--dark-purple);
     border-radius: 20px;
     box-shadow: 10px 10px 5px rgba(0,0,0,0.2);
@@ -185,4 +185,26 @@ body {
 .social-icon {
     width: 25px;
     height: 25px;
+}
+
+.accC {
+    display: inline;
+    font-size: 12px;
+    margin-top: 10px;
+
+} 
+.accC p {
+    display: inline;
+    opacity: .5;
+    color: var(--snow-white);
+}
+
+.accC a {
+    display: inline;
+    color: var(--snow-white);
+    opacity: .7;
+}
+
+.accC a:hover {
+    cursor: pointer;
 }
