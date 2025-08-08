@@ -10,4 +10,17 @@ class User {
     private string $passHash;
     private string $email;
     private string $createdAt;
+
+    function getMail() {
+        return $this->email;
+    }
+    function getUsername(){
+        return $this->username;
+    }
+    function getID() {
+        return $this->id;
+    }
+    function getCreateDate() {
+        return $this->createdAt;
+    }
 }
