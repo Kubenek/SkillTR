@@ -1,0 +1,3 @@
+<?php
+
+$conn = Database::getConnection();
