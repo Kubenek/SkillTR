@@ -1,8 +1,6 @@
 <?php
 
-require '../../vendor/autoload.php';
-
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__."/../../");
 $dotenv->load();
 
 class Database {
@@ -10,7 +8,7 @@ class Database {
 
     public static function getConnection() {
         if(self::$conn !== null) return self::$conn;
-
+    
         $dbHost = $_ENV['DB_HOST'];
         $dbUser = $_ENV['DB_USERNAME'];
         $dbPass = $_ENV['DB_PASSWORD'];
