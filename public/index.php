@@ -19,6 +19,9 @@ switch ($path) {
     case "/creator":
         App\Controllers\CreatorController::showCreator();
         break;
+    case "/new-account":
+        App\Controllers\NAccountController::showPage();
+        break;
     default:
         http_response_code(404);
         echo "404 Not Found";
