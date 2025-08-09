@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use Database;
+
 require_once __DIR__ . "/../Models/User.php";
 
 class NAccountController {
@@ -15,7 +17,13 @@ class NAccountController {
 
         $passHash = password_hash($pass, PASSWORD_DEFAULT);
 
-        $newUser = new \User($uname, $passHash, $mail);
+        $conn = Database::getConnection();
+
+        $sql = "INSERT INTO `users` (id, username, email, password) VALUES (NULL, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sss", $uname, $mail, $passHash);
+        $stmt->execute();
+        $stmt->close();
 
     }
 }
