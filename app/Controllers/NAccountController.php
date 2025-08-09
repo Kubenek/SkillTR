@@ -14,16 +14,8 @@ class NAccountController {
         $mail = $_POST['email-input'];
         $pass = $_POST['pass-input'];
         $uname = $_POST['username-input'];
-
         $passHash = password_hash($pass, PASSWORD_DEFAULT);
 
-        $conn = Database::getConnection();
-
-        $sql = "INSERT INTO `users` (id, username, email, password) VALUES (NULL, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sss", $uname, $mail, $passHash);
-        $stmt->execute();
-        $stmt->close();
-
+        $newUser = \User::create($uname, $mail, $passHash);
     }
 }
