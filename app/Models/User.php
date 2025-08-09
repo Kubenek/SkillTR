@@ -11,16 +11,25 @@ class User {
     private string $email;
     private string $createdAt;
 
-    function getMail() {
+    public function __construct($uname, $pass, $mail) {
+        $this->username = $uname;
+        $this->passHash = $pass;
+        $this->email = $mail;
+    }
+
+    public function getMail() {
         return $this->email;
     }
-    function getUsername(){
+
+    public function getUsername(){
         return $this->username;
     }
-    function getID() {
+
+    public function getID() {
         return $this->id;
     }
-    function getCreateDate() {
+
+    public function getCreateDate() {
         return $this->createdAt;
     }
 }
