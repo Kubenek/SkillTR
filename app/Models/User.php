@@ -38,7 +38,6 @@ class User {
         $user->save();
         return $user;
     }
-
     public function save() {
         $conn = Database::getConnection();
         $sql = "INSERT INTO `users` (id, username, email, password) VALUES (NULL, ?, ?, ?)";
