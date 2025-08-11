@@ -45,5 +45,6 @@ class User {
         $stmt->bind_param("sss", $this->username, $this->email, $this->passHash);
         $stmt->execute();
         $stmt->close();
+        $conn->close();
     }
 }
