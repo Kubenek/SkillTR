@@ -47,4 +47,5 @@ class User {
         $stmt->close();
         $conn->close();
     }
+    
 }
