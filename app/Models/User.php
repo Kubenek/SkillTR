@@ -1,6 +1,6 @@
 <?php
 
-require '../../vendor/autoload.php';
+require __DIR__ . '/../../vendor/autoload.php';
 
 $conn = Database::getConnection();
 
@@ -47,5 +47,5 @@ class User {
         $stmt->close();
         $conn->close();
     }
-    
+
 }
