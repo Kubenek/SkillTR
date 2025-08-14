@@ -19,7 +19,16 @@ class User {
         return "user" . random_int(10000, 99999);
     }
 
-    //add username uniqueness
+    private static function checkUNameUniqueness(mysqli $conn, $username) {
+        $sql = "SELECT `username` FROM `users`";
+        $result = $conn->query($sql);
+        while($row = $result->fetch_assoc()) {
+            if ($row === $username) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     public function __construct($pass, $mail, $username) {
         $this->passHash = $pass;
@@ -47,6 +56,11 @@ class User {
         $conn = Database::getConnection();
 
         $username = self::randomUName();
+        
+        if(!(self::checkUNameUniqueness($conn, $username))) {
+            return;
+        }
+
         $hashed = password_hash($password, PASSWORD_DEFAULT);
 
         $user = new User($hashed, $email, $username);
