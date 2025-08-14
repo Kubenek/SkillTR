@@ -11,10 +11,16 @@ class User {
     private string $email;
     private string $createdAt;
 
-    public function __construct($uname, $pass, $mail) {
-        $this->username = $uname;
+    private static function randomUName() {
+        return "user" . random_int(10000, 99999);
+    }
+
+    //add username uniqueness
+
+    public function __construct($pass, $mail, $username) {
         $this->passHash = $pass;
         $this->email = $mail;
+        $this->username = $username;
     }
 
     public function getMail() {
@@ -33,19 +39,20 @@ class User {
         return $this->createdAt;
     }
 
-    public static function create($username, $email, $password) {
-        $user = new User($username, $password, $email);
-        $user->save();
+    public static function create($email, $password) {
+        $conn = Database::getConnection();
+        $username = self::randomUName();
+        $user = new User($password, $email, $username);
+        $user->save($conn);
+        $conn->close();
         return $user;
     }
-    public function save() {
-        $conn = Database::getConnection();
+    public function save(mysqli $conn) {
         $sql = "INSERT INTO `users` (id, username, email, password) VALUES (NULL, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("sss", $this->username, $this->email, $this->passHash);
         $stmt->execute();
         $stmt->close();
-        $conn->close();
     }
 
 }
