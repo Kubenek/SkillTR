@@ -17,7 +17,6 @@ export function initializeElement(type, className, text) {
     return elem;
 }
 
-export function switchIcon(elemID, path) {
-    const elem = document.getElementById(elemID);
+export function switchIcon(elem, path) {
     if (elem) elem.src = path;
 }

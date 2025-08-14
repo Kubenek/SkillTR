@@ -1,20 +1,25 @@
 import { switchIcon } from "./QoL.js";
 
-const eyeIcon = document.getElementById("eyeIcon")
+const fields = document.querySelectorAll(".password")
 
-eyeIcon.addEventListener("click", () => {
-    let state = eyeIcon.dataset.icon
+fields.forEach(field => {
+    let eyeIcon = field.querySelector(".eyeIcon")
+    let passField = field.querySelector(".pass-input")
 
-    if(state === "0") { switchIcon('eyeIcon', '/../images/icons/bx-eye-closed.png'); state = "1"; }
-    else { switchIcon('eyeIcon', '/../images/icons/bx-eye-alt.png'); state = "0" }
+    eyeIcon.addEventListener("click", () => {
+        let state = eyeIcon.dataset.icon
 
-    togglePassVisibility(state)
+        if(state === "0") { switchIcon(eyeIcon, '/../images/icons/bx-eye-closed.png'); state = "1"; }
+        else { switchIcon(eyeIcon, '/../images/icons/bx-eye-alt.png'); state = "0" }
 
-    eyeIcon.dataset.icon = state;
+        togglePassVisibility(state, passField)
+
+        eyeIcon.dataset.icon = state;
+    })
 })
 
-function togglePassVisibility(state) {
-    const passInput = document.querySelector(".pass-input")
-    if(state === "0") passInput.type = "text";
-    else passInput.type = "password"
+
+function togglePassVisibility(state, elem) {
+    if(state === "0") elem.type = "text";
+    else elem.type = "password"
 }   

@@ -29,7 +29,7 @@
                     <div class="inputBox password">
                         <img src="/../images/icons/bx-lock.png" class="icon">
                         <input type="password" class="pass-input" name="pass-input" placeholder="Password"/>
-                        <img src="/../images/icons/bx-eye-closed.png" id="eyeIcon" class="iconSmall" data-icon="1">
+                        <img src="/../images/icons/bx-eye-closed.png" id="eyeIcon" class="iconSmall eyeIcon" data-icon="1">
                     </div>
 
                     <a href="..." class="forgot-password">Forgot password</a>
