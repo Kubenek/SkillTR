@@ -1,5 +1,9 @@
 <?php
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require __DIR__ . '/../../vendor/autoload.php';
 
 $conn = Database::getConnection();
@@ -41,18 +45,30 @@ class User {
 
     public static function create($email, $password) {
         $conn = Database::getConnection();
+
         $username = self::randomUName();
         $hashed = password_hash($password, PASSWORD_DEFAULT);
+
         $user = new User($hashed, $email, $username);
         $user->save($conn);
         $conn->close();
+
         return $user;
     }
     public function save(mysqli $conn) {
         $sql = "INSERT INTO `users` (id, username, email, password) VALUES (NULL, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
+
+        if (!$stmt) {
+            die("Prepare failed: " . $conn->error);
+        }
+
         $stmt->bind_param("sss", $this->username, $this->email, $this->passHash);
-        $stmt->execute();
+        
+        if (!$stmt->execute()) {
+            die("Execute failed: " . $stmt->error);
+        }
+
         $stmt->close();
     }
 

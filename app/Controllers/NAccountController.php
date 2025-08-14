@@ -13,10 +13,18 @@ class NAccountController {
     public static function createAccount() {
         $mail = $_POST['email-input'];
         $pass = $_POST['pass-input'];
-        $repeat = $_POST['pass-input-2'];
+        $repeat = $_POST['pass-input-repeat'];
         
         if($pass !== $repeat) return;
 
-        $newUser = \User::create($mail, $pass);
+        try {
+            \User::create($mail, $pass);
+            header("Location: /login");
+            exit;
+        } catch (\Exception $e) {
+            error_log("Account creation failed: " . $e->getMessage());
+            header("Location: /new-account");
+            exit;
+        }
     }
 }

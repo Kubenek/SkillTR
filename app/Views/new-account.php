@@ -20,7 +20,7 @@
                     <p class="secondary">…and explore endless possibilities<p>
                 </div>
 
-                <form method="POST" action="/login" class="input-fields">
+                <form method="POST" action="/new-account" class="input-fields">
                     <div class="inputBox email">
                         <img src="/../images/icons/bx-envelope-alt.png" class="icon">
                         <input type="text" class="email-input" name="email-input" placeholder="Email"/>

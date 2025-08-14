@@ -11,19 +11,23 @@ if ($path !== '/' && file_exists($fullStaticPath)) {
     return false;
 }
 
-
-switch ($path) {
-    case "/login":
-        ($method === "GET") ? App\Controllers\AuthController::showLogin() : App\Controllers\AuthController::login();
-        break;
-    case "/creator":
-        App\Controllers\CreatorController::showCreator();
-        break;
-    case "/new-account":
-        App\Controllers\NAccountController::showPage();
-        break;
-    default:
-        http_response_code(404);
-        echo "404 Not Found";
-        break;
+try {
+    switch ($path) {
+        case "/login":
+            ($method === "GET") ? App\Controllers\AuthController::showLogin() : App\Controllers\AuthController::login();
+            break;
+        case "/creator":
+            App\Controllers\CreatorController::showCreator();
+            break;
+        case "/new-account":
+            ($method === "GET") ? App\Controllers\NAccountController::showPage() : App\Controllers\NAccountController::createAccount();
+            break;
+        default:
+            http_response_code(404);
+            echo "404 Not Found";
+            break;
+    }
+} catch (\Exception $e) {
+    http_response_code(500);
+    echo "Error: " . $e->getMessage();
 }
