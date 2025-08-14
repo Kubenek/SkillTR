@@ -42,7 +42,8 @@ class User {
     public static function create($email, $password) {
         $conn = Database::getConnection();
         $username = self::randomUName();
-        $user = new User($password, $email, $username);
+        $hashed = password_hash($password, PASSWORD_DEFAULT);
+        $user = new User($hashed, $email, $username);
         $user->save($conn);
         $conn->close();
         return $user;

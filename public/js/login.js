@@ -18,8 +18,8 @@ fields.forEach(field => {
     })
 })
 
-
 function togglePassVisibility(state, elem) {
     if(state === "0") elem.type = "text";
     else elem.type = "password"
 }   
+

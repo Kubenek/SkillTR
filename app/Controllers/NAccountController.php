@@ -13,8 +13,10 @@ class NAccountController {
     public static function createAccount() {
         $mail = $_POST['email-input'];
         $pass = $_POST['pass-input'];
-        $passHash = password_hash($pass, PASSWORD_DEFAULT);
+        $repeat = $_POST['pass-input-2'];
+        
+        if($pass !== $repeat) return;
 
-        $newUser = \User::create($mail, $passHash);
+        $newUser = \User::create($mail, $pass);
     }
 }

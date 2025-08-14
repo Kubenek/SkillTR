@@ -34,7 +34,7 @@
 
                     <div class="inputBox password">
                         <img src="/../images/icons/bx-lock.png" class="icon">
-                        <input type="password" class="pass-input" name="pass-input" placeholder="Repeat"/>
+                        <input type="password" class="pass-input" name="pass-input-repeat" placeholder="Repeat"/>
                         <img src="/../images/icons/bx-eye-closed.png" id="eyeIcon" class="iconSmall eyeIcon" data-icon="1">
                     </div>
 
