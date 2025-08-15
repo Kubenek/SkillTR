@@ -5,6 +5,7 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 require __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . "/AuthService.php";
 
 $conn = Database::getConnection();
 
@@ -17,17 +18,6 @@ class User {
 
     private static function randomUName() {
         return "user" . random_int(10000, 99999);
-    }
-
-    private static function checkUNameUniqueness(mysqli $conn, $username) {
-        $sql = "SELECT `username` FROM `users`";
-        $result = $conn->query($sql);
-        while($row = $result->fetch_assoc()) {
-            if ($row === $username) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public function __construct($pass, $mail, $username) {
@@ -55,11 +45,9 @@ class User {
     public static function create($email, $password) {
         $conn = Database::getConnection();
 
-        $username = self::randomUName();
-        
-        if(!(self::checkUNameUniqueness($conn, $username))) {
-            return;
-        }
+        do {
+            $username = self::randomUName();
+        } while (!\AuthService::checkUNameUniqueness($conn, $username));
 
         $hashed = password_hash($password, PASSWORD_DEFAULT);
 
@@ -69,6 +57,7 @@ class User {
 
         return $user;
     }
+
     public function save(mysqli $conn) {
         $sql = "INSERT INTO `users` (id, username, email, password) VALUES (NULL, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
@@ -85,5 +74,7 @@ class User {
 
         $stmt->close();
     }
+
+
 
 }
