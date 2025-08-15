@@ -12,7 +12,9 @@ class AuthController {
         $mail = $_POST['email-input'];
         $pass = $_POST['pass-input'];
 
-        if(!\AuthService::doesEmailExist($mail)) return; //? add error message
+        $user = \AuthService::userCheck($mail); 
+
+        if(!$user) return; //? add error message
 
         //TODO
         //* found -> get hashed password compare it with $pass using password_verify

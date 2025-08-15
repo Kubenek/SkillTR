@@ -18,14 +18,16 @@ class AuthService {
         return true;
     }
 
-    public static function doesEmailExist($email) {
-        $stmt = self::$conn->prepare("SELECT 1 FROM `users` WHERE `email` = ? LIMIT 1");
+    public static function userCheck($email) {
+        $stmt = self::$conn->prepare("SELECT * FROM `users` WHERE `email` = ? LIMIT 1");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $stmt->store_result();
-        $result = $stmt->num_rows > 0;
+        $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
         $stmt->close();
 
-        return $result; 
+        return $user ?: null;
+
     }
 }
