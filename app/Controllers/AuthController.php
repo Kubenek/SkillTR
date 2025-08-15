@@ -3,6 +3,10 @@
 namespace App\Controllers;
 
 require_once __DIR__ . "/../Models/AuthService.php";
+require_once __DIR__ . "/../Models/User.php";
+
+use AuthService;
+use Database;
 
 class AuthController {
     public static function showLogin() {
@@ -12,16 +16,20 @@ class AuthController {
         $mail = $_POST['email-input'];
         $pass = $_POST['pass-input'];
 
-        $user = \AuthService::userCheck($mail); 
+        $conn = Database::getConnection();
+        $authService = new AuthService($conn);
 
-        if(!$user) return; //? add error message
+        $user = $authService->userCheck($mail); 
 
-        //TODO
-        //* found -> get hashed password compare it with $pass using password_verify
-        //* incorrect pass -> error message, incorrect password
-        //* correct pass -> start a session, put the user model into it, redirect to dashboard
+        if(!$user) return; //! add error message
 
+        $passHash = $user["password"];
+        if(!password_verify($pass, $passHash)) return; //! add error msg
 
-        
+        $userModel = new \User($passHash, $mail, $user["username"]);
+        $_SESSION["user"] = $userModel;
+
+        header("Location: /creator"); //? Redirect to dashboard
+      
     }
 }
