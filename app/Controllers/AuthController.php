@@ -29,7 +29,7 @@ class AuthController {
         $userModel = new \User($passHash, $mail, $user["username"]);
         $_SESSION["user"] = $userModel;
 
-        header("Location: /creator"); //? Redirect to dashboard
+        header("Location: /dashboard");
       
     }
 }

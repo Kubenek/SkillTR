@@ -2,6 +2,7 @@
 
 require_once __DIR__ . "/../vendor/autoload.php";
 require_once __DIR__ . "/../app/Core/dbLoader.php";
+require_once __DIR__ . "/../app/Models/User.php";
 
 $path = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
@@ -26,6 +27,9 @@ try {
             break;
         case "/new-account":
             ($method === "GET") ? App\Controllers\NAccountController::showPage() : App\Controllers\NAccountController::createAccount();
+            break;
+        case "/dashboard":
+            App\Controllers\DashboardController::showPage();
             break;
         default:
             http_response_code(404);
