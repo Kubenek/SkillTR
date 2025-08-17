@@ -17,6 +17,7 @@ if ($path !== '/' && file_exists($fullStaticPath)) {
     return false;
 }
 
+
 try {
     switch ($path) {
         case "/login":
