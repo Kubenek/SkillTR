@@ -12,6 +12,7 @@ if(session_status() === PHP_SESSION_NONE) {
     $_SESSION["ssid"] = session_id();
 }
  
+
 $fullStaticPath = __DIR__ . $path;
 if ($path !== '/' && file_exists($fullStaticPath)) {
     return false;
