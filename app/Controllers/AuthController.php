@@ -21,10 +21,10 @@ class AuthController {
 
         $user = $authService->userCheck($mail); 
 
-        if(!$user) { self::showLogin("Could not find specified user."); return; }
+        if(!$user) { self::showLogin("Could not find specified user"); return; }
 
         $passHash = $user["password"];
-        if(!password_verify($pass, $passHash)) return; //! add error msg
+        if(!password_verify($pass, $passHash)) {  self::showLogin("Incorrect password submitted"); return; }
 
         $userModel = new \User($passHash, $mail, $user["username"]);
         $_SESSION["user"] = $userModel;

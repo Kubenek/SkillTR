@@ -66,7 +66,7 @@
             <div class="error-body">
                 <img class="erIcon" src="../images/icons/error.png">
                 <p class="header">Something went wrong</p>
-                <p class="text"><?php $errorMSG ?></p>
+                <p class="text"><?php echo $errorMSG ?></p>
             </div>
         </div>
     <?php endif; ?>
