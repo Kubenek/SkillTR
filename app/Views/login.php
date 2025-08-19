@@ -24,12 +24,12 @@
                 <form method="POST" action="/login" class="input-fields">
                     <div class="inputBox email">
                         <img src="/../images/icons/bx-envelope-alt.png" class="icon">
-                        <input type="text" class="email-input" name="email-input" placeholder="Email"/>
+                        <input type="text" class="email-input" name="email-input" placeholder="Email" required/>
                     </div>
         
                     <div class="inputBox password">
                         <img src="/../images/icons/bx-lock.png" class="icon">
-                        <input type="password" class="pass-input" name="pass-input" placeholder="Password"/>
+                        <input type="password" class="pass-input" name="pass-input" placeholder="Password" required/>
                         <img src="/../images/icons/bx-eye-closed.png" id="eyeIcon" class="iconSmall eyeIcon" data-icon="1">
                     </div>
 
