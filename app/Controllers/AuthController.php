@@ -9,7 +9,7 @@ use AuthService;
 use Database;
 
 class AuthController {
-    public static function showLogin() {
+    public static function showLogin($errorMSG = null) {
         require_once __DIR__ . "/../Views/login.php";
     }
     public static function login() {
@@ -21,7 +21,7 @@ class AuthController {
 
         $user = $authService->userCheck($mail); 
 
-        if(!$user) return; //! add error message
+        if(!$user) { self::showLogin("Could not find specified user."); return; }
 
         $passHash = $user["password"];
         if(!password_verify($pass, $passHash)) return; //! add error msg

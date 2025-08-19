@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/styles/basics.css">
 
     <script src="/js/login.js" type="module" defer></script>
+    <script src="/js/close.js" type="module" defer></script>
 </head>
 <body>
     <main class="site-container">
@@ -60,5 +61,15 @@
         </section>
 
     </main>
+    <?php if ($errorMSG !== null) : ?>
+        <div class="error">
+            <div class="error-body">
+                <img class="erIcon" src="../images/icons/error.png">
+                <p class="header">Something went wrong</p>
+                <p class="text"><?php $errorMSG ?></p>
+            </div>
+        </div>
+    <?php endif; ?>
+
 </body>
 </html>
