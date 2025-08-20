@@ -1,3 +1,8 @@
+<?php function isActive($path)
+{
+    return $_SERVER['REQUEST_URI'] === $path ? 'active' : 'active';
+} ?>
+
 <aside class="sidebar">
     <div class="sidebar-header">
         <img src="images/logo.png" alt="logo" />
@@ -5,7 +10,7 @@
     </div>
     <ul class="sidebar-links">
         <h4>
-            <span>Main Menu</span>
+            <span>Workspace</span>
             <div class="menu-separator"></div>
         </h4>
         <li>
@@ -13,26 +18,24 @@
                 <span class="material-symbols-outlined"> dashboard </span>Dashboard</a>
         </li>
         <li>
-            <a href="#"><span class="material-symbols-outlined"> overview </span>Overview</a>
+            <a href="#"><span class="material-symbols-outlined"> search </span>Browser</a>
         </li>
         <li>
-            <a href="#"><span class="material-symbols-outlined"> monitoring </span>Analytic</a>
+            <a href="#" class="<?= isActive("creator") ?>"><span class="material-symbols-outlined"> edit
+                </span>Creator</a>
+        </li>
+        <li>
+            <a href="#"><span class="material-symbols-outlined"> folder </span>Projects</a>
         </li>
         <h4>
             <span>General</span>
             <div class="menu-separator"></div>
         </h4>
         <li>
-            <a href="#"><span class="material-symbols-outlined"> folder </span>Projects</a>
-        </li>
-        <li>
             <a href="#"><span class="material-symbols-outlined"> groups </span>Groups</a>
         </li>
         <li>
-            <a href="#"><span class="material-symbols-outlined"> move_up </span>Transfer</a>
-        </li>
-        <li>
-            <a href="#"><span class="material-symbols-outlined"> flag </span>All Reports</a>
+            <a href="#"><span class="material-symbols-outlined"> monitoring </span>Statistics</a>
         </li>
         <li>
             <a href="#"><span class="material-symbols-outlined">

@@ -106,7 +106,8 @@ body {
   transition: 0.2s ease;
 }
 
-.sidebar-links li a:hover {
+.sidebar-links li a:hover,
+.sidebar-links li a.active {
   color: #161a2d;
   background: #fff;
   border-radius: 4px;
