@@ -1,7 +1,7 @@
 <aside class="sidebar">
     <div class="sidebar-header">
         <img src="images/logo.png" alt="logo" />
-        <h2>CodingLab</h2>
+        <h2>SkillTR</h2>
     </div>
     <ul class="sidebar-links">
         <h4>
