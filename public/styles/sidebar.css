@@ -115,6 +115,8 @@ body {
 .user-account {
   margin-top: auto;
   padding: 12px 10px;
+  width: 120%;
+  box-sizing: border-box;
   margin-left: -10px;
 }
 
@@ -124,10 +126,15 @@ body {
   color: #161a2d;
 }
 
-.user-profile img {
+.user-profile svg {
   width: 42px;
+  height: 42px;
   border-radius: 50%;
-  border: 2px solid #fff;
+  flex-shrink: 0;
+}
+
+.sidebar:not(:hover) .user-profile svg {
+  color: #fff;
 }
 
 .user-profile h3 {
