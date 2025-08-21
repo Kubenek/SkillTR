@@ -113,6 +113,19 @@ body {
   border-radius: 4px;
 }
 
+.sidebar-links:hover li a.activated:not(:hover) {
+  display: flex;
+  align-items: center;
+  gap: 0 20px;
+  color: #fff;
+  font-weight: 500;
+  white-space: nowrap;
+  padding: 15px 10px;
+  text-decoration: none;
+  transition: 0.2s ease;
+  background: transparent;
+}
+
 .user-account {
   margin-top: auto;
   padding: 12px 10px;
