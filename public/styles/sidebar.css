@@ -107,7 +107,7 @@ body {
 }
 
 .sidebar-links li a:hover,
-.sidebar-links li a.active {
+.sidebar-links li a.activated {
   color: #161a2d;
   background: #fff;
   border-radius: 4px;
@@ -118,7 +118,7 @@ body {
   padding: 12px 10px;
   width: 120%;
   box-sizing: border-box;
-  margin-left: -10px;
+  margin-left: -9px;
 }
 
 .user-profile {

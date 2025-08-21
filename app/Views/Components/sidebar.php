@@ -1,6 +1,9 @@
-<?php function isActive($path)
+<?php
+function isActive($path)
 {
-    return $_SERVER['REQUEST_URI'] === $path ? 'active' : 'active';
+    $crPath = $_SERVER['REQUEST_URI'];
+    $path = "/" . $path;
+    return $crPath === $path ? 'activated' : '';
 } ?>
 
 <aside class="sidebar">
