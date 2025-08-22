@@ -54,7 +54,7 @@ body {
   position: absolute;
   top: 5px;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) scale(1);
   transform-origin: center;
 }
 
@@ -70,6 +70,22 @@ body {
   }
 }
 
+@keyframes pop {
+  0% {
+    transform: translateX(-50%) scale(0.5);
+  }
+  70% {
+    transform: translateX(-50%) scale(1.2);
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+  }
+}
+
 .show {
   animation: show 0.3s ease-out;
+}
+
+.pop {
+  animation: pop 0.15s ease-out;
 }

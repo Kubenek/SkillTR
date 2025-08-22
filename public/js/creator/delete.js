@@ -121,9 +121,15 @@ function onMouseMove(e) {
   })
 
   const colliding = checkCollisions(creatorState.selectionBox)
-  colliding.forEach((node) => node.classList.add('select-del'))
 
-  creatorState.selectCollidingNodes = colliding
+  if (creatorState.selectCollidingNodes.length < 50) {
+    colliding.forEach((node) => node.classList.add('select-del'))
+    if (creatorState.selectCollidingNodes.length !== colliding.length) {
+      changeCount(creatorState.delCounter, colliding.length)
+      creatorState.delCounter.classList.add('pop')
+    }
+    creatorState.selectCollidingNodes = colliding
+  }
 }
 
 function addCounter(amount) {
@@ -131,6 +137,7 @@ function addCounter(amount) {
   const site = document.querySelector('.site-container')
   counter.innerText = `${amount}/50`
   counter.classList.add('delCounter', 'show')
+  creatorState.delCounter = counter
   site.append(counter)
 }
 
@@ -176,4 +183,14 @@ function enableDragging(box) {
     document.addEventListener('mousemove', onMouseMove)
     document.addEventListener('mouseup', onMouseUp)
   })
+}
+
+function changeCount(counter, count) {
+  counter.innerText = `${count}/50`
+}
+
+function triggerAnimation(element, animName) {
+  element.classList.remove(animName)
+  void element.offsetWidth
+  element.classList.add(animName)
 }
