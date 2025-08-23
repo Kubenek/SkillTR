@@ -1,5 +1,6 @@
 import { creatorState } from './creatorState.js'
 import { initializeElement } from '../QoL.js'
+import { createDeletePopup } from './functions.js'
 
 let startX, startY
 let hasMoved = false
@@ -20,11 +21,13 @@ document.addEventListener('keydown', (e) => {
         node.classList.remove('select-del')
       })
       removeCounter()
+      creatorState.deleteButton.remove()
     } else {
       updateStyles(true)
       creatorState.isSelecting = true
       const colAmount = creatorState.selectCollidingNodes.length
       addCounter(colAmount)
+      addButtons()
     }
   }
 })
@@ -198,7 +201,31 @@ function updateStyles(status) {
 
 function addButtons() {
   var delBtn = initializeElement('button', 'delAll', 'Delete')
+
+  const yHandler = () => {
+    const nodes = creatorState.selectCollidingNodes
+    nodes.forEach((node) => {
+      node.remove()
+    })
+    creatorState.nodes = creatorState.nodes.filter(
+      (item) => !nodes.includes(item)
+    )
+    creatorState.selectionBox.remove()
+
+    Object.assign(creatorState, {
+      selectCollidingNodes: [],
+      selectionBox: null,
+    })
+
+    changeCount(creatorState.delCounter, 0)
+  }
+
+  delBtn.addEventListener('click', () => {
+    createDeletePopup(null, yHandler)
+  })
+
   document.body.appendChild(delBtn)
+  creatorState.deleteButton = delBtn
 }
 
 function enableDragging(box) {

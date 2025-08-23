@@ -23,4 +23,5 @@ export const creatorState = {
   isSelecting: false,
   selectCollidingNodes: [],
   delCounter: null,
+  deleteButton: null,
 }
