@@ -133,12 +133,17 @@ function onMouseMove(e) {
   if (creatorState.selectCollidingNodes.length < 50) {
     colliding.forEach((node) => node.classList.add('select-del'))
 
-    if (creatorState.selectCollidingNodes.length !== colliding.length) {
+    const selectionChanged =
+      creatorState.selectCollidingNodes.length !== colliding.length
+    if (selectionChanged) {
       changeCount(creatorState.delCounter, colliding.length)
-      if (creatorState.delCounter.classList.contains('pop')) {
-        triggerAnimation(creatorState.delCounter, 'pop')
-      } else creatorState.delCounter.classList.add('pop')
+
+      const counter = creatorState.delCounter
+      counter.classList.contains('pop')
+        ? triggerAnimation(counter, 'pop')
+        : counter.classList.add('pop')
     }
+
     creatorState.selectCollidingNodes = colliding
   }
 }
