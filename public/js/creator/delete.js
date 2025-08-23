@@ -92,7 +92,7 @@ function onMouseMove(e) {
     })
 
     const newSet = new Set(checkCollisions(creatorState.selectionBox))
-    const prevSet = creatorState.selectCollidingNodes
+    const prevSet = new Set(creatorState.selectCollidingNodes)
     const allNodes = new Set([...prevSet, ...newSet])
     const counter = creatorState.delCounter
 
@@ -154,9 +154,7 @@ function onMouseMove(e) {
       changeCount(creatorState.delCounter, colliding.length)
 
       const counter = creatorState.delCounter
-      counter.classList.contains('pop')
-        ? triggerAnimation(counter, 'pop')
-        : counter.classList.add('pop')
+      triggerAnimation(counter, 'pop')
     }
 
     creatorState.selectCollidingNodes = colliding
