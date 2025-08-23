@@ -11,7 +11,7 @@ linkItems.forEach((linkItem, index) => {
     const name = linkItem.querySelector('.link-text').textContent
     creatorState.currentItem = name
 
-    if (creatorState.isSelecting) {
+    if (creatorState.isSelecting && name !== 'Delete') {
       const linkItem = document.querySelectorAll('.link-item')[2]
       if (linkItem.classList.contains('active'))
         linkItem.classList.remove('active')
@@ -19,6 +19,8 @@ linkItems.forEach((linkItem, index) => {
         linkItem.classList.remove('del-active')
         indicator.classList.remove('del-active')
       }
+
+      creatorState.delCounter.remove()
 
       creatorState.selectCollidingNodes.forEach((node) => {
         node.classList.remove('select-del')

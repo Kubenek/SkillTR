@@ -83,7 +83,9 @@ function onMouseMove(e) {
 
   if (isDraggingBox) {
     //* drag functionality
+
     const { clientX, clientY } = e
+
     Object.assign(creatorState.selectionBox.style, {
       left: `${clientX - offsetX}px`,
       top: `${clientY - offsetY}px`,
@@ -91,12 +93,25 @@ function onMouseMove(e) {
 
     const newSet = new Set(checkCollisions(creatorState.selectionBox))
     const prevSet = creatorState.selectCollidingNodes
+    const allNodes = new Set([...prevSet, ...newSet])
+    const counter = creatorState.delCounter
 
-    for (const node of prevSet)
-      if (!newSet.has(node)) node.classList.remove('select-del')
-    for (const node of newSet)
-      if (!node.classList.contains('select-del'))
+    for (const node of allNodes) {
+      const inPrev = prevSet.has(node)
+      const inNew = newSet.has(node)
+
+      if (inPrev && !inNew) {
+        node.classList.remove('select-del')
+        triggerAnimation(counter, 'pop')
+        changeCount(counter, newSet.size)
+      }
+
+      if (!inPrev && inNew) {
         node.classList.add('select-del')
+        triggerAnimation(counter, 'pop')
+        changeCount(counter, newSet.size)
+      }
+    }
 
     creatorState.selectCollidingNodes = newSet
     return
@@ -206,7 +221,7 @@ function changeCount(counter, count) {
 }
 
 function triggerAnimation(element, animName) {
-  element.classList.remove(animName)
+  if (element.classList.contains(animName)) element.classList.remove(animName)
   void element.offsetWidth
   element.classList.add(animName)
 }
