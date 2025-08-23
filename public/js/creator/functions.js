@@ -153,7 +153,7 @@ export function createDeletePopup(node = null, yHandler = null) {
   if (node !== null) {
     yBtn.onclick = () => handleConfirmDelete(node, popup)
   } else {
-    yBtn.onclick = () => yHandler()
+    yBtn.onclick = () => yHandler(popup)
   }
   nBtn.onclick = () => handleCancelDelete(popup)
 

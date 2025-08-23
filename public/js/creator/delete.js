@@ -202,7 +202,7 @@ function updateStyles(status) {
 function addButtons() {
   var delBtn = initializeElement('button', 'delAll', 'Delete')
 
-  const yHandler = () => {
+  const yHandler = (popup) => {
     const nodes = creatorState.selectCollidingNodes
     nodes.forEach((node) => {
       node.remove()
@@ -211,6 +211,9 @@ function addButtons() {
       (item) => !nodes.includes(item)
     )
     creatorState.selectionBox.remove()
+
+    popup.remove()
+    creatorState.isPopupActive = false
 
     Object.assign(creatorState, {
       selectCollidingNodes: [],
@@ -222,6 +225,7 @@ function addButtons() {
 
   delBtn.addEventListener('click', () => {
     createDeletePopup(null, yHandler)
+    creatorState.isSelecting = false
   })
 
   document.body.appendChild(delBtn)
