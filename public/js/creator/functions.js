@@ -163,7 +163,6 @@ export function createDeletePopup(node = null, yHandler = null) {
   content.append(p, popupButtons)
   popup.appendChild(content)
   document.body.appendChild(popup)
-  return
 }
 
 function handleConfirmDelete(node, popup) {
