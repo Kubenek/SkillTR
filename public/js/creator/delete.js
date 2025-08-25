@@ -228,6 +228,14 @@ function addButtons() {
     creatorState.isSelecting = false
   })
 
+  delBtn.addEventListener('mouseover', () => {
+    creatorState.isSelecting = false
+  })
+
+  delBtn.addEventListener('mouseout', () => {
+    creatorState.isSelecting = true
+  })
+
   document.body.appendChild(delBtn)
   creatorState.deleteButton = delBtn
 }
