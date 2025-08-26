@@ -21,6 +21,7 @@ linkItems.forEach((linkItem, index) => {
       }
 
       creatorState.delCounter.remove()
+      creatorState.deleteButton.remove()
 
       creatorState.selectCollidingNodes.forEach((node) => {
         node.classList.remove('select-del')
