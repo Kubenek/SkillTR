@@ -211,6 +211,7 @@ function addButtons() {
       (item) => !nodes.includes(item)
     )
     creatorState.selectionBox.remove()
+    creatorState.delCounter.remove()
 
     popup.remove()
     creatorState.isPopupActive = false
