@@ -116,7 +116,7 @@ function onMouseMove(e) {
       }
     }
 
-    creatorState.selectCollidingNodes = newSet
+    creatorState.selectCollidingNodes = [...newSet]
     return
   }
 
