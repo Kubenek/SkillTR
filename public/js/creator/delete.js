@@ -237,6 +237,8 @@ function addButtons() {
     creatorState.isSelecting = true
   })
 
+  delBtn.classList.add('show')
+
   document.body.appendChild(delBtn)
   creatorState.deleteButton = delBtn
 }
