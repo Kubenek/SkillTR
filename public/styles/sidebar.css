@@ -21,6 +21,9 @@ body {
 
 .sidebar:hover {
   width: 260px;
+}
+
+.sidebar > * {
   font-family: 'Poppins', sans-serif;
 }
 
@@ -40,6 +43,7 @@ body {
   font-weight: 600;
   white-space: nowrap;
   margin-left: 23px;
+  font-family: 'Poppins', sans-serif;
 }
 
 .sidebar-links h4 {
@@ -48,10 +52,12 @@ body {
   white-space: nowrap;
   margin: 10px 0;
   position: relative;
+  font-family: 'Poppins', sans-serif;
 }
 
 .sidebar-links h4 span {
   opacity: 0;
+  font-family: 'Poppins', sans-serif;
 }
 
 .sidebar:hover .sidebar-links h4 span {
@@ -98,6 +104,7 @@ body {
   padding: 15px 10px;
   text-decoration: none;
   transition: 0.2s ease;
+  font-family: 'Poppins', sans-serif;
 }
 
 .sidebar-links li a:hover,
@@ -148,11 +155,20 @@ body {
 .user-profile h3 {
   font-size: 1rem;
   font-weight: 600;
+  font-family: 'Poppins', sans-serif;
 }
 
 .user-profile span {
   font-size: 0.775rem;
   font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+}
+
+.user-detail span,
+.user-detail h3 {
+  margin: 0;
+  padding: 0;
+  display: block;
 }
 
 .user-detail {
@@ -163,4 +179,5 @@ body {
 .sidebar:hover .user-account {
   background: #fff;
   border-radius: 4px;
+  font-family: 'Poppins', sans-serif;
 }
