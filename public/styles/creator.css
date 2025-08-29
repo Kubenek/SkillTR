@@ -89,3 +89,20 @@ body {
 .pop {
   animation: pop 0.15s ease-out;
 }
+
+.delAll {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 5%;
+  height: 4%;
+  background-color: #ffa500;
+  border: 3px solid #d18800;
+  color: #fff;
+  border-radius: 7px;
+  transition: transform 0.15s ease-in-out;
+}
+
+.delAll:hover {
+  transform: scale(1.05);
+}
