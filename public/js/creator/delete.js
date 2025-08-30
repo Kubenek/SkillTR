@@ -10,26 +10,7 @@ let offsetX, offsetY
 document.addEventListener('keydown', (e) => {
   //* Toggle Alt Delete
 
-  if (e.shiftKey && creatorState.currentItem === 'Delete') {
-    if (creatorState.isSelecting) {
-      updateStyles(false)
-      creatorState.isSelecting = false
-      if (creatorState.selectionBox) creatorState.selectionBox.remove()
-      creatorState.selectionBox = null
-      const selectedNodes = document.querySelectorAll('.select-del')
-      selectedNodes.forEach((node) => {
-        node.classList.remove('select-del')
-      })
-      removeCounter()
-      creatorState.deleteButton.remove()
-    } else {
-      updateStyles(true)
-      creatorState.isSelecting = true
-      const colAmount = creatorState.selectCollidingNodes.length
-      addCounter(colAmount)
-      addButtons()
-    }
-  }
+  if (e.shiftKey && creatorState.currentItem === 'Delete') toggleMode()
 })
 
 document.addEventListener('mousedown', (e) => {
@@ -200,33 +181,27 @@ function updateStyles(status) {
 }
 
 function addButtons() {
-  // Create the Delete button
   const delBtn = initializeElement('button', 'delAll', 'Delete')
   delBtn.classList.add('show')
   document.body.appendChild(delBtn)
   creatorState.deleteButton = delBtn
 
-  // Delete handler (yHandler)
   const yHandler = (popup) => {
-    // Grab nodes to delete: use array or fallback to DOM
     const nodes = creatorState.selectCollidingNodes.length
       ? creatorState.selectCollidingNodes
       : Array.from(document.querySelectorAll('.select-del'))
 
-    // Remove nodes from DOM
     nodes.forEach((node) => node.remove())
 
-    // Remove nodes from state array
     creatorState.nodes = creatorState.nodes.filter(
       (item) => !nodes.includes(item)
     )
 
-    // Clean up selection box, counter, popup
     creatorState.selectionBox?.remove()
     creatorState.delCounter?.remove()
+    delBtn.remove()
     popup.remove()
 
-    // Reset state
     Object.assign(creatorState, {
       selectCollidingNodes: [],
       selectionBox: null,
@@ -234,10 +209,9 @@ function addButtons() {
       isSelecting: true,
     })
 
-    changeCount(creatorState.delCounter, 0)
+    toggleMode()
   }
 
-  // Delete button events
   delBtn.addEventListener('click', () => {
     creatorState.isSelecting = false
     createDeletePopup(null, yHandler)
@@ -273,4 +247,25 @@ function triggerAnimation(element, animName) {
   if (element.classList.contains(animName)) element.classList.remove(animName)
   void element.offsetWidth
   element.classList.add(animName)
+}
+
+function toggleMode() {
+  if (creatorState.isSelecting) {
+    updateStyles(false)
+    creatorState.isSelecting = false
+    if (creatorState.selectionBox) creatorState.selectionBox.remove()
+    creatorState.selectionBox = null
+    const selectedNodes = document.querySelectorAll('.select-del')
+    selectedNodes.forEach((node) => {
+      node.classList.remove('select-del')
+    })
+    removeCounter()
+    creatorState.deleteButton.remove()
+  } else {
+    updateStyles(true)
+    creatorState.isSelecting = true
+    const colAmount = creatorState.selectCollidingNodes.length
+    addCounter(colAmount)
+    addButtons()
+  }
 }
