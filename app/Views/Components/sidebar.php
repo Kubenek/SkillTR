@@ -17,14 +17,14 @@ function isActive($path)
             <div class="menu-separator"></div>
         </h4>
         <li>
-            <a href="#">
+            <a href="/dashboard" class="<?= isActive("dashboard") ?>">
                 <span class="material-symbols-outlined"> dashboard </span>Dashboard</a>
         </li>
         <li>
             <a href="#"><span class="material-symbols-outlined"> search </span>Browser</a>
         </li>
         <li>
-            <a href="#" class="<?= isActive("creator") ?>"><span class="material-symbols-outlined"> edit
+            <a href="/creator" class="<?= isActive("creator") ?>"><span class="material-symbols-outlined"> edit
                 </span>Creator</a>
         </li>
         <li>

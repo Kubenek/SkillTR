@@ -1,15 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | SkillTR</title>
+
+    <link rel="stylesheet" href="/styles/basics.css">
+    <link rel="stylesheet" href="/styles/sidebar.css">
+
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
+
 <body>
-    <?php
-        $userObject = $_SESSION["user"];
-        $username = $userObject->getUsername();
-        echo "Logged in as " . $username;
-    ?>
+
+    <?php require_once __DIR__ . "/Components/sidebar.php"; ?>
+
 </body>
+
 </html>
