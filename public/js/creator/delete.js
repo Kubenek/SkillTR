@@ -200,33 +200,47 @@ function updateStyles(status) {
 }
 
 function addButtons() {
-  var delBtn = initializeElement('button', 'delAll', 'Delete')
+  // Create the Delete button
+  const delBtn = initializeElement('button', 'delAll', 'Delete')
+  delBtn.classList.add('show')
+  document.body.appendChild(delBtn)
+  creatorState.deleteButton = delBtn
 
+  // Delete handler (yHandler)
   const yHandler = (popup) => {
-    const nodes = creatorState.selectCollidingNodes
-    nodes.forEach((node) => {
-      node.remove()
-    })
+    // Grab nodes to delete: use array or fallback to DOM
+    const nodes = creatorState.selectCollidingNodes.length
+      ? creatorState.selectCollidingNodes
+      : Array.from(document.querySelectorAll('.select-del'))
+
+    // Remove nodes from DOM
+    nodes.forEach((node) => node.remove())
+
+    // Remove nodes from state array
     creatorState.nodes = creatorState.nodes.filter(
       (item) => !nodes.includes(item)
     )
-    creatorState.selectionBox.remove()
-    creatorState.delCounter.remove()
 
+    // Clean up selection box, counter, popup
+    creatorState.selectionBox?.remove()
+    creatorState.delCounter?.remove()
     popup.remove()
-    creatorState.isPopupActive = false
 
+    // Reset state
     Object.assign(creatorState, {
       selectCollidingNodes: [],
       selectionBox: null,
+      isPopupActive: false,
+      isSelecting: true,
     })
 
     changeCount(creatorState.delCounter, 0)
   }
 
+  // Delete button events
   delBtn.addEventListener('click', () => {
-    createDeletePopup(null, yHandler)
     creatorState.isSelecting = false
+    createDeletePopup(null, yHandler)
   })
 
   delBtn.addEventListener('mouseover', () => {
@@ -236,11 +250,6 @@ function addButtons() {
   delBtn.addEventListener('mouseout', () => {
     creatorState.isSelecting = true
   })
-
-  delBtn.classList.add('show')
-
-  document.body.appendChild(delBtn)
-  creatorState.deleteButton = delBtn
 }
 
 function enableDragging(box) {

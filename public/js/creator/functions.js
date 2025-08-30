@@ -162,6 +162,11 @@ export function createDeletePopup(node = null, yHandler = null) {
 
   content.append(p, popupButtons)
   popup.appendChild(content)
+
+  popup.addEventListener('mouseover', () => {
+    creatorState.isSelecting = false
+  })
+
   document.body.appendChild(popup)
 }
 
