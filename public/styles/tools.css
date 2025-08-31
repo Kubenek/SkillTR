@@ -1,102 +1,102 @@
 /* Google Fonts - Poppins */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
-body{
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-nav{
-    position: fixed;
-    bottom: 1rem;
-    left: 50%;
-    transform-origin: bottom center;
-    transform: translateX(-50%);
-
-    border-radius: 1rem;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 0 2rem;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    z-index: 9200;
-    width: 35rem;
-    height: 7rem;
-    display: flex;
-    justify-content: center;
-
-    will-change: transform;
-}
-.nav-content{
-    display: flex;
-    height: 7rem;
-    align-items: center;
-    list-style: none;
-    position: relative;
-}
-.link-item{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    height: 6rem;
-    width: 6rem;
-    text-decoration: none;
-    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-.link-item.active{
-    transform: translateY(-10px);
-}
-.link-icon{
-    font-size: 2rem;
-    color: #999;
-    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-.link-item.active .link-icon{
-    color: #4070F4;
+body {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.link-item.del-active .link-icon, .link-item.del-active .link-text {
-    color: #FFA500;
+nav {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform-origin: bottom center;
+  transform: translateX(-50%);
+
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0 2rem;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  z-index: 9200;
+  width: 35rem;
+  height: 7rem;
+  display: flex;
+  justify-content: center;
+
+  will-change: transform;
+}
+.nav-content {
+  display: flex;
+  height: 7rem;
+  align-items: center;
+  list-style: none;
+  position: relative;
+}
+.link-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 6rem;
+  width: 6rem;
+  text-decoration: none;
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+.link-item.active {
+  transform: translateY(-10px);
+}
+.link-icon {
+  font-size: 2rem;
+  color: #999;
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+.link-item.active .link-icon {
+  color: #4070f4;
 }
 
-.link-text{
-    position: absolute;
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: #4070F4;
-    opacity: 0;
-    transform: translateY(2rem);
-    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+.link-item.del-active .link-icon,
+.link-item.del-active .link-text {
+  color: #ffa500;
 }
-.link-item.active .link-text{
-    opacity: 1;
+
+.link-text {
+  position: absolute;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #4070f4;
+  opacity: 0;
+  transform: translateY(2rem);
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
-.indicator{
-    position: absolute;
-    top: -0.9rem;
-    left: 3rem;
-    height: 2.25rem;
-    width: 2.25rem;
-    background-color: white;
-    border: 0.4rem solid #4070F4;
-    border-radius: 50%;
-    transform: translateX(-50%);
-    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+.link-item.active .link-text {
+  opacity: 1;
+}
+.indicator {
+  position: absolute;
+  top: -0.9rem;
+  left: 3rem;
+  height: 2.25rem;
+  width: 2.25rem;
+  background-color: white;
+  border: 0.4rem solid #4070f4;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 .indicator.del-active {
-    border: 0.4rem solid #FFA500;
+  border: 0.4rem solid #ffa500;
 }
 .indicator::before,
-.indicator::after{
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    height: 1.5rem;
-    width: 1.2rem;
+.indicator::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  height: 1.5rem;
+  width: 1.2rem;
 }
-
