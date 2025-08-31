@@ -7,11 +7,11 @@ require_once __DIR__ . "/../app/Models/User.php";
 $path = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
 
-if(session_status() === PHP_SESSION_NONE) {
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
     $_SESSION["ssid"] = session_id();
 }
- 
+
 $fullStaticPath = __DIR__ . $path;
 if ($path !== '/' && file_exists($fullStaticPath)) {
     return false;
@@ -31,6 +31,8 @@ try {
         case "/dashboard":
             App\Controllers\DashboardController::showPage();
             break;
+        case "/logout":
+            App\Controllers\AuthController::logout();
         default:
             http_response_code(404);
             echo "404 Not Found";

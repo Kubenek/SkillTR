@@ -55,7 +55,9 @@ function isActive($path)
             <a href="#"><span class="material-symbols-outlined"> settings </span>Settings</a>
         </li>
         <li>
-            <a href="#"><span class="material-symbols-outlined"> logout </span>Logout</a>
+            <form method="post" action="/logout">
+                <button type="submit"><span class="material-symbols-outlined"> logout </span>Logout</button>
+            </form>
         </li>
     </ul>
     <div class="user-account">

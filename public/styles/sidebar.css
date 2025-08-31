@@ -103,7 +103,16 @@ body {
   display: none;
 }
 
-.sidebar-links li a {
+form,
+form button {
+  background: transparent;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.sidebar-links li a,
+.sidebar-links li form button {
   display: flex;
   align-items: center;
   gap: 0 20px;
@@ -117,13 +126,16 @@ body {
 }
 
 .sidebar-links li a:hover,
-.sidebar-links li a.activated {
+.sidebar-links li a.activated,
+.sidebar-links li form button:hover,
+.sidebar-links li form button.activated {
   color: #161a2d;
   background: #fff;
   border-radius: 4px;
 }
 
-.sidebar-links:hover li a.activated:not(:hover) {
+.sidebar-links:hover li a.activated:not(:hover),
+.sidebar-links:hover li form button.activated:not(:hover) {
   display: flex;
   align-items: center;
   gap: 0 20px;
