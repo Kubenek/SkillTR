@@ -1,4 +1,4 @@
-export const creatorState = {
+const defaultState = {
   zoom: 1,
   panX: 0,
   panY: 0,
@@ -24,4 +24,13 @@ export const creatorState = {
   selectCollidingNodes: [],
   delCounter: null,
   deleteButton: null,
+}
+
+let savedState = JSON.parse(localStorage.getItem('creatorState')) || {}
+
+export const creatorState = { ...defaultState, ...savedState }
+
+export function setCreatorState(updates) {
+  Object.assign(creatorState, updates)
+  localStorage.setItem('creatorState', JSON.stringify(creatorState))
 }
