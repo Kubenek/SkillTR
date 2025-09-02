@@ -1,4 +1,4 @@
-import { creatorState } from './creatorState.js'
+import { creatorState, setCreatorState } from './creatorState.js'
 import { COLLISION_RADIUS } from '../config.js'
 import { removeElementFromList, initializeElement } from '../QoL.js'
 
@@ -176,6 +176,7 @@ function handleConfirmDelete(node, popup) {
   popup.remove()
   creatorState.isPopupActive = false
   removeElementFromList(creatorState.nodes, node)
+  setCreatorState({ nodes: creatorState.ndoes })
 }
 
 function handleCancelDelete(popup) {

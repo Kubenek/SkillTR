@@ -1,4 +1,4 @@
-import { creatorState } from './creatorState.js'
+import { creatorState, setCreatorState } from './creatorState.js'
 import { initializeElement } from '../QoL.js'
 import { createDeletePopup } from './functions.js'
 
@@ -196,6 +196,7 @@ function addButtons() {
     creatorState.nodes = creatorState.nodes.filter(
       (item) => !nodes.includes(item)
     )
+    setCreatorState({ nodes: creatorState.nodes })
 
     creatorState.selectionBox?.remove()
     creatorState.delCounter?.remove()

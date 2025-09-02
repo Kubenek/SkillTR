@@ -26,11 +26,24 @@ const defaultState = {
   deleteButton: null,
 }
 
-let savedState = JSON.parse(localStorage.getItem('creatorState')) || {}
+let savedState = {}
+try {
+  savedState = JSON.parse(localStorage.getItem('creatorState')) || {}
+} catch (e) {
+  console.warn('Failed to parse saved state:', e)
+}
 
 export const creatorState = { ...defaultState, ...savedState }
 
+console.log(creatorState)
+
 export function setCreatorState(updates) {
   Object.assign(creatorState, updates)
-  localStorage.setItem('creatorState', JSON.stringify(creatorState))
+
+  const stateToSave = {
+    nodes: creatorState.nodes,
+    connections: creatorState.connections,
+  }
+
+  localStorage.setItem('creatorState', JSON.stringify(stateToSave))
 }

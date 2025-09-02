@@ -3,7 +3,7 @@ import {
   CLICK_MOVE_THRESHOLD,
   CLICK_TIME_THRESHOLD,
 } from '../config.js'
-import { creatorState } from './creatorState.js'
+import { creatorState, setCreatorState } from './creatorState.js'
 import {
   nodesOverlap,
   updateConnectedLines,
@@ -78,6 +78,7 @@ function addNodeAtLocation(canvas, x, y) {
 
   canvas.appendChild(node)
   creatorState.nodes.push(nodeData)
+  setCreatorState({ nodes: creatorState.nodes })
 
   node.addEventListener('mouseover', () => {
     creatorState.disableDrag = true
@@ -86,6 +87,7 @@ function addNodeAtLocation(canvas, x, y) {
       .forEach((elem) => {
         elem.line.classList.replace('permanent-line', 'highlighted-line')
       })
+    setCreatorState({ connections: creatorState.connections })
   })
 
   node.addEventListener('mouseout', () => {
@@ -95,6 +97,7 @@ function addNodeAtLocation(canvas, x, y) {
       .forEach((elem) => {
         elem.line.classList.replace('highlighted-line', 'permanent-line')
       })
+    setCreatorState({ connections: creatorState.connections })
   })
 
   node.addEventListener('mousedown', (e) => {
@@ -184,6 +187,7 @@ function addNodeAtLocation(canvas, x, y) {
             creatorState.connections = creatorState.connections.filter(
               (conn) => conn.line !== line
             )
+            setCreatorState({ connections: creatorState.connections })
           }
         })
 
@@ -204,6 +208,7 @@ function addNodeAtLocation(canvas, x, y) {
           toNode: creatorState.selectNodeSecond,
           line: creatorState.activeLine,
         })
+        setCreatorState({ connections: creatorState.connections })
 
         updateConnectedLines(a)
         resetSelectData()
