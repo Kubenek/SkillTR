@@ -35,7 +35,7 @@ try {
 
 export const creatorState = { ...defaultState, ...savedState }
 
-console.log(creatorState)
+renderNodes(creatorState.nodes)
 
 export function setCreatorState(updates) {
   Object.assign(creatorState, updates)
@@ -46,4 +46,28 @@ export function setCreatorState(updates) {
   }
 
   localStorage.setItem('creatorState', JSON.stringify(stateToSave))
+}
+
+function renderNodes(nodes) {
+  const canvas = document.querySelector('.canvas-content')
+
+  nodes.forEach((data) => {
+    const x = data.x
+    const y = data.y
+    const size = 15
+
+    const node = document.createElement('div')
+    node.classList.add('node')
+
+    Object.assign(node.style, {
+      position: 'absolute',
+      width: `${size}px`,
+      height: `${size}px`,
+      left: `${x - size / 2}px`,
+      top: `${y - size / 2}px`,
+    })
+
+    canvas.appendChild(node)
+    data.elem = node
+  })
 }
