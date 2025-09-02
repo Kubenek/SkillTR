@@ -50,6 +50,7 @@ export function setCreatorState(updates) {
 
 function renderNodes(nodes) {
   const canvas = document.querySelector('.canvas-content')
+  const newNodes = []
 
   nodes.forEach((data) => {
     const x = data.x
@@ -67,7 +68,12 @@ function renderNodes(nodes) {
       top: `${y - size / 2}px`,
     })
 
+    const nodeData = { elem: node, x, y }
+    newNodes.push(nodeData)
+
     canvas.appendChild(node)
-    data.elem = node
   })
+
+  creatorState.nodes = newNodes
+  console.log(creatorState)
 }

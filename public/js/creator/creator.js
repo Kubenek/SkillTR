@@ -55,42 +55,17 @@ document.addEventListener('DOMContentLoaded', () => {
       !e.button ? addNodeAtLocation(canvas, x, y) : alert('unimplemented')
     }
   })
-})
 
-function addNodeAtLocation(canvas, x, y) {
-  if (disableNodePlace || creatorState.currentItem !== 'Place') return
-
-  const size = 15
-  const node = document.createElement('div')
-  node.classList.add('node')
-
-  Object.assign(node.style, {
-    position: 'absolute',
-    width: `${size}px`,
-    height: `${size}px`,
-    left: `${x - size / 2}px`,
-    top: `${y - size / 2}px`,
-  })
-
-  const nodeData = { elem: node, x, y }
-
-  if (nodesOverlap(nodeData)) return
-
-  canvas.appendChild(node)
-  creatorState.nodes.push(nodeData)
-  setCreatorState({ nodes: creatorState.nodes })
-
-  node.addEventListener('mouseover', () => {
+  const nodeOverHandler = () => {
     creatorState.disableDrag = true
     creatorState.connections
       .filter((elem) => elem.fromNode === node)
       .forEach((elem) => {
         elem.line.classList.replace('permanent-line', 'highlighted-line')
       })
-    setCreatorState({ connections: creatorState.connections })
-  })
+  }
 
-  node.addEventListener('mouseout', () => {
+  const nodeOutHandler = () => {
     creatorState.disableDrag = false
     creatorState.connections
       .filter((elem) => elem.fromNode === node)
@@ -98,9 +73,9 @@ function addNodeAtLocation(canvas, x, y) {
         elem.line.classList.replace('highlighted-line', 'permanent-line')
       })
     setCreatorState({ connections: creatorState.connections })
-  })
+  }
 
-  node.addEventListener('mousedown', (e) => {
+  const nodeDownHandler = (e, node, nodeData) => {
     if (creatorState.currentItem === 'Move') {
       Object.assign(creatorState, {
         isDraggingNode: true,
@@ -215,7 +190,51 @@ function addNodeAtLocation(canvas, x, y) {
       }
     } else if (creatorState.currentItem === 'Delete') createDeletePopup(node)
     else return
+  }
+
+  canvas.addEventListener('mouseover', (e) => {
+    const nodeElem = e.target.closest('.node')
+    if (!nodeElem) return
+    nodeOverHandler()
   })
+
+  canvas.addEventListener('mouseout', (e) => {
+    const nodeElem = e.target.closest('.node')
+    if (!nodeElem) return
+    nodeOutHandler()
+  })
+
+  canvas.addEventListener('mousedown', (e) => {
+    const nodeElem = e.target.closest('.node')
+    if (!nodeElem) return
+    const nodeData = creatorState.nodes.find((n) => n.elem === nodeElem)
+    if (!nodeData) return
+    nodeDownHandler(e, nodeElem, nodeData)
+  })
+})
+
+function addNodeAtLocation(canvas, x, y) {
+  if (disableNodePlace || creatorState.currentItem !== 'Place') return
+
+  const size = 15
+  const node = document.createElement('div')
+  node.classList.add('node')
+
+  Object.assign(node.style, {
+    position: 'absolute',
+    width: `${size}px`,
+    height: `${size}px`,
+    left: `${x - size / 2}px`,
+    top: `${y - size / 2}px`,
+  })
+
+  const nodeData = { elem: node, x, y }
+
+  if (nodesOverlap(nodeData)) return
+
+  canvas.appendChild(node)
+  creatorState.nodes.push(nodeData)
+  setCreatorState({ nodes: creatorState.nodes })
 }
 
 document.addEventListener('mousemove', (e) => {
