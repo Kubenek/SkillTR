@@ -176,7 +176,7 @@ function handleConfirmDelete(node, popup) {
   popup.remove()
   creatorState.isPopupActive = false
   removeElementFromList(creatorState.nodes, node)
-  setCreatorState({ nodes: creatorState.ndoes })
+  setCreatorState({ nodes: creatorState.nodes })
 }
 
 function handleCancelDelete(popup) {
