@@ -1,3 +1,5 @@
+import { updateLinePosition } from './functions.js'
+
 const defaultState = {
   zoom: 1,
   panX: 0,
@@ -36,6 +38,7 @@ try {
 export const creatorState = { ...defaultState, ...savedState }
 
 renderNodes(creatorState.nodes)
+renderConnections(creatorState.connections)
 
 export function setCreatorState(updates) {
   Object.assign(creatorState, updates)
@@ -75,5 +78,26 @@ function renderNodes(nodes) {
   })
 
   creatorState.nodes = newNodes
-  console.log(creatorState)
+}
+
+function renderConnections(connections) {
+  const canvas = document.querySelector('.canvas-content')
+  const newConns = []
+
+  connections.forEach((item) => {
+    const line = document.createElement('div')
+    line.classList.add('permanent-line')
+
+    const nodeA = item.fromNode
+    const nodeB = item.toNode
+    console.log(item)
+
+    newConns.push({
+      fromNode: nodeA,
+      toNode: nodeB,
+      line: line,
+    })
+
+    canvas.appendChild(line)
+  })
 }
