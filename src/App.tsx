@@ -5,6 +5,8 @@ import { useEffect, useRef, useState } from 'react'
 function App() {
 
   const [dragging, setDragging] = useState(false);
+  const mouseDown = useRef(false);
+  const wasDragging = useRef(false);
   
   const position = useRef({x: 0, y: 0})
   const lastMousePosition = useRef({x: 0, y:0})
@@ -26,9 +28,10 @@ function App() {
   // node adding functionality
   useEffect(() => {
 
-    const handleMouseDown = (e: MouseEvent) => {
+    const handleMouseUp = (e: MouseEvent) => {
       if(activeTool !== 1) return;
       if(disableTools) return;
+      if(wasDragging.current) return;
 
       const node = document.createElement("div")
       node.classList.add("node")
@@ -39,10 +42,10 @@ function App() {
       contentRef.current?.appendChild(node)
     }
 
-    window.addEventListener("mousedown", handleMouseDown);
+    window.addEventListener("mouseup", handleMouseUp);
 
     return() => {
-      window.removeEventListener("mousedown", handleMouseDown);
+      window.removeEventListener("mouseup", handleMouseUp);
     };
 
   }, [activeTool, disableTools])
@@ -52,11 +55,17 @@ function App() {
   useEffect(() => {
 
     const handleMouseMove = (e: MouseEvent) => {
-      if(!dragging) return;
+      if(!mouseDown.current) return;
       if(disableDragging) return;
 
       const dx = e.clientX - lastMousePosition.current.x;
       const dy = e.clientY - lastMousePosition.current.y;
+
+      const distance = Math.hypot(dx, dy);
+      if (distance < 3) return;
+
+      setDragging(true);
+      wasDragging.current = true;
 
       position.current!.x += dx;
       position.current!.y += dy;
@@ -69,13 +78,15 @@ function App() {
     }
 
     const handleMouseDown = (e: MouseEvent) => {
-      setDragging(true);
+      mouseDown.current = true;
+      wasDragging.current = false;
 
       lastMousePosition.current.x = e.clientX;
       lastMousePosition.current.y = e.clientY;
     }
 
     const handleMouseUp = () => {
+      mouseDown.current = false;
       setDragging(false);
     }
 
