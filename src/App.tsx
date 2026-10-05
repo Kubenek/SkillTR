@@ -21,6 +21,7 @@ function App() {
   const [activeTool, setActiveTool] = useState<number | null>(0);
 
   const draggedNode = useRef<HTMLDivElement | null>(null);
+  const mouseDraggingOffset = useRef<{x: number, y: number}>({x: 0, y: 0});
 
   const NODE_HEIGHT = 50;
   const NODE_WIDTH = 50;
@@ -42,16 +43,24 @@ function App() {
 
       disableDragging.current = true;
       draggedNode.current = e.target;
+
+      const nodeRect = draggedNode.current.getBoundingClientRect();
+      
+      const offsetX = e.clientX - nodeRect.left;
+      const offsetY = e.clientY - nodeRect.top;
+
+      mouseDraggingOffset.current = {x: offsetX, y: offsetY}
       
     }
 
     const handleMouseMove = (e: MouseEvent) => {
+
       if(activeTool !== 2) return;
       if(disableTools.current) return;
       if(! (draggedNode.current) ) return;
 
-      draggedNode.current!.style.left = `${e.clientX - (NODE_WIDTH / 2) - (position.current.x) }px`
-      draggedNode.current!.style.top = `${e.clientY - (NODE_HEIGHT / 2) - (position.current.y) }px`
+      draggedNode.current!.style.left = `${e.clientX - (position.current.x) - (mouseDraggingOffset.current!.x) }px`
+      draggedNode.current!.style.top = `${e.clientY - (position.current.y) - (mouseDraggingOffset.current!.y) }px`
 
       lastMousePosition.current.x = e.clientX;
       lastMousePosition.current.y = e.clientY;
@@ -64,6 +73,7 @@ function App() {
       disableDragging.current = false;
       dragging.current = false;
       draggedNode.current = null;
+      mouseDraggingOffset.current = {x: 0, y: 0};
 
     }
 
