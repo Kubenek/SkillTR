@@ -4,9 +4,13 @@ import { useEffect, useRef, useState } from 'react'
 
 function App() {
 
-  const [dragging, setDragging] = useState(false);
+  const dragging = useRef(false);
   const mouseDown = useRef(false);
+
   const wasDragging = useRef(false);
+  const disableDragging = useRef(false);
+  const disableTools = useRef(false);
+
   
   const position = useRef({x: 0, y: 0})
   const lastMousePosition = useRef({x: 0, y:0})
@@ -15,8 +19,8 @@ function App() {
   const contentRef = useRef<HTMLDivElement>(null);
 
   const [activeTool, setActiveTool] = useState<number | null>(0);
-  const [disableTools, setDisableTools] = useState<boolean>(false);
-  const [disableDragging, setDisableDragging] = useState<boolean>(false);
+
+  const draggedNode = useRef<HTMLDivElement | null>(null);
 
   const NODE_HEIGHT = 50;
   const NODE_WIDTH = 50;
@@ -25,12 +29,48 @@ function App() {
     setActiveTool(id);
   }
 
-  // node adding functionality
+  // toolbar functions
   useEffect(() => {
 
+    // node moving
+    const handleMouseDown = (e: MouseEvent) => {
+      if(activeTool !== 2) return;
+      if(disableTools.current) return;
+
+      if(! (e.target instanceof HTMLDivElement) ) return;
+      if(! (e.target.classList.contains("node")) ) return;
+
+      disableDragging.current = true;
+      draggedNode.current = e.target;
+      
+    }
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if(activeTool !== 2) return;
+      if(disableTools.current) return;
+      if(! (draggedNode.current) ) return;
+
+      draggedNode.current!.style.left = `${e.clientX - (NODE_WIDTH / 2) - (position.current.x) }px`
+      draggedNode.current!.style.top = `${e.clientY - (NODE_HEIGHT / 2) - (position.current.y) }px`
+
+      lastMousePosition.current.x = e.clientX;
+      lastMousePosition.current.y = e.clientY;
+    }
+
     const handleMouseUp = (e: MouseEvent) => {
+
+      handleNodeAddition(e);
+
+      disableDragging.current = false;
+      dragging.current = false;
+      draggedNode.current = null;
+
+    }
+
+    // node addition
+    const handleNodeAddition = (e: MouseEvent) => {
       if(activeTool !== 1) return;
-      if(disableTools) return;
+      if(disableTools.current) return;
       if(wasDragging.current) return;
 
       const node = document.createElement("div")
@@ -42,13 +82,19 @@ function App() {
       contentRef.current?.appendChild(node)
     }
 
+    const canvas = canvasRef.current!;
+
+    canvas.addEventListener("mousedown", handleMouseDown);
     window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("mousemove", handleMouseMove)
 
     return() => {
+      canvas.removeEventListener("mousedown", handleMouseDown);
       window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("mousemove", handleMouseMove);
     };
 
-  }, [activeTool, disableTools])
+  }, [activeTool])
 
 
   // dragging functionality
@@ -56,7 +102,8 @@ function App() {
 
     const handleMouseMove = (e: MouseEvent) => {
       if(!mouseDown.current) return;
-      if(disableDragging) return;
+      if(disableDragging.current) return;
+      if(draggedNode.current) return;
 
       const dx = e.clientX - lastMousePosition.current.x;
       const dy = e.clientY - lastMousePosition.current.y;
@@ -64,7 +111,7 @@ function App() {
       const distance = Math.hypot(dx, dy);
       if (distance < 3) return;
 
-      setDragging(true);
+      dragging.current = true;
       wasDragging.current = true;
 
       position.current!.x += dx;
@@ -78,6 +125,8 @@ function App() {
     }
 
     const handleMouseDown = (e: MouseEvent) => {
+      if(draggedNode.current) return;
+      
       mouseDown.current = true;
       wasDragging.current = false;
 
@@ -87,28 +136,30 @@ function App() {
 
     const handleMouseUp = () => {
       mouseDown.current = false;
-      setDragging(false);
+      dragging.current = false;
     }
+
+    const canvas = canvasRef.current!;
 
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseup", handleMouseUp);
-    window.addEventListener("mousedown", handleMouseDown);
+    canvas.addEventListener("mousedown", handleMouseDown);
 
     return() => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
-      window.removeEventListener("mousedown", handleMouseDown);
+      canvas.removeEventListener("mousedown", handleMouseDown);
     };
 
-  }, [dragging, disableDragging])
+  }, [])
 
   return (
     <>
       <section className='siteContainer'>
 
         <div className='editorToolbar' 
-          onMouseEnter={() => {setDisableTools(true); setDisableDragging(true)}}
-          onMouseLeave={() => {setDisableTools(false); setDisableDragging(false)}}
+          onMouseEnter={() => {disableTools.current = true; disableDragging.current = true}}
+          onMouseLeave={() => {disableTools.current = false; disableDragging.current = false}}
         >
           <button className={`toolbarItem ${activeTool == 0 ? "active" : ""}`} onClick={() => handleToolOnClick(0)}> <CursorPointer className='tIcon'/> </button> { /* View */ } 
           <button className={`toolbarItem ${activeTool == 1 ? "active" : ""}`} onClick={() => handleToolOnClick(1)}> <Plus className='tIcon'/> </button> { /* Add */ } 
