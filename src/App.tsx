@@ -78,6 +78,8 @@ function App() {
       if(disableTools.current) return;
       if(wasDragging.current) return;
 
+      if(e.target instanceof HTMLDivElement && e.target.classList.contains("node")) return;
+
       const node = document.createElement("div")
       node.classList.add("node")
 
