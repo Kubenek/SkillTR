@@ -27,6 +27,13 @@ function App() {
   const [lineStart, setLineStart] = useState<{ x: number, y: number } | null>(null);
   const [lineEnd, setLineEnd] = useState<{x: number, y: number} | null>(null);
 
+  type NodeConnection = {
+    from: HTMLDivElement;
+    to: HTMLDivElement;
+  };
+
+  const connections = useRef<NodeConnection[]>([]);
+
   const NODE_HEIGHT = 50;
   const NODE_WIDTH = 50;
 
@@ -134,6 +141,26 @@ function App() {
         const nodeOne = connectionNode.current;
         const nodeTwo = e.target;
 
+        const exists = connections.current.some(
+          connection => 
+            (connection.from === nodeOne && connection.to === nodeTwo) ||
+            (connection.from === nodeTwo && connection.to === nodeOne) ||
+            (nodeOne === nodeTwo)
+        );
+
+        if(exists) {
+          const nodes = contentRef.current?.querySelectorAll(".node");
+
+          nodes?.forEach(node => {
+            node.classList.remove('selected');
+          })
+
+          connectionNode.current = null;
+          setLineStart(null); setLineEnd(null);
+
+          return;
+        }
+
         const onePosX = nodeOne.getBoundingClientRect().left + ( NODE_WIDTH / 2 ) - svgRect.left;
         const onePosY = nodeOne.getBoundingClientRect().top + ( NODE_HEIGHT / 2 ) - svgRect.top;
 
@@ -155,6 +182,7 @@ function App() {
         line.setAttribute("y2", String(twoPosY))
 
         connectionLayer.current?.appendChild(line);
+        connections.current.push({from: nodeOne, to: nodeTwo});
 
         //? Variable reset
         const nodes = contentRef.current?.querySelectorAll(".node");
@@ -253,6 +281,7 @@ function App() {
     };
 
   }, [])
+
 
   return (
     <>
