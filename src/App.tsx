@@ -112,6 +112,8 @@ function App() {
       if(! (e.target instanceof HTMLDivElement) ) return;
       if(! (e.target.classList.contains("node")) ) return;
 
+      const svgRect = connectionLayer.current!.getBoundingClientRect();
+
       if(connectionNode.current === null) {
 
         const currentNode = e.target;
@@ -121,21 +123,22 @@ function App() {
         disableDragging.current = true;
 
         const nodeRect = currentNode.getBoundingClientRect();
-        const lineX = nodeRect.left + (NODE_WIDTH / 2);
-        const lineY = nodeRect.top + (NODE_HEIGHT / 2);
 
-        setLineStart({x: lineX, y: lineY});
+        setLineStart({
+          x: nodeRect.left + NODE_WIDTH / 2 - svgRect.left,
+          y: nodeRect.top + NODE_HEIGHT / 2 - svgRect.top
+        });
 
       } else {
 
         const nodeOne = connectionNode.current;
         const nodeTwo = e.target;
 
-        const onePosX = nodeOne.getBoundingClientRect().left + ( NODE_WIDTH / 2 );
-        const onePosY = nodeOne.getBoundingClientRect().top + ( NODE_HEIGHT / 2 );
+        const onePosX = nodeOne.getBoundingClientRect().left + ( NODE_WIDTH / 2 ) - svgRect.left;
+        const onePosY = nodeOne.getBoundingClientRect().top + ( NODE_HEIGHT / 2 ) - svgRect.top;
 
-        const twoPosX = nodeTwo.getBoundingClientRect().left + ( NODE_WIDTH / 2 );
-        const twoPosY = nodeTwo.getBoundingClientRect().top + ( NODE_HEIGHT / 2 );
+        const twoPosX = nodeTwo.getBoundingClientRect().left + ( NODE_WIDTH / 2 ) - svgRect.left;
+        const twoPosY = nodeTwo.getBoundingClientRect().top + ( NODE_HEIGHT / 2 ) - svgRect.top;
 
         //? Line Creation
         const line = document.createElementNS(
@@ -170,8 +173,10 @@ function App() {
     const connectingMouseMove = (e: MouseEvent) => {
       if(activeTool !== 3) return;
 
-      const posX = e.clientX;
-      const posY = e.clientY;
+      const svgRect = connectionLayer.current!.getBoundingClientRect();
+
+      const posX = e.clientX - svgRect.left;
+      const posY = e.clientY - svgRect.top;
 
       setLineEnd({x: posX, y: posY});
 
