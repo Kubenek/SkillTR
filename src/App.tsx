@@ -10,18 +10,22 @@ function App() {
   const wasDragging = useRef(false);
   const disableDragging = useRef(false);
   const disableTools = useRef(false);
-
   
   const position = useRef({x: 0, y: 0})
   const lastMousePosition = useRef({x: 0, y:0})
 
   const canvasRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const connectionLayer = useRef<SVGSVGElement>(null);
 
   const [activeTool, setActiveTool] = useState<number | null>(0);
 
   const draggedNode = useRef<HTMLDivElement | null>(null);
   const mouseDraggingOffset = useRef<{x: number, y: number}>({x: 0, y: 0});
+
+  const connectionNode = useRef<HTMLDivElement | null>(null);
+  const [lineStart, setLineStart] = useState<{ x: number, y: number } | null>(null);
+  const [lineEnd, setLineEnd] = useState<{x: number, y: number} | null>(null);
 
   const NODE_HEIGHT = 50;
   const NODE_WIDTH = 50;
@@ -33,37 +37,21 @@ function App() {
   // toolbar functions
   useEffect(() => {
 
-    // node moving
     const handleMouseDown = (e: MouseEvent) => {
-      if(activeTool !== 2) return;
       if(disableTools.current) return;
 
-      if(! (e.target instanceof HTMLDivElement) ) return;
-      if(! (e.target.classList.contains("node")) ) return;
-
-      disableDragging.current = true;
-      draggedNode.current = e.target;
-
-      const nodeRect = draggedNode.current.getBoundingClientRect();
-      
-      const offsetX = e.clientX - nodeRect.left;
-      const offsetY = e.clientY - nodeRect.top;
-
-      mouseDraggingOffset.current = {x: offsetX, y: offsetY}
+      if(activeTool == 2) draggingMouseDown(e);
+      if(activeTool == 3) connectingMouseDown(e);
       
     }
 
     const handleMouseMove = (e: MouseEvent) => {
 
-      if(activeTool !== 2) return;
       if(disableTools.current) return;
-      if(! (draggedNode.current) ) return;
+      
+      if(activeTool === 2) draggingMouseMove(e);
+      if(activeTool === 3) connectingMouseMove(e);
 
-      draggedNode.current!.style.left = `${e.clientX - (position.current.x) - (mouseDraggingOffset.current!.x) }px`
-      draggedNode.current!.style.top = `${e.clientY - (position.current.y) - (mouseDraggingOffset.current!.y) }px`
-
-      lastMousePosition.current.x = e.clientX;
-      lastMousePosition.current.y = e.clientY;
     }
 
     const handleMouseUp = (e: MouseEvent) => {
@@ -90,6 +78,103 @@ function App() {
       node.style.top = `${e.clientY - (NODE_HEIGHT / 2) - (position.current.y) }px`
 
       contentRef.current?.appendChild(node)
+    }
+
+    // node dragging
+    const draggingMouseDown = (e: MouseEvent) => {
+      if(! (e.target instanceof HTMLDivElement) ) return;
+      if(! (e.target.classList.contains("node")) ) return;
+
+      disableDragging.current = true;
+      draggedNode.current = e.target;
+
+      const nodeRect = draggedNode.current.getBoundingClientRect();
+      
+      const offsetX = e.clientX - nodeRect.left;
+      const offsetY = e.clientY - nodeRect.top;
+
+      mouseDraggingOffset.current = {x: offsetX, y: offsetY}
+    }
+
+    const draggingMouseMove = (e: MouseEvent) => {
+      if(activeTool !== 2) return;
+      if(!(draggedNode.current)) return;
+
+      draggedNode.current!.style.left = `${e.clientX - (position.current.x) - (mouseDraggingOffset.current!.x) }px`
+      draggedNode.current!.style.top = `${e.clientY - (position.current.y) - (mouseDraggingOffset.current!.y) }px`
+
+      lastMousePosition.current.x = e.clientX;
+      lastMousePosition.current.y = e.clientY;
+    }
+
+    // node connection
+    const connectingMouseDown = (e: MouseEvent) => {
+      if(! (e.target instanceof HTMLDivElement) ) return;
+      if(! (e.target.classList.contains("node")) ) return;
+
+      if(connectionNode.current === null) {
+
+        const currentNode = e.target;
+        currentNode.classList.add("selected");
+
+        connectionNode.current = currentNode;
+        disableDragging.current = true;
+
+        const nodeRect = currentNode.getBoundingClientRect();
+        const lineX = nodeRect.left + (NODE_WIDTH / 2);
+        const lineY = nodeRect.top + (NODE_HEIGHT / 2);
+
+        setLineStart({x: lineX, y: lineY});
+
+      } else {
+
+        const nodeOne = connectionNode.current;
+        const nodeTwo = e.target;
+
+        const onePosX = nodeOne.getBoundingClientRect().left + ( NODE_WIDTH / 2 );
+        const onePosY = nodeOne.getBoundingClientRect().top + ( NODE_HEIGHT / 2 );
+
+        const twoPosX = nodeTwo.getBoundingClientRect().left + ( NODE_WIDTH / 2 );
+        const twoPosY = nodeTwo.getBoundingClientRect().top + ( NODE_HEIGHT / 2 );
+
+        //? Line Creation
+        const line = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "line"
+        );
+
+        line.setAttribute("stroke", "#666");
+        line.setAttribute("stroke-width", "6");
+
+        line.setAttribute("x1", String(onePosX))
+        line.setAttribute("y1", String(onePosY))
+        line.setAttribute("x2", String(twoPosX))
+        line.setAttribute("y2", String(twoPosY))
+
+        connectionLayer.current?.appendChild(line);
+
+        //? Variable reset
+        const nodes = contentRef.current?.querySelectorAll(".node");
+
+        nodes?.forEach(node => {
+          node.classList.remove('selected');
+        })
+
+        connectionNode.current = null;
+        setLineStart(null); setLineEnd(null);
+
+      }
+
+    }
+
+    const connectingMouseMove = (e: MouseEvent) => {
+      if(activeTool !== 3) return;
+
+      const posX = e.clientX;
+      const posY = e.clientY;
+
+      setLineEnd({x: posX, y: posY});
+
     }
 
     const canvas = canvasRef.current!;
@@ -180,6 +265,16 @@ function App() {
 
         <section className='canvasArea' ref={canvasRef}>
           <div className='canvasContent' ref={contentRef}>
+
+            <svg className='connectionLayer' ref={connectionLayer}>
+              {lineStart && lineEnd && (
+                <line
+                      x1={lineStart.x} y1={lineStart.y}
+                      x2={lineEnd.x}   y2={lineEnd.y}
+                />
+              )}
+            </svg>
+
           </div>
         </section>
 

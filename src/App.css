@@ -16,6 +16,7 @@
 }
 
 .canvasContent {
+    position: relative;
     width: 100%;
     height: 100%;
 }
@@ -110,4 +111,17 @@
 
 .node.selected {
     background-color: yellow;
+}
+
+.connectionLayer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.connectionLayer line {
+    stroke: #666;
+    stroke-width: 6;
 }
