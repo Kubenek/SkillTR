@@ -217,8 +217,9 @@ function App() {
       position.current!.x += dx;
       position.current!.y += dy;
 
-      canvasRef.current!.style.backgroundPosition = `${position.current!.x}px ${position.current!.y}px`
+      canvasRef.current!.style.backgroundPosition = `${position.current.x}px ${position.current.y}px`
       contentRef.current!.style.transform = `translate(${position.current.x}px, ${position.current.y}px)`
+      connectionLayer.current!.style.transform = `translate(${position.current.x}px, ${position.current.y}px)`
 
       lastMousePosition.current.x = e.clientX;
       lastMousePosition.current.y = e.clientY;
@@ -269,9 +270,9 @@ function App() {
         </div>
 
         <section className='canvasArea' ref={canvasRef}>
-          <div className='canvasContent' ref={contentRef}>
+          <div className='canvasContent' ref={contentRef}></div>
 
-            <svg className='connectionLayer' ref={connectionLayer}>
+          <svg className='connectionLayer' ref={connectionLayer}>
               {lineStart && lineEnd && (
                 <line
                       x1={lineStart.x} y1={lineStart.y}
@@ -280,7 +281,6 @@ function App() {
               )}
             </svg>
 
-          </div>
         </section>
 
       </section>
