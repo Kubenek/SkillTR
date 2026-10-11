@@ -363,6 +363,7 @@ function App() {
 
     const handleMouseDown = (e: MouseEvent) => {
       if(draggedNode.current) return;
+      if(e.button !== 0) return;
       
       mouseDown.current = true;
       wasDragging.current = false;
@@ -374,7 +375,12 @@ function App() {
     const handleMouseUp = () => {
       mouseDown.current = false;
       dragging.current = false;
+      setCanvasPositionData({x: position.current.x, y: position.current.y});
+    }
 
+    const stopDragging = () => {
+      dragging.current = false;
+      mouseDown.current = false;
       setCanvasPositionData({x: position.current.x, y: position.current.y});
     }
 
@@ -384,10 +390,20 @@ function App() {
     window.addEventListener("mouseup", handleMouseUp);
     canvas.addEventListener("mousedown", handleMouseDown);
 
+    window.addEventListener('blur', stopDragging);
+    window.addEventListener('mouseup', stopDragging);
+    window.addEventListener('pointerup', stopDragging);
+    window.addEventListener('pointercancel', stopDragging);
+
     return() => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
       canvas.removeEventListener("mousedown", handleMouseDown);
+
+      window.removeEventListener('blur', stopDragging);
+      window.removeEventListener('mouseup', stopDragging);
+      window.removeEventListener('pointerup', stopDragging);
+      window.removeEventListener('pointercancel', stopDragging);
     };
 
   }, [])
