@@ -13,18 +13,46 @@ function App() {
   const wasDragging = useRef(false);
   const disableDragging = useRef(false);
   const disableTools = useRef(false);
-  
-  const position = useRef({x: 0, y: 0})
+
   const lastMousePosition = useRef({x: 0, y:0})
+  const position = useRef({x: 0, y: 0})
+
+  const [canvasPositionData, setCanvasPositionData] = useState<{x: number, y: number}>(() => {
+    const saved = localStorage.getItem("CanvasPosition");
+
+    try {
+      const loadedPosition: { x: number, y: number } = (saved === null) ? { x: 0, y: 0 } : JSON.parse(saved);
+      return loadedPosition;
+    } catch {
+      return {x: 0, y: 0}
+    }
+
+  });
 
   const canvasRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const connectionLayer = useRef<SVGSVGElement>(null);
 
-  const [activeTool, setActiveTool] = useState<number | null>(0);
+  const [activeTool, setActiveTool] = useState<number>(() => {
+    
+    const saved = localStorage.getItem("ActiveTools");
+    if(saved === null) return 0;
+    return Number(saved);
+
+  });
 
   const draggedNode = useRef<HTMLDivElement | null>(null);
   const mouseDraggingOffset = useRef<{x: number, y: number}>({x: 0, y: 0});
+
+  const [nodes, setNodes] = useState<NodeData[]>(() => {
+
+    const saved = localStorage.getItem("Nodes");
+    if(saved === null) return [];
+
+    try   { return JSON.parse(saved) as NodeData[]; }
+    catch { return []; }
+
+  })
 
   const connectionNode = useRef<HTMLDivElement | null>(null);
   const [lineStart, setLineStart] = useState<{ x: number, y: number } | null>(null);
@@ -33,24 +61,12 @@ function App() {
   const connections = useRef<Connection[]>([]);
   const draggedConnections = useRef<Connection[] | null>(null);
 
-  
-  const [nodes, setNodes] = useState<NodeData[]>(() => {
-
-    const saved = localStorage.getItem("SkillTR-Nodes");
-
-    if(saved === null) return [];
-
-    try   { return JSON.parse(saved) as NodeData[]; }
-    catch { return []; }
-
-  })
-
-
   const NODE_HEIGHT = 50;
   const NODE_WIDTH = 50;
 
   const handleToolOnClick = (id: number) => {
     setActiveTool(id);
+    localStorage.setItem("ActiveTools", String(id));
   }
 
   //*> toolbar functions
@@ -317,7 +333,6 @@ function App() {
 
   }, [activeTool])
 
-
   //*> dragging functionality
   useEffect(() => {
 
@@ -359,6 +374,8 @@ function App() {
     const handleMouseUp = () => {
       mouseDown.current = false;
       dragging.current = false;
+
+      setCanvasPositionData({x: position.current.x, y: position.current.y});
     }
 
     const canvas = canvasRef.current!;
@@ -375,16 +392,22 @@ function App() {
 
   }, [])
 
-  //*> saving functionality
+  //*> saving functionalities
   useEffect(() => {
-    localStorage.setItem("SkillTR-Nodes", JSON.stringify(nodes))
+    localStorage.setItem("Nodes", JSON.stringify(nodes))
   }, [nodes])
+
+  useEffect(() => {
+    localStorage.setItem("CanvasPosition", JSON.stringify(canvasPositionData))
+  }, [canvasPositionData])
 
   //*> loading functionality
   useEffect(() => {
 
+    const canvasArea = canvasRef.current;
     const contentArea = contentRef.current;
-    if(!contentArea) return;
+    const connectionArea = connectionLayer.current;
+    if(!canvasArea || !contentArea || !connectionArea) return;
 
     contentArea.replaceChildren();
     nodes.forEach(nodeData => {
@@ -399,6 +422,15 @@ function App() {
       
       contentArea.appendChild(node);
     })
+
+    const posX = canvasPositionData.x; const posY = canvasPositionData.y;
+    position.current.x = posX; position.current.y = posY;
+
+    canvasArea.style.backgroundPosition = `${posX}px ${posY}px`
+
+    contentArea.style.transform         = `translate(${posX}px, ${posY}px)`
+    connectionArea.style.transform      = `translate(${posX}px, ${posY}px)`
+
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
