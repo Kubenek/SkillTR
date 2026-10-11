@@ -2,6 +2,9 @@ import './App.css'
 import { CursorPointer, Plus, Move, Link, Trash } from '@boxicons/react';
 import { useEffect, useRef, useState } from 'react'
 
+import type { Connection } from './types/connection';
+import type { NodeData } from './types/node';
+
 function App() {
 
   const dragging = useRef(false);
@@ -27,14 +30,21 @@ function App() {
   const [lineStart, setLineStart] = useState<{ x: number, y: number } | null>(null);
   const [lineEnd, setLineEnd] = useState<{x: number, y: number} | null>(null);
 
-  type NodeConnection = {
-    from: HTMLDivElement;
-    to: HTMLDivElement;
-    svg: SVGLineElement;
-  };
+  const connections = useRef<Connection[]>([]);
+  const draggedConnections = useRef<Connection[] | null>(null);
 
-  const connections = useRef<NodeConnection[]>([]);
-  const draggedConnections = useRef<NodeConnection[] | null>(null);
+  
+  const [nodes, setNodes] = useState<NodeData[]>(() => {
+
+    const saved = localStorage.getItem("SkillTR-Nodes");
+
+    if(saved === null) return [];
+
+    try   { return JSON.parse(saved) as NodeData[]; }
+    catch { return []; }
+
+  })
+
 
   const NODE_HEIGHT = 50;
   const NODE_WIDTH = 50;
@@ -43,7 +53,7 @@ function App() {
     setActiveTool(id);
   }
 
-  // toolbar functions
+  //*> toolbar functions
   useEffect(() => {
 
     const handleMouseDown = (e: MouseEvent) => {
@@ -65,7 +75,10 @@ function App() {
 
     const handleMouseUp = (e: MouseEvent) => {
 
-      handleNodeAddition(e);
+      if(disableTools.current) return;
+
+      if(activeTool === 1) handleNodeAddition(e);
+      if(activeTool === 2) draggingMouseUp();
 
       //! Reset Parameters
       draggedConnections.current = null;
@@ -78,7 +91,6 @@ function App() {
 
     //!> node addition
     const handleNodeAddition = (e: MouseEvent) => {
-      if(activeTool !== 1) return;
       if(disableTools.current) return;
       if(wasDragging.current) return;
 
@@ -87,10 +99,23 @@ function App() {
       const node = document.createElement("div")
       node.classList.add("node")
 
-      node.style.left = `${e.clientX - (NODE_WIDTH / 2) - (position.current.x) }px`
-      node.style.top = `${e.clientY - (NODE_HEIGHT / 2) - (position.current.y) }px`
+      const x = e.clientX - (NODE_WIDTH / 2) - (position.current.x)
+      const y = e.clientY - (NODE_HEIGHT / 2) - (position.current.y)
 
-      contentRef.current?.appendChild(node)
+      node.style.left = `${x}px`
+      node.style.top  = `${y}px`
+
+      const nodeData: NodeData = {
+        NodeUUID: crypto.randomUUID(),
+        PositionX: x,
+        PositionY: y
+      };
+
+      node.dataset.nodeId = nodeData.NodeUUID;
+
+      setNodes(prev => [...prev, nodeData]);
+
+      contentRef.current?.appendChild(node);
     }
 
     //!> node dragging
@@ -109,8 +134,8 @@ function App() {
       mouseDraggingOffset.current = {x: offsetX, y: offsetY}
 
       const nodeConnections = connections.current.filter((connection) => 
-        connection.from === draggedNode.current ||
-        connection.to === draggedNode.current
+        connection.From === draggedNode.current ||
+        connection.To === draggedNode.current
       )
 
       draggedConnections.current = (nodeConnections.length > 0) ? nodeConnections : null; 
@@ -118,13 +143,15 @@ function App() {
     }
 
     const draggingMouseMove = (e: MouseEvent) => {
-      if(activeTool !== 2) return;
       if(!(draggedNode.current)) return;
 
       //?> Dragging selected node
 
-      draggedNode.current!.style.left = `${e.clientX - (position.current.x) - (mouseDraggingOffset.current!.x) }px`
-      draggedNode.current!.style.top = `${e.clientY - (position.current.y) - (mouseDraggingOffset.current!.y) }px`
+      const x = e.clientX - (position.current.x) - (mouseDraggingOffset.current!.x)
+      const y = e.clientY - (position.current.y) - (mouseDraggingOffset.current!.y)
+
+      draggedNode.current!.style.left = `${x}px`
+      draggedNode.current!.style.top = `${y}px`
 
       lastMousePosition.current.x = e.clientX;
       lastMousePosition.current.y = e.clientY;
@@ -137,25 +164,46 @@ function App() {
       const svgRect = connectionLayer.current!.getBoundingClientRect();
 
       draggedConnections.current.forEach(connection => {
-        if(connection.from === rootNode) { 
+        if(connection.From === rootNode) { 
 
           const posX = rootNode.getBoundingClientRect().left + ( NODE_WIDTH / 2 ) - svgRect.left;
           const posY = rootNode.getBoundingClientRect().top + ( NODE_HEIGHT / 2 ) - svgRect.top;
 
-          connection.svg.setAttribute("x1", String(posX));
-          connection.svg.setAttribute("y1", String(posY));
+          connection.SVG.setAttribute("x1", String(posX));
+          connection.SVG.setAttribute("y1", String(posY));
 
         }
-        else if(connection.to === rootNode) {
+        else if(connection.To === rootNode) {
 
           const posX = rootNode.getBoundingClientRect().left + ( NODE_WIDTH / 2 ) - svgRect.left;
           const posY = rootNode.getBoundingClientRect().top + ( NODE_HEIGHT / 2 ) - svgRect.top;
 
-          connection.svg.setAttribute("x2", String(posX));
-          connection.svg.setAttribute("y2", String(posY));
+          connection.SVG.setAttribute("x2", String(posX));
+          connection.SVG.setAttribute("y2", String(posY));
 
         }
       })
+
+    }
+
+    const draggingMouseUp = () => {
+
+      const dragged = draggedNode.current;
+      if (!dragged) return;
+
+      const nodeId = dragged.dataset.nodeId;
+      if (!nodeId) return;
+
+      const x = parseFloat(dragged.style.left);
+      const y = parseFloat(dragged.style.top);
+
+      setNodes(prev =>
+        prev.map(node =>
+          node.NodeUUID === nodeId
+            ? { ...node, PositionX: x, PositionY: y }
+            : node
+        )
+      );
 
     }
 
@@ -188,8 +236,8 @@ function App() {
 
         const exists = connections.current.some(
           connection => 
-            (connection.from === nodeOne && connection.to === nodeTwo) ||
-            (connection.from === nodeTwo && connection.to === nodeOne) ||
+            (connection.From === nodeOne && connection.To === nodeTwo) ||
+            (connection.From === nodeTwo && connection.To === nodeOne) ||
             (nodeOne === nodeTwo)
         );
 
@@ -227,7 +275,7 @@ function App() {
         line.setAttribute("y2", String(twoPosY))
 
         connectionLayer.current?.appendChild(line);
-        connections.current.push({from: nodeOne, to: nodeTwo, svg: line});
+        connections.current.push({From: nodeOne, To: nodeTwo, SVG: line});
 
         //? Variable reset
         const nodes = contentRef.current?.querySelectorAll(".node");
@@ -270,7 +318,7 @@ function App() {
   }, [activeTool])
 
 
-  // dragging functionality
+  //*> dragging functionality
   useEffect(() => {
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -325,6 +373,34 @@ function App() {
       canvas.removeEventListener("mousedown", handleMouseDown);
     };
 
+  }, [])
+
+  //*> saving functionality
+  useEffect(() => {
+    localStorage.setItem("SkillTR-Nodes", JSON.stringify(nodes))
+  }, [nodes])
+
+  //*> loading functionality
+  useEffect(() => {
+
+    const contentArea = contentRef.current;
+    if(!contentArea) return;
+
+    contentArea.replaceChildren();
+    nodes.forEach(nodeData => {
+
+      const node = document.createElement("div");
+      node.classList.add("node")
+
+      node.style.left = `${nodeData.PositionX}px`
+      node.style.top  = `${nodeData.PositionY}px`
+
+      node.dataset.nodeId = nodeData.NodeUUID;
+      
+      contentArea.appendChild(node);
+    })
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
 
