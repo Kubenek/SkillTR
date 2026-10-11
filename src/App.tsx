@@ -2,7 +2,7 @@ import './App.css'
 import { CursorPointer, Plus, Move, Link, Trash } from '@boxicons/react';
 import { useEffect, useRef, useState } from 'react'
 
-import type { Connection } from './types/connection';
+import type { Connection, ConnectionData } from './types/connection';
 import type { NodeData } from './types/node';
 
 function App() {
@@ -54,11 +54,22 @@ function App() {
 
   })
 
+  const [connectionsData, setConnectionsData] = useState<ConnectionData[]>(() => {
+    
+    const saved = localStorage.getItem("Connections");
+    if(saved === null) return [];
+
+    try   { return JSON.parse(saved) as ConnectionData[]; }
+    catch { return []; }
+
+  })
+
   const connectionNode = useRef<HTMLDivElement | null>(null);
   const [lineStart, setLineStart] = useState<{ x: number, y: number } | null>(null);
   const [lineEnd, setLineEnd] = useState<{x: number, y: number} | null>(null);
 
   const connections = useRef<Connection[]>([]);
+  const nodeElements = useRef<HTMLDivElement[]>([]);
   const draggedConnections = useRef<Connection[] | null>(null);
 
   const NODE_HEIGHT = 50;
@@ -67,6 +78,23 @@ function App() {
   const handleToolOnClick = (id: number) => {
     setActiveTool(id);
     localStorage.setItem("ActiveTools", String(id));
+  }
+
+  const createLineElement = (stroke: string, width: string, x1: string, y1: string, x2: string, y2: string) => {
+    const line = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "line"
+    );
+
+    line.setAttribute("stroke", stroke);
+    line.setAttribute("stroke-width", width);
+
+    line.setAttribute("x1", x1)
+    line.setAttribute("y1", y1)
+    line.setAttribute("x2", x2)
+    line.setAttribute("y2", y2)
+
+    return line;
   }
 
   //*> toolbar functions
@@ -277,21 +305,17 @@ function App() {
         const twoPosY = nodeTwo.getBoundingClientRect().top + ( NODE_HEIGHT / 2 ) - svgRect.top;
 
         //?> Line Creation
-        const line = document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            "line"
-        );
-
-        line.setAttribute("stroke", "#666");
-        line.setAttribute("stroke-width", "6");
-
-        line.setAttribute("x1", String(onePosX))
-        line.setAttribute("y1", String(onePosY))
-        line.setAttribute("x2", String(twoPosX))
-        line.setAttribute("y2", String(twoPosY))
+        const line = createLineElement("#666", "6", String(onePosX), String(onePosY), String(twoPosX), String(twoPosY))
 
         connectionLayer.current?.appendChild(line);
         connections.current.push({From: nodeOne, To: nodeTwo, SVG: line});
+        
+        const connData: ConnectionData = {
+          SourceUUID: nodeOne.dataset.nodeId!,
+          DestinationUUID: nodeTwo.dataset.nodeId!
+        }
+
+        setConnectionsData(prev => [...prev, connData]);
 
         //? Variable reset
         const nodes = contentRef.current?.querySelectorAll(".node");
@@ -414,6 +438,10 @@ function App() {
   }, [nodes])
 
   useEffect(() => {
+    localStorage.setItem("Connections", JSON.stringify(connectionsData))
+  }, [connectionsData])
+
+  useEffect(() => {
     localStorage.setItem("CanvasPosition", JSON.stringify(canvasPositionData))
   }, [canvasPositionData])
 
@@ -437,6 +465,28 @@ function App() {
       node.dataset.nodeId = nodeData.NodeUUID;
       
       contentArea.appendChild(node);
+      nodeElements.current.push(node);
+    })
+
+    connectionArea.replaceChildren();
+    connectionsData.forEach(connData => {
+
+      const source      = nodes.find(node => node.NodeUUID === connData.SourceUUID)!;
+      const destination = nodes.find(node => node.NodeUUID === connData.DestinationUUID)!;
+
+      const sourceElement      = nodeElements.current.find(node => node.dataset.nodeId === source.NodeUUID);
+      const destinationElement = nodeElements.current.find(node => node.dataset.nodeId === destination.NodeUUID);
+
+      const x1 = source.PositionX + (NODE_WIDTH / 2);
+      const y1 = source.PositionY + (NODE_HEIGHT / 2);
+      const x2 = destination.PositionX + (NODE_WIDTH / 2);
+      const y2 = destination.PositionY + (NODE_HEIGHT / 2);
+
+      const line = createLineElement("#666", "6", String(x1), String(y1), String(x2), String(y2));
+
+      connectionArea.appendChild(line);
+      connections.current.push({From: sourceElement!, To: destinationElement!, SVG: line});
+
     })
 
     const posX = canvasPositionData.x; const posY = canvasPositionData.y;
