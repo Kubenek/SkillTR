@@ -30,9 +30,11 @@ function App() {
   type NodeConnection = {
     from: HTMLDivElement;
     to: HTMLDivElement;
+    svg: SVGLineElement;
   };
 
   const connections = useRef<NodeConnection[]>([]);
+  const draggedConnections = useRef<NodeConnection[] | null>(null);
 
   const NODE_HEIGHT = 50;
   const NODE_WIDTH = 50;
@@ -65,6 +67,8 @@ function App() {
 
       handleNodeAddition(e);
 
+      //! Reset Parameters
+      draggedConnections.current = null;
       disableDragging.current = false;
       dragging.current = false;
       draggedNode.current = null;
@@ -72,7 +76,7 @@ function App() {
 
     }
 
-    // node addition
+    //!> node addition
     const handleNodeAddition = (e: MouseEvent) => {
       if(activeTool !== 1) return;
       if(disableTools.current) return;
@@ -89,7 +93,7 @@ function App() {
       contentRef.current?.appendChild(node)
     }
 
-    // node dragging
+    //!> node dragging
     const draggingMouseDown = (e: MouseEvent) => {
       if(! (e.target instanceof HTMLDivElement) ) return;
       if(! (e.target.classList.contains("node")) ) return;
@@ -103,20 +107,59 @@ function App() {
       const offsetY = e.clientY - nodeRect.top;
 
       mouseDraggingOffset.current = {x: offsetX, y: offsetY}
+
+      const nodeConnections = connections.current.filter((connection) => 
+        connection.from === draggedNode.current ||
+        connection.to === draggedNode.current
+      )
+
+      draggedConnections.current = (nodeConnections.length > 0) ? nodeConnections : null; 
+
     }
 
     const draggingMouseMove = (e: MouseEvent) => {
       if(activeTool !== 2) return;
       if(!(draggedNode.current)) return;
 
+      //?> Dragging selected node
+
       draggedNode.current!.style.left = `${e.clientX - (position.current.x) - (mouseDraggingOffset.current!.x) }px`
       draggedNode.current!.style.top = `${e.clientY - (position.current.y) - (mouseDraggingOffset.current!.y) }px`
 
       lastMousePosition.current.x = e.clientX;
       lastMousePosition.current.y = e.clientY;
+
+      //?> Moving connection lines
+
+      if(draggedConnections.current === null) return;
+
+      const rootNode = draggedNode.current;
+      const svgRect = connectionLayer.current!.getBoundingClientRect();
+
+      draggedConnections.current.forEach(connection => {
+        if(connection.from === rootNode) { 
+
+          const posX = rootNode.getBoundingClientRect().left + ( NODE_WIDTH / 2 ) - svgRect.left;
+          const posY = rootNode.getBoundingClientRect().top + ( NODE_HEIGHT / 2 ) - svgRect.top;
+
+          connection.svg.setAttribute("x1", String(posX));
+          connection.svg.setAttribute("y1", String(posY));
+
+        }
+        else if(connection.to === rootNode) {
+
+          const posX = rootNode.getBoundingClientRect().left + ( NODE_WIDTH / 2 ) - svgRect.left;
+          const posY = rootNode.getBoundingClientRect().top + ( NODE_HEIGHT / 2 ) - svgRect.top;
+
+          connection.svg.setAttribute("x2", String(posX));
+          connection.svg.setAttribute("y2", String(posY));
+
+        }
+      })
+
     }
 
-    // node connection
+    //!> node connection
     const connectingMouseDown = (e: MouseEvent) => {
       if(! (e.target instanceof HTMLDivElement) ) return;
       if(! (e.target.classList.contains("node")) ) return;
@@ -169,7 +212,7 @@ function App() {
         const twoPosX = nodeTwo.getBoundingClientRect().left + ( NODE_WIDTH / 2 ) - svgRect.left;
         const twoPosY = nodeTwo.getBoundingClientRect().top + ( NODE_HEIGHT / 2 ) - svgRect.top;
 
-        //? Line Creation
+        //?> Line Creation
         const line = document.createElementNS(
             "http://www.w3.org/2000/svg",
             "line"
@@ -184,7 +227,7 @@ function App() {
         line.setAttribute("y2", String(twoPosY))
 
         connectionLayer.current?.appendChild(line);
-        connections.current.push({from: nodeOne, to: nodeTwo});
+        connections.current.push({from: nodeOne, to: nodeTwo, svg: line});
 
         //? Variable reset
         const nodes = contentRef.current?.querySelectorAll(".node");
