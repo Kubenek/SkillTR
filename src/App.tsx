@@ -345,7 +345,6 @@ function App() {
     }
 
     //!> node deletion
-
     const deletingMouseUp = (e: MouseEvent) => {
       if(disableTools.current) return;
       if(wasDragging.current) return;
