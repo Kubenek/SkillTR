@@ -2,6 +2,11 @@ import './App.css'
 import { CursorPointer, Plus, Move, Link, Trash } from '@boxicons/react';
 import { useEffect, useRef, useState } from 'react'
 
+import { createLineElement } from './utils/createLineElement';
+import { restoreNodes, restoreConnections, restoreCanvas } from './utils/restoreEditor';
+
+import { NODE_WIDTH, NODE_HEIGHT } from './constants/editor';
+
 import type { Connection, ConnectionData } from './types/connection';
 import type { NodeData } from './types/node';
 
@@ -68,33 +73,13 @@ function App() {
   const [lineStart, setLineStart] = useState<{ x: number, y: number } | null>(null);
   const [lineEnd, setLineEnd] = useState<{x: number, y: number} | null>(null);
 
-  const connections = useRef<Connection[]>([]);
-  const nodeElements = useRef<HTMLDivElement[]>([]);
+  const connectionVisuals = useRef<Connection[]>([]);
+  const nodeVisuals = useRef<HTMLDivElement[]>([]);
   const draggedConnections = useRef<Connection[] | null>(null);
-
-  const NODE_HEIGHT = 50;
-  const NODE_WIDTH = 50;
 
   const handleToolOnClick = (id: number) => {
     setActiveTool(id);
     localStorage.setItem("ActiveTools", String(id));
-  }
-
-  const createLineElement = (stroke: string, width: string, x1: string, y1: string, x2: string, y2: string) => {
-    const line = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "line"
-    );
-
-    line.setAttribute("stroke", stroke);
-    line.setAttribute("stroke-width", width);
-
-    line.setAttribute("x1", x1)
-    line.setAttribute("y1", y1)
-    line.setAttribute("x2", x2)
-    line.setAttribute("y2", y2)
-
-    return line;
   }
 
   //*> toolbar functions
@@ -178,7 +163,7 @@ function App() {
 
       mouseDraggingOffset.current = {x: offsetX, y: offsetY}
 
-      const nodeConnections = connections.current.filter((connection) => 
+      const nodeConnections = connectionVisuals.current.filter((connection) => 
         connection.From === draggedNode.current ||
         connection.To === draggedNode.current
       )
@@ -279,7 +264,7 @@ function App() {
         const nodeOne = connectionNode.current;
         const nodeTwo = e.target;
 
-        const exists = connections.current.some(
+        const exists = connectionVisuals.current.some(
           connection => 
             (connection.From === nodeOne && connection.To === nodeTwo) ||
             (connection.From === nodeTwo && connection.To === nodeOne) ||
@@ -309,7 +294,7 @@ function App() {
         const line = createLineElement("#666", "6", String(onePosX), String(onePosY), String(twoPosX), String(twoPosY))
 
         connectionLayer.current?.appendChild(line);
-        connections.current.push({From: nodeOne, To: nodeTwo, SVG: line});
+        connectionVisuals.current.push({From: nodeOne, To: nodeTwo, SVG: line});
         
         const connData: ConnectionData = {
           SourceUUID: nodeOne.dataset.nodeId!,
@@ -355,15 +340,15 @@ function App() {
       const deletedNode = e.target;
 
       contentRef.current?.removeChild(e.target);
-      nodeElements.current = nodeElements.current.filter(node => node.dataset.nodeId !== deletedNode.dataset.nodeId);
+      nodeVisuals.current = nodeVisuals.current.filter(node => node.dataset.nodeId !== deletedNode.dataset.nodeId);
       setNodes(prev => prev.filter(node => node.NodeUUID !== deletedNode.dataset.nodeId));
 
-      const deletedConnections = connections.current.filter(conn =>
+      const deletedConnections = connectionVisuals.current.filter(conn =>
         conn.From === deletedNode || conn.To === deletedNode
       );
       deletedConnections.forEach(conn => connectionLayer.current?.removeChild(conn.SVG));
 
-      connections.current = connections.current.filter(conn => !deletedConnections.includes(conn));
+      connectionVisuals.current = connectionVisuals.current.filter(conn => !deletedConnections.includes(conn));
       setConnectionsData(prev => prev.filter(conn => 
         conn.SourceUUID !== deletedNode.dataset.nodeId && conn.DestinationUUID !== deletedNode.dataset.nodeId
       ))
@@ -481,52 +466,9 @@ function App() {
     const connectionArea = connectionLayer.current;
     if(!canvasArea || !contentArea || !connectionArea) return;
 
-    contentArea.replaceChildren();
-    nodeElements.current = [];
-    nodes.forEach(nodeData => {
-
-      const node = document.createElement("div");
-      node.classList.add("node")
-
-      node.style.left = `${nodeData.PositionX}px`
-      node.style.top  = `${nodeData.PositionY}px`
-
-      node.dataset.nodeId = nodeData.NodeUUID;
-      
-      contentArea.appendChild(node);
-      nodeElements.current.push(node);
-    })
-
-    connectionArea.replaceChildren();
-    connections.current = [];
-    connectionsData.forEach(connData => {
-
-      const source      = nodes.find(node => node.NodeUUID === connData.SourceUUID)!;
-      const destination = nodes.find(node => node.NodeUUID === connData.DestinationUUID)!;
-
-      const sourceElement      = nodeElements.current.find(node => node.dataset.nodeId === source.NodeUUID);
-      const destinationElement = nodeElements.current.find(node => node.dataset.nodeId === destination.NodeUUID);
-
-      const x1 = source.PositionX + (NODE_WIDTH / 2);
-      const y1 = source.PositionY + (NODE_HEIGHT / 2);
-      const x2 = destination.PositionX + (NODE_WIDTH / 2);
-      const y2 = destination.PositionY + (NODE_HEIGHT / 2);
-
-      const line = createLineElement("#666", "6", String(x1), String(y1), String(x2), String(y2));
-
-      connectionArea.appendChild(line);
-      connections.current.push({From: sourceElement!, To: destinationElement!, SVG: line});
-
-    })
-
-    const posX = canvasPositionData.x; const posY = canvasPositionData.y;
-    position.current.x = posX; position.current.y = posY;
-
-    canvasArea.style.backgroundPosition = `${posX}px ${posY}px`
-
-    contentArea.style.transform         = `translate(${posX}px, ${posY}px)`
-    connectionArea.style.transform      = `translate(${posX}px, ${posY}px)`
-
+    nodeVisuals.current = restoreNodes(contentArea, nodes);
+    connectionVisuals.current = restoreConnections(connectionArea, nodes, nodeVisuals.current, connectionsData);
+    position.current = restoreCanvas(canvasPositionData, canvasArea, contentArea, connectionArea);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
