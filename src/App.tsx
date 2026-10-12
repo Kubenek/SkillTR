@@ -123,6 +123,7 @@ function App() {
 
       if(activeTool === 1) handleNodeAddition(e);
       if(activeTool === 2) draggingMouseUp();
+      if(activeTool === 4) deletingMouseUp(e);
 
       //! Reset Parameters
       draggedConnections.current = null;
@@ -343,6 +344,34 @@ function App() {
 
     }
 
+    //!> node deletion
+
+    const deletingMouseUp = (e: MouseEvent) => {
+      if(disableTools.current) return;
+      if(wasDragging.current) return;
+
+      if(!( e.target instanceof HTMLDivElement )) return;
+      if(!( e.target.classList.contains("node") )) return;
+
+      const deletedNode = e.target;
+
+      contentRef.current?.removeChild(e.target);
+      nodeElements.current = nodeElements.current.filter(node => node.dataset.nodeId !== deletedNode.dataset.nodeId);
+      setNodes(prev => prev.filter(node => node.NodeUUID !== deletedNode.dataset.nodeId));
+
+      const deletedConnections = connections.current.filter(conn =>
+        conn.From === deletedNode || conn.To === deletedNode
+      );
+      deletedConnections.forEach(conn => connectionLayer.current?.removeChild(conn.SVG));
+
+      connections.current = connections.current.filter(conn => !deletedConnections.includes(conn));
+      setConnectionsData(prev => prev.filter(conn => 
+        conn.SourceUUID !== deletedNode.dataset.nodeId && conn.DestinationUUID !== deletedNode.dataset.nodeId
+      ))
+
+
+    }
+
     const canvas = canvasRef.current!;
 
     canvas.addEventListener("mousedown", handleMouseDown);
@@ -454,6 +483,7 @@ function App() {
     if(!canvasArea || !contentArea || !connectionArea) return;
 
     contentArea.replaceChildren();
+    nodeElements.current = [];
     nodes.forEach(nodeData => {
 
       const node = document.createElement("div");
@@ -469,6 +499,7 @@ function App() {
     })
 
     connectionArea.replaceChildren();
+    connections.current = [];
     connectionsData.forEach(connData => {
 
       const source      = nodes.find(node => node.NodeUUID === connData.SourceUUID)!;
