@@ -2,6 +2,8 @@ import './App.css'
 import { CursorPointer, Plus, Move, Link, Trash } from '@boxicons/react';
 import { useEffect, useRef, useState } from 'react'
 
+import { useCanvas } from './hooks/useCanvas';
+
 import { createLineElement } from './utils/createLineElement';
 import { restoreNodes, restoreConnections, restoreCanvas } from './utils/restoreEditor';
 
@@ -9,6 +11,7 @@ import { NODE_WIDTH, NODE_HEIGHT } from './constants/editor';
 
 import type { Connection, ConnectionData } from './types/connection';
 import type { NodeData } from './types/node';
+import type { CanvasInteraction } from './types/canvas';
 
 function App() {
 
@@ -76,6 +79,16 @@ function App() {
   const connectionVisuals = useRef<Connection[]>([]);
   const nodeVisuals = useRef<HTMLDivElement[]>([]);
   const draggedConnections = useRef<Connection[] | null>(null);
+
+  const canvasInteraction: CanvasInteraction = {
+    dragging,
+    wasDragging,
+    disableDragging,
+    mouseDown,
+    position,
+    lastMousePosition,
+    draggedNode
+  }
 
   const handleToolOnClick = (id: number) => {
     setActiveTool(id);
@@ -370,81 +383,6 @@ function App() {
 
   }, [activeTool])
 
-  //*> dragging functionality
-  useEffect(() => {
-
-    const handleMouseMove = (e: MouseEvent) => {
-      if(!mouseDown.current) return;
-      if(disableDragging.current) return;
-      if(draggedNode.current) return;
-
-      const dx = e.clientX - lastMousePosition.current.x;
-      const dy = e.clientY - lastMousePosition.current.y;
-
-      const distance = Math.hypot(dx, dy);
-      if (distance < 3) return;
-
-      dragging.current = true;
-      wasDragging.current = true;
-
-      position.current!.x += dx;
-      position.current!.y += dy;
-
-      canvasRef.current!.style.backgroundPosition = `${position.current.x}px ${position.current.y}px`
-      contentRef.current!.style.transform = `translate(${position.current.x}px, ${position.current.y}px)`
-      connectionLayer.current!.style.transform = `translate(${position.current.x}px, ${position.current.y}px)`
-
-      lastMousePosition.current.x = e.clientX;
-      lastMousePosition.current.y = e.clientY;
-    }
-
-    const handleMouseDown = (e: MouseEvent) => {
-      if(draggedNode.current) return;
-      if(e.button !== 0) return;
-      
-      mouseDown.current = true;
-      wasDragging.current = false;
-
-      lastMousePosition.current.x = e.clientX;
-      lastMousePosition.current.y = e.clientY;
-    }
-
-    const handleMouseUp = () => {
-      mouseDown.current = false;
-      dragging.current = false;
-      setCanvasPositionData({x: position.current.x, y: position.current.y});
-    }
-
-    const stopDragging = () => {
-      dragging.current = false;
-      mouseDown.current = false;
-      setCanvasPositionData({x: position.current.x, y: position.current.y});
-    }
-
-    const canvas = canvasRef.current!;
-
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", handleMouseUp);
-    canvas.addEventListener("mousedown", handleMouseDown);
-
-    window.addEventListener('blur', stopDragging);
-    window.addEventListener('mouseup', stopDragging);
-    window.addEventListener('pointerup', stopDragging);
-    window.addEventListener('pointercancel', stopDragging);
-
-    return() => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-      canvas.removeEventListener("mousedown", handleMouseDown);
-
-      window.removeEventListener('blur', stopDragging);
-      window.removeEventListener('mouseup', stopDragging);
-      window.removeEventListener('pointerup', stopDragging);
-      window.removeEventListener('pointercancel', stopDragging);
-    };
-
-  }, [])
-
   //*> saving functionalities
   useEffect(() => {
     localStorage.setItem("Nodes", JSON.stringify(nodes))
@@ -473,6 +411,13 @@ function App() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useCanvas(
+    canvasRef,
+    contentRef,
+    connectionLayer,
+    canvasInteraction,
+    setCanvasPositionData
+  )
 
   return (
     <>
