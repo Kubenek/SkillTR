@@ -8,13 +8,15 @@ export function useCanvas(
     contentRef: RefObject<HTMLElement | null>,
     connectionRef: RefObject<SVGSVGElement | null>,
     interactionObject: CanvasInteraction,
-    setCanvasPositionData: Dispatch<SetStateAction<{x: number, y: number}>>
+    setCanvasPositionData: Dispatch<SetStateAction<{x: number, y: number}>>,
+    setPositionDisplay: Dispatch<SetStateAction<{x: number, y: number}>>
 ) {
 
     const {
         dragging,
         wasDragging,
         disableDragging,
+        forceDisableDrag,
         mouseDown,
         position,
         lastMousePosition,
@@ -34,6 +36,8 @@ export function useCanvas(
             if(disableDragging.current) return;
             if(draggedNode.current) return;
 
+            if(forceDisableDrag.current) return;
+
             const dx = e.clientX - lastMousePosition.current.x;
             const dy = e.clientY - lastMousePosition.current.y;
 
@@ -46,6 +50,11 @@ export function useCanvas(
             position.current.x += dx;
             position.current.y += dy;
 
+            setPositionDisplay({
+                x: position.current.x,
+                y: position.current.y
+            })
+
             canvasArea.style.backgroundPosition = `${position.current.x}px ${position.current.y}px`
             contentArea.style.transform = `translate(${position.current.x}px, ${position.current.y}px)`
             connectionLayer.style.transform = `translate(${position.current.x}px, ${position.current.y}px)`
@@ -57,6 +66,8 @@ export function useCanvas(
         const handleMouseDown = (e: MouseEvent) => {
             if(draggedNode.current) return;
             if(e.button !== 0) return;
+
+            if(forceDisableDrag.current) return;
             
             mouseDown.current = true;
             wasDragging.current = false;

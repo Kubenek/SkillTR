@@ -6,6 +6,7 @@ export interface CanvasInteraction {
   dragging: MutableRef<boolean>;
   wasDragging: MutableRef<boolean>;
   disableDragging: MutableRef<boolean>;
+  forceDisableDrag: MutableRef<boolean>;
   mouseDown: MutableRef<boolean>;
   position: MutableRef<{ x: number; y: number }>;
   lastMousePosition: MutableRef<{ x: number; y: number }>;

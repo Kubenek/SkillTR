@@ -1,5 +1,5 @@
 import './App.css'
-import { CursorPointer, Plus, Move, Link, Trash } from '@boxicons/react';
+import { CursorPointer, Plus, Move, Link, Trash, Redo, Hand, Block } from '@boxicons/react';
 import { useEffect, useRef, useState } from 'react'
 
 import { useCanvas } from './hooks/useCanvas';
@@ -24,6 +24,11 @@ function App() {
 
   const lastMousePosition = useRef({x: 0, y:0})
   const position = useRef({x: 0, y: 0})
+
+  const [positionDisplay, setPositionDisplay] = useState<{x: number, y: number}>({x: 0, y: 0})
+  
+  const [forceDDState, setForceDDState] = useState<boolean>(false);
+  const forceDisableDrag = useRef<boolean>(false);
 
   const [canvasPositionData, setCanvasPositionData] = useState<{x: number, y: number}>(() => {
     const saved = localStorage.getItem("CanvasPosition");
@@ -84,6 +89,7 @@ function App() {
     dragging,
     wasDragging,
     disableDragging,
+    forceDisableDrag,
     mouseDown,
     position,
     lastMousePosition,
@@ -94,6 +100,26 @@ function App() {
     setActiveTool(id);
     localStorage.setItem("ActiveTools", String(id));
   }
+
+  const handleResetView = () => {
+
+    position.current = {x: 0, y: 0};
+    setPositionDisplay(position.current);
+    setCanvasPositionData(position.current)
+
+    canvasRef.current!.style.backgroundPosition = `${position.current.x}px ${position.current.y}px`
+    contentRef.current!.style.transform = `translate(${position.current.x}px, ${position.current.y}px)`
+    connectionLayer.current!.style.transform = `translate(${position.current.x}px, ${position.current.y}px)`
+
+  }
+
+  const toggleDrag = () => {
+    setForceDDState(!forceDDState);
+  }
+
+  useEffect(() => {
+    forceDisableDrag.current = forceDDState;
+  }, [forceDDState])
 
   //*> toolbar functions
   useEffect(() => {
@@ -408,6 +434,11 @@ function App() {
     connectionVisuals.current = restoreConnections(connectionArea, nodes, nodeVisuals.current, connectionsData);
     position.current = restoreCanvas(canvasPositionData, canvasArea, contentArea, connectionArea);
 
+    setPositionDisplay({
+      x: position.current.x,
+      y: position.current.y
+    })
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -416,7 +447,8 @@ function App() {
     contentRef,
     connectionLayer,
     canvasInteraction,
-    setCanvasPositionData
+    setCanvasPositionData,
+    setPositionDisplay
   )
 
   return (
@@ -432,6 +464,19 @@ function App() {
           <button className={`toolbarItem ${activeTool == 2 ? "active" : ""}`} onClick={() => handleToolOnClick(2)}> <Move className='tIcon'/> </button> { /* Move */ }
           <button className={`toolbarItem ${activeTool == 3 ? "active" : ""}`} onClick={() => handleToolOnClick(3)}> <Link className='tIcon'/> </button> { /* Connect */ }
           <button className={`toolbarItem ${activeTool == 4 ? "active" : ""}`} onClick={() => handleToolOnClick(4)}> <Trash className='tIcon'/> </button> { /* Delete */ }
+        </div>
+
+        <div className='canvasCoordinates'>
+          X: {positionDisplay.x * -1}<br/>
+          Y: {positionDisplay.y}
+        </div>
+
+        <div className='additionalTools'>
+          <button onClick={handleResetView} className='item'> <Redo className='itemIcon'/> </button>
+          <button className={`item ${forceDDState ? "disabled" : ""}`} onClick={toggleDrag}>
+            { !forceDDState && <Hand className='itemIcon'/> }
+            { forceDDState && <Block className='itemIcon'/> }
+          </button>
         </div>
 
         <section className='canvasArea' ref={canvasRef}>
