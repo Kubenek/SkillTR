@@ -186,6 +186,31 @@
     transition: transform 0.3s ease, background-color 0.3s ease;   
 }
 
+.additionalTools > .item::after {
+  content: attr(data-tooltip);
+
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+
+  background: black;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+
+  white-space: nowrap;
+  font-size: 16px;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+.additionalTools > .item:hover::after {
+  opacity: 1;
+}
+
 .additionalTools > .item.disabled {
     background-color: rgb(80, 38, 38) !important;
 }

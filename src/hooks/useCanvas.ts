@@ -36,8 +36,6 @@ export function useCanvas(
             if(disableDragging.current) return;
             if(draggedNode.current) return;
 
-            if(forceDisableDrag.current) return;
-
             const dx = e.clientX - lastMousePosition.current.x;
             const dy = e.clientY - lastMousePosition.current.y;
 
@@ -46,6 +44,8 @@ export function useCanvas(
 
             dragging.current = true;
             wasDragging.current = true;
+
+            if(forceDisableDrag.current) return;
 
             position.current.x += dx;
             position.current.y += dy;
@@ -66,8 +66,6 @@ export function useCanvas(
         const handleMouseDown = (e: MouseEvent) => {
             if(draggedNode.current) return;
             if(e.button !== 0) return;
-
-            if(forceDisableDrag.current) return;
             
             mouseDown.current = true;
             wasDragging.current = false;

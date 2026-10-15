@@ -27,8 +27,17 @@ function App() {
 
   const [positionDisplay, setPositionDisplay] = useState<{x: number, y: number}>({x: 0, y: 0})
   
-  const [forceDDState, setForceDDState] = useState<boolean>(false);
-  const forceDisableDrag = useRef<boolean>(false);
+  const [forceDDState, setForceDDState] = useState<boolean>(() => {
+    const saved = localStorage.getItem("DisableDrag");
+
+    try {
+      const loadedState: boolean = (saved === null) ? false : JSON.parse(saved);
+      return loadedState
+    } catch {
+      return false;
+    }
+  });
+  const forceDisableDrag = useRef<boolean>(forceDDState);
 
   const [canvasPositionData, setCanvasPositionData] = useState<{x: number, y: number}>(() => {
     const saved = localStorage.getItem("CanvasPosition");
@@ -121,7 +130,7 @@ function App() {
     forceDisableDrag.current = forceDDState;
   }, [forceDDState])
 
-  //*> toolbar functions
+  //?> toolbar functions
   useEffect(() => {
 
     const handleMouseDown = (e: MouseEvent) => {
@@ -409,20 +418,15 @@ function App() {
 
   }, [activeTool])
 
-  //*> saving functionalities
+  //?> Saving functionalities
   useEffect(() => {
-    localStorage.setItem("Nodes", JSON.stringify(nodes))
-  }, [nodes])
+    localStorage.setItem("Nodes", JSON.stringify(nodes));
+    localStorage.setItem("Connections", JSON.stringify(connectionsData));
+    localStorage.setItem("CanvasPosition", JSON.stringify(canvasPositionData));
+    localStorage.setItem("DisableDrag", JSON.stringify(forceDDState));
+  }, [nodes, connectionsData, canvasPositionData, forceDDState]);
 
-  useEffect(() => {
-    localStorage.setItem("Connections", JSON.stringify(connectionsData))
-  }, [connectionsData])
-
-  useEffect(() => {
-    localStorage.setItem("CanvasPosition", JSON.stringify(canvasPositionData))
-  }, [canvasPositionData])
-
-  //*> loading functionality
+  //?> loading functionality
   useEffect(() => {
 
     const canvasArea = canvasRef.current;
@@ -471,9 +475,12 @@ function App() {
           Y: {positionDisplay.y}
         </div>
 
-        <div className='additionalTools'>
-          <button onClick={handleResetView} className='item'> <Redo className='itemIcon'/> </button>
-          <button className={`item ${forceDDState ? "disabled" : ""}`} onClick={toggleDrag}>
+        <div className='additionalTools'
+          onMouseEnter={() => {disableTools.current = true; disableDragging.current = true}}
+          onMouseLeave={() => {disableTools.current = false; disableDragging.current = false}}
+        >
+          <button onClick={handleResetView} className='item' data-tooltip="Reset view"> <Redo className='itemIcon'/> </button>
+          <button className={`item ${forceDDState ? "disabled" : ""}`} onClick={toggleDrag} data-tooltip={`${forceDDState ? "Enable drag" : "Disable drag"} `}>
             { !forceDDState && <Hand className='itemIcon'/> }
             { forceDDState && <Block className='itemIcon'/> }
           </button>
