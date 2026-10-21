@@ -1,0 +1,96 @@
+
+.navbar {
+    position: fixed;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    padding: 15px;
+    z-index: 10;
+
+    user-select: none;
+
+    background-color: #000000;
+    border-radius: 0 18px 18px 0;
+
+    padding-top: 40px; padding-bottom: 40px;
+    padding-right: 20px;
+}
+
+.navbutton:hover {
+    cursor: pointer;
+}
+
+.navbutton {
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+
+    padding: 0;
+    margin: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 50px;
+    border: none;
+    background-color: #24191c;
+    transform: scale(1.00);
+    box-sizing: border-box;
+
+    transition: transform 0.3s ease, background-color 0.3s ease;   
+}
+
+.navbutton.active {
+    transform: scale(1.07);
+    background-color: #3a2129;
+    cursor: pointer;
+}
+
+.navbutton:hover {
+    transform: scale(1.07);
+    background-color: #3a2129;
+    cursor: pointer;
+}
+
+.navbutton::after {
+  content: attr(data-tooltip);
+
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+
+  background: black;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+
+  white-space: nowrap;
+  font-size: 16px;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+.navbutton:hover::after {
+    opacity: 1;
+}
+
+.navbutton > .icon {
+    color: rgb(139, 125, 153);
+    width: 20px;
+    height: auto;
+    text-align: center;
+
+    flex-shrink: 0;
+
+    margin: 0;
+    padding: 0;
+}
