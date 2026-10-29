@@ -113,6 +113,12 @@ export default function Designer() {
 
   const handleResetView = () => {
 
+    const ANIM_TIME = 250
+
+    contentRef.current!.style.transition =  `transform ${ANIM_TIME}ms ease-in-out`;
+    connectionLayer.current!.style.transition =  `transform ${ANIM_TIME}ms ease-in-out`;
+    canvasRef.current!.style.transition = `background-position ${ANIM_TIME}ms ease-in-out`;
+
     position.current = {x: 0, y: 0};
     setPositionDisplay(position.current);
     setCanvasPositionData(position.current)
@@ -120,6 +126,12 @@ export default function Designer() {
     canvasRef.current!.style.backgroundPosition = `${position.current.x}px ${position.current.y}px`
     contentRef.current!.style.transform = `translate(${position.current.x}px, ${position.current.y}px)`
     connectionLayer.current!.style.transform = `translate(${position.current.x}px, ${position.current.y}px)`
+
+    setTimeout(() => {
+      canvasRef.current!.style.transition = "none";
+      contentRef.current!.style.transition = "none";
+      connectionLayer.current!.style.transition = "none";
+    }, ANIM_TIME);
 
   }
 
@@ -137,6 +149,7 @@ export default function Designer() {
     const handleMouseDown = (e: MouseEvent) => {
       if(disableTools.current) return;
 
+      if(activeTool == 0) viewingMouseDown(e);
       if(activeTool == 2) draggingMouseDown(e);
       if(activeTool == 3) connectingMouseDown(e);
       
@@ -402,6 +415,43 @@ export default function Designer() {
         conn.SourceUUID !== deletedNode.dataset.nodeId && conn.DestinationUUID !== deletedNode.dataset.nodeId
       ))
 
+
+    }
+
+    //!> node view/editing
+    const viewingMouseDown = (e: MouseEvent) => {
+      if(!( e.target instanceof HTMLDivElement )) return;
+      if(!( e.target.classList.contains("node") )) return;
+
+      const nodeElement = e.target;
+      const nodeRect = nodeElement.getBoundingClientRect();
+      
+      const posX = Math.round((window.innerWidth / 2) - nodeRect.left - nodeRect.width / 2);
+      const posY = Math.round((window.innerHeight / 2) - nodeRect.top - nodeRect.width / 2);
+
+      position.current.x += posX;
+      position.current.y += posY;  
+
+      setPositionDisplay({
+          x: position.current.x,
+          y: position.current.y
+      })
+
+      const ANIM_TIME = 250
+
+      contentRef.current!.style.transition =  `transform ${ANIM_TIME}ms ease-in-out`;
+      connectionLayer.current!.style.transition =  `transform ${ANIM_TIME}ms ease-in-out`;
+      canvasRef.current!.style.transition = `background-position ${ANIM_TIME}ms ease-in-out`;
+
+      canvasRef.current!.style.backgroundPosition = `${position.current.x}px ${position.current.y}px`
+      contentRef.current!.style.transform = `translate(${position.current.x}px, ${position.current.y}px)`
+      connectionLayer.current!.style.transform = `translate(${position.current.x}px, ${position.current.y}px)`
+
+      setTimeout(() => {
+        canvasRef.current!.style.transition = "none";
+        contentRef.current!.style.transition = "none";
+        connectionLayer.current!.style.transition = "none";
+      }, ANIM_TIME);
 
     }
 
