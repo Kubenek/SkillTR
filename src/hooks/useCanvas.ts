@@ -9,7 +9,8 @@ export function useCanvas(
     connectionRef: RefObject<SVGSVGElement | null>,
     interactionObject: CanvasInteraction,
     setCanvasPositionData: Dispatch<SetStateAction<{x: number, y: number}>>,
-    setPositionDisplay: Dispatch<SetStateAction<{x: number, y: number}>>
+    setPositionDisplay: Dispatch<SetStateAction<{x: number, y: number}>>,
+    setViewedNode: Dispatch<SetStateAction<HTMLDivElement | null>>
 ) {
 
     const {
@@ -54,6 +55,8 @@ export function useCanvas(
                 x: position.current.x,
                 y: position.current.y
             })
+
+            setViewedNode(null);
 
             canvasArea.style.backgroundPosition = `${position.current.x}px ${position.current.y}px`
             contentArea.style.transform = `translate(${position.current.x}px, ${position.current.y}px)`

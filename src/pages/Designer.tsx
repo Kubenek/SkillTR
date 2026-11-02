@@ -87,6 +87,8 @@ export default function Designer() {
 
   })
 
+  const [viewedNode, setViewedNode] = useState<HTMLDivElement | null>(null);
+
   const connectionNode = useRef<HTMLDivElement | null>(null);
   const [lineStart, setLineStart] = useState<{ x: number, y: number } | null>(null);
   const [lineEnd, setLineEnd] = useState<{x: number, y: number} | null>(null);
@@ -426,6 +428,8 @@ export default function Designer() {
       const nodeElement = e.target;
       const nodeRect = nodeElement.getBoundingClientRect();
       
+      setViewedNode(nodeElement)
+      
       const posX = Math.round((window.innerWidth / 2) - nodeRect.left - nodeRect.width / 2);
       const posY = Math.round((window.innerHeight / 2) - nodeRect.top - nodeRect.width / 2);
 
@@ -503,12 +507,29 @@ export default function Designer() {
     connectionLayer,
     canvasInteraction,
     setCanvasPositionData,
-    setPositionDisplay
+    setPositionDisplay,
+    setViewedNode
   )
 
   return (
     <>
       <section className='siteContainer'>
+
+        <div className='nodeInformation'>
+          <p className='title'>{(viewedNode) ? "NODE #UUID" : "NO NODE SELECTED"}</p>
+          <hr/>
+
+          { viewedNode &&
+          <div className='itemGroup'>
+            <p className='cost'>1 SKILL POINT</p>
+            <p className='category'>Vocabulary</p>
+          </div>
+          } 
+
+          <p className='description' style={{ marginTop: viewedNode ? "10px" : "0px" }}>
+            {(viewedNode) ? "Node description...." : "Use \"View\" tool to select a node"}
+          </p>
+        </div>
 
         <div className='editorToolbar' 
           onMouseEnter={() => {disableTools.current = true; disableDragging.current = true}}

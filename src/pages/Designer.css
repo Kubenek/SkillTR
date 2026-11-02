@@ -24,6 +24,63 @@
     z-index: 5;
 }
 
+.nodeInformation {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 400px;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: start;
+    text-align: left;
+
+    padding: 15px;
+    margin-top: 10px;
+
+    z-index: 10;
+
+    user-select: none;
+    pointer-events: none;
+}
+
+.nodeInformation .title {
+    margin: 0;
+    font-weight: bold;
+    font-size: 30px;
+    word-spacing: 10px;
+}
+
+.nodeInformation hr {
+    width: 100%;
+    border: none;
+    border-top: 1px solid #FFFFC5;
+}
+
+.nodeInformation > .itemGroup {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.nodeInformation > .itemGroup > p {
+    margin: 0;
+    font-size: 23px;
+    color: #757575;
+}
+
+.nodeInformation > .itemGroup .cost {
+    color: #9a9a78;
+}
+
+.nodeInformation > .description {
+    font-size: 23px;
+    margin-top: 10px;
+}
+
 .editorToolbar {
     position: absolute;
     top: 0; right: 0;
@@ -139,8 +196,8 @@
 
 .canvasCoordinates {
     position: absolute;
-    left: 0;
-    top: 0;
+    right: 0;
+    bottom: 0;
 
     display: flex;
     justify-content: start;
