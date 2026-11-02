@@ -1,5 +1,5 @@
 import './Designer.css'
-import { CursorPointer, Plus, Move, Link, Trash, Redo, Hand, Block } from '@boxicons/react';
+import { CursorPointer, Plus, Move, Link, Trash, Redo, Hand, Block, Edit } from '@boxicons/react';
 import { useEffect, useRef, useState } from 'react'
 
 import { useCanvas } from '../hooks/useCanvas';
@@ -88,6 +88,9 @@ export default function Designer() {
   })
 
   const [viewedNode, setViewedNode] = useState<HTMLDivElement | null>(null);
+  const selectedViewNode = viewedNode 
+    ? nodes.find(node => node.NodeUUID === viewedNode.dataset.nodeId)
+    : null
 
   const connectionNode = useRef<HTMLDivElement | null>(null);
   const [lineStart, setLineStart] = useState<{ x: number, y: number } | null>(null);
@@ -124,6 +127,7 @@ export default function Designer() {
     position.current = {x: 0, y: 0};
     setPositionDisplay(position.current);
     setCanvasPositionData(position.current)
+    setViewedNode(null);
 
     canvasRef.current!.style.backgroundPosition = `${position.current.x}px ${position.current.y}px`
     contentRef.current!.style.transform = `translate(${position.current.x}px, ${position.current.y}px)`
@@ -202,7 +206,11 @@ export default function Designer() {
       const nodeData: NodeData = {
         NodeUUID: crypto.randomUUID(),
         PositionX: x,
-        PositionY: y
+        PositionY: y,
+        Title: "NO DATA",
+        Cost: 0,
+        Category: "undefined",
+        Description: "No added description"
       };
 
       node.dataset.nodeId = nodeData.NodeUUID;
@@ -516,18 +524,18 @@ export default function Designer() {
       <section className='siteContainer'>
 
         <div className='nodeInformation'>
-          <p className='title'>{(viewedNode) ? "NODE #UUID" : "NO NODE SELECTED"}</p>
+          <p className='title'>{(selectedViewNode) ? selectedViewNode.Title : "NO NODE SELECTED"}</p>
           <hr/>
 
-          { viewedNode &&
+          { selectedViewNode &&
           <div className='itemGroup'>
-            <p className='cost'>1 SKILL POINT</p>
-            <p className='category'>Vocabulary</p>
+            <p className='cost'>{selectedViewNode.Cost} SKILL POINTS</p>
+            <p className='category'>{selectedViewNode.Category}</p>
           </div>
           } 
 
-          <p className='description' style={{ marginTop: viewedNode ? "10px" : "0px" }}>
-            {(viewedNode) ? "Node description...." : "Use \"View\" tool to select a node"}
+          <p className='description' style={{ marginTop: selectedViewNode ? "10px" : "0px" }}>
+            {(selectedViewNode) ? selectedViewNode.Description : "Use \"View\" tool to select a node"}
           </p>
         </div>
 
@@ -540,6 +548,7 @@ export default function Designer() {
           <button className={`toolbarItem ${activeTool == 2 ? "active" : ""}`} onClick={() => handleToolOnClick(2)}> <Move className='tIcon'/> </button> { /* Move */ }
           <button className={`toolbarItem ${activeTool == 3 ? "active" : ""}`} onClick={() => handleToolOnClick(3)}> <Link className='tIcon'/> </button> { /* Connect */ }
           <button className={`toolbarItem ${activeTool == 4 ? "active" : ""}`} onClick={() => handleToolOnClick(4)}> <Trash className='tIcon'/> </button> { /* Delete */ }
+          <button className={`toolbarItem ${activeTool == 5 ? "active" : ""}`} onClick={() => handleToolOnClick(5)}> <Edit className='tIcon'/> </button> { /* Edit */ } 
         </div>
 
         <div className='canvasCoordinates'>
