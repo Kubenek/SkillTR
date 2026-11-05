@@ -15,6 +15,7 @@
     background-size: 80px 80px;
 
     z-index: 0;
+    pointer-events: auto;
 }
 
 .canvasContent {
@@ -22,6 +23,30 @@
     width: 100%;
     height: 100%;
     z-index: 5;
+
+    pointer-events: none;
+}
+
+.canvasContent .node {
+    pointer-events: auto;
+}
+
+.canvasCoordinates {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+
+    display: flex;
+    justify-content: start;
+    text-align: left;
+
+    padding: 15px;
+
+    z-index: 10;
+    font-size: 23px;
+
+    user-select: none;
+    pointer-events: none;
 }
 
 .nodeInformation {
@@ -125,6 +150,31 @@
     background-color: rgb(55, 47, 63);
 }
 
+.editorToolbar > .toolbarItem::after {
+  content: attr(data-tooltip);
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, 100%);
+
+  background: black;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+
+  white-space: nowrap;
+  font-size: 16px;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+.editorToolbar > .toolbarItem:hover::after {
+    opacity: 1;
+}
+
 .editorToolbar > .toolbarItem > .tIcon {
     color: rgb(139, 125, 153);
     width: 30px;
@@ -145,7 +195,6 @@
     border: 5px solid #444;
     box-shadow: 2px 2px 6px rgba(0,0,0,0.8);
 
-    cursor: pointer;
     user-select: none;
 
     display: flex;
@@ -188,28 +237,9 @@
 }
 
 .connectionLayer line {
-    stroke: #666;
     stroke-width: 6;
-
+    pointer-events: stroke;
     z-index: 4;
-}
-
-.canvasCoordinates {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-
-    display: flex;
-    justify-content: start;
-    text-align: left;
-
-    padding: 15px;
-
-    z-index: 10;
-    font-size: 23px;
-
-    user-select: none;
-    pointer-events: none;
 }
 
 .additionalTools {
@@ -231,6 +261,10 @@
     width: 50px;
     height: 50px;
     flex-shrink: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     padding: 0;
     margin: 0;
@@ -281,9 +315,96 @@
 .additionalTools > .item > .itemIcon {
     color: rgb(139, 125, 153);
     width: 20px;
-    height: auto;
+    height: 20px;
     text-align: center;
 
     margin: 0;
     padding: 0;
+}
+
+.clickable:hover {
+    cursor: pointer;
+}
+
+.grabbable:hover {
+    cursor: grab;
+}
+
+.grabbing:hover {
+    cursor: grabbing;
+}
+
+.paint-bucket:hover {
+    cursor: crosshair;
+}
+
+.color-wheel {
+    display: block !important;
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px;
+    min-height: 20px;
+
+    border-radius: 50%;
+    background: conic-gradient(
+        red,
+        yellow,
+        lime,
+        cyan,
+        blue,
+        magenta,
+        red
+    );
+}
+
+.colorWheelWindow {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    width: 15%;
+    height: 25%;
+
+    display: flex;
+    justify-content: center;
+
+    transform: translate(30%, 0%);
+
+    background-color: rgba(0, 0, 0, 0.683);
+
+    z-index: 20;
+    pointer-events: auto;
+}
+
+.colorWheel {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+
+    margin-top: 20px;
+
+    background:
+        conic-gradient(red, yellow, lime, cyan, blue, magenta, red);
+
+    cursor: crosshair;
+    pointer-events: auto;
+}
+
+.colorDial {
+    position: absolute;
+
+    width: 14px;
+    height: 14px;
+
+    border: 2px solid white;
+    border-radius: 50%;
+
+    box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.5),
+        0 2px 5px rgba(0, 0, 0, 0.3);
+
+    transform: translate(-50%, -50%);
+
+    pointer-events: none;
 }

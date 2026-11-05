@@ -1,5 +1,5 @@
 import './Designer.css'
-import { CursorPointer, Plus, Move, Link, Trash, Redo, Hand, Block, Edit } from '@boxicons/react';
+import { CursorPointer, Plus, Move, Link, Trash, Redo, Hand, Block, Edit, Paint } from '@boxicons/react';
 import { useEffect, useRef, useState } from 'react'
 
 import { useCanvas } from '../hooks/useCanvas';
@@ -100,6 +100,14 @@ export default function Designer() {
   const nodeVisuals = useRef<HTMLDivElement[]>([]);
   const draggedConnections = useRef<Connection[] | null>(null);
 
+  const currentColor = useRef<string>("#666");
+  const [colorWheel, setColorWheel] = useState<boolean>(false);
+  const [colorDisplay, setColorDisplay] = useState<string>("#666");
+
+  const dialRef = useRef<HTMLDivElement | null>(null);
+  const [dialPosition, setDialPosition] = useState<{ x: number, y: number }>({x: 0, y: 0});
+
+
   const canvasInteraction: CanvasInteraction = {
     dragging,
     wasDragging,
@@ -113,6 +121,29 @@ export default function Designer() {
 
   const handleToolOnClick = (id: number) => {
     setActiveTool(id);
+
+    nodeVisuals.current.forEach(node =>
+      node.classList.remove("clickable", "grabbable")
+    )
+
+    connectionVisuals.current.forEach(connData =>
+      connData.SVG.classList.remove("paint-bucket")
+    )
+
+    if(id === 0 || id === 3 || id === 4 || id === 5) {
+      nodeVisuals.current.forEach(node =>
+        node.classList.add("clickable")
+      )
+    } else if(id === 2) {
+      nodeVisuals.current.forEach(node =>
+        node.classList.add("grabbable")
+      )
+    } else if(id === 31) {
+      connectionVisuals.current.forEach(connData =>
+        connData.SVG.classList.add("paint-bucket")
+      )
+    }
+
     localStorage.setItem("ActiveTools", String(id));
   }
 
@@ -141,13 +172,44 @@ export default function Designer() {
 
   }
 
+  const handleColorSelect = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const dx = x - centerX;
+    const dy = y - centerY;
+
+    const hue = (Math.atan2(dy, dx) * 180 / Math.PI + 360 + 90) % 360;
+    
+    const color = `hsl(${hue}, 100%, 50%)`
+
+    setColorDisplay(color);
+
+    setDialPosition({
+        x: (x / rect.width) * 100,
+        y: (y / rect.height) * 100
+    });
+};
+
   const toggleDrag = () => {
     setForceDDState(!forceDDState);
+  }
+  const toggleColorWheel = () => {
+    setColorWheel(!colorWheel);
   }
 
   useEffect(() => {
     forceDisableDrag.current = forceDDState;
   }, [forceDDState])
+
+  useEffect(() => {
+    currentColor.current = colorDisplay;
+  }, [colorDisplay])
 
   //?> toolbar functions
   useEffect(() => {
@@ -158,6 +220,7 @@ export default function Designer() {
       if(activeTool == 0) viewingMouseDown(e);
       if(activeTool == 2) draggingMouseDown(e);
       if(activeTool == 3) connectingMouseDown(e);
+      if(activeTool == 31) paintingMouseDown(e);
       
     }
 
@@ -216,6 +279,7 @@ export default function Designer() {
       node.dataset.nodeId = nodeData.NodeUUID;
 
       setNodes(prev => [...prev, nodeData]);
+      nodeVisuals.current.push(node);
 
       contentRef.current?.appendChild(node);
     }
@@ -227,6 +291,9 @@ export default function Designer() {
 
       disableDragging.current = true;
       draggedNode.current = e.target;
+
+      draggedNode.current.classList.remove("grabbable");
+      draggedNode.current.classList.add("grabbing");
 
       const nodeRect = draggedNode.current.getBoundingClientRect();
       
@@ -295,6 +362,9 @@ export default function Designer() {
 
       const nodeId = dragged.dataset.nodeId;
       if (!nodeId) return;
+
+      dragged.classList.remove("grabbing");
+      dragged.classList.add("grabbable");
 
       const x = parseFloat(dragged.style.left);
       const y = parseFloat(dragged.style.top);
@@ -370,7 +440,8 @@ export default function Designer() {
         
         const connData: ConnectionData = {
           SourceUUID: nodeOne.dataset.nodeId!,
-          DestinationUUID: nodeTwo.dataset.nodeId!
+          DestinationUUID: nodeTwo.dataset.nodeId!,
+          Color: "#666"
         }
 
         setConnectionsData(prev => [...prev, connData]);
@@ -399,6 +470,24 @@ export default function Designer() {
 
       setLineEnd({x: posX, y: posY});
 
+    }
+
+    //!> connection painting
+    const paintingMouseDown = (e: MouseEvent) => {
+      const target = e.target;
+      if(! (target instanceof SVGLineElement) ) return;
+
+      const color = currentColor.current;
+      target.setAttribute("stroke", color);
+
+      const lineVis = connectionVisuals.current.find(connData => connData.SVG === target)!;
+      setConnectionsData(prev => 
+        prev.map(connData =>
+          connData.SourceUUID === lineVis.From.dataset.nodeId && connData.DestinationUUID === lineVis.To.dataset.nodeId
+            ? {...connData, Color: color}
+            : connData
+        )
+      )
     }
 
     //!> node deletion
@@ -506,6 +595,8 @@ export default function Designer() {
       y: position.current.y
     })
 
+    handleToolOnClick(activeTool);
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -535,7 +626,7 @@ export default function Designer() {
           } 
 
           <p className='description' style={{ marginTop: selectedViewNode ? "10px" : "0px" }}>
-            {(selectedViewNode) ? selectedViewNode.Description : "Use \"View\" tool to select a node"}
+            {(selectedViewNode) ? selectedViewNode.Description : "Use \"View\" or \"Edit\" tool to select one"}
           </p>
         </div>
 
@@ -543,13 +634,14 @@ export default function Designer() {
           onMouseEnter={() => {disableTools.current = true; disableDragging.current = true}}
           onMouseLeave={() => {disableTools.current = false; disableDragging.current = false}}
         >
-          <button className={`toolbarItem ${activeTool == 0 ? "active" : ""}`} onClick={() => handleToolOnClick(0)}> <CursorPointer className='tIcon'/> </button> { /* View */ } 
-          <button className={`toolbarItem ${activeTool == 1 ? "active" : ""}`} onClick={() => handleToolOnClick(1)}> <Plus className='tIcon'/> </button> { /* Add */ } 
-          <button className={`toolbarItem ${activeTool == 2 ? "active" : ""}`} onClick={() => handleToolOnClick(2)}> <Move className='tIcon'/> </button> { /* Move */ }
-          <button className={`toolbarItem ${activeTool == 3 ? "active" : ""}`} onClick={() => handleToolOnClick(3)}> <Link className='tIcon'/> </button> { /* Connect */ }
-          <button className={`toolbarItem ${activeTool == 4 ? "active" : ""}`} onClick={() => handleToolOnClick(4)}> <Trash className='tIcon'/> </button> { /* Delete */ }
-          <button className={`toolbarItem ${activeTool == 5 ? "active" : ""}`} onClick={() => handleToolOnClick(5)}> <Edit className='tIcon'/> </button> { /* Edit */ } 
-        </div>
+          <button data-tooltip="View" className={`toolbarItem ${activeTool == 0 ? "active" : ""}`} onClick={() => handleToolOnClick(0)}> <CursorPointer className='tIcon'/> </button> { /* View */ } 
+          <button data-tooltip="Add" className={`toolbarItem ${activeTool == 1 ? "active" : ""}`} onClick={() => handleToolOnClick(1)}> <Plus className='tIcon'/> </button> { /* Add */ } 
+          <button data-tooltip="Move" className={`toolbarItem ${activeTool == 2 ? "active" : ""}`} onClick={() => handleToolOnClick(2)}> <Move className='tIcon'/> </button> { /* Move */ }
+          <button data-tooltip="Connect" className={`toolbarItem ${activeTool == 3 ? "active" : ""}`} onClick={() => handleToolOnClick(3)}> <Link className='tIcon'/> </button> { /* Connect */ }
+          <button data-tooltip="Colorize" className={`toolbarItem ${activeTool == 31 ? "active" : ""}`} onClick={() => handleToolOnClick(31)}> <Paint className='tIcon'/> </button> { /* Colorize */ } 
+          <button data-tooltip="Delete" className={`toolbarItem ${activeTool == 4 ? "active" : ""}`} onClick={() => handleToolOnClick(4)}> <Trash className='tIcon'/> </button> { /* Delete */ }
+          <button data-tooltip="Edit" className={`toolbarItem ${activeTool == 5 ? "active" : ""}`} onClick={() => handleToolOnClick(5)}> <Edit className='tIcon'/> </button> { /* Edit */ } 
+       </div>
 
         <div className='canvasCoordinates'>
           X: {positionDisplay.x * -1}<br/>
@@ -567,7 +659,26 @@ export default function Designer() {
             { !forceDDState && <Hand className='itemIcon'/> }
             { forceDDState && <Block className='itemIcon'/> }
           </button>
+
+          { activeTool === 31 &&
+            <button onClick={toggleColorWheel} className='item' style={{backgroundColor: "#2b2b3e"}} data-tooltip="Set fill"> <i className='itemIcon'> <i className='color-wheel' /> </i> </button>
+          }
+
         </div>
+
+        { colorWheel &&
+          <div className='colorWheelWindow'
+            onMouseEnter={() => { disableTools.current = true; disableDragging.current = true; }}
+            onMouseLeave={() => { disableTools.current = false; disableDragging.current = false; }}
+          >
+
+            <div className='colorWheel' onClick={handleColorSelect}>
+              <div className='colorDial' style={{ left: `${dialPosition.x}%`, top: `${dialPosition.y}%` }} ref={dialRef}/>
+            </div>
+
+          </div>
+        }
+        
 
         <section className='canvasArea' ref={canvasRef}>
           <div className='canvasContent' ref={contentRef}></div>
@@ -577,6 +688,7 @@ export default function Designer() {
                 <line
                       x1={lineStart.x} y1={lineStart.y}
                       x2={lineEnd.x}   y2={lineEnd.y}
+                      stroke="#666"
                 />
               )}
             </svg>

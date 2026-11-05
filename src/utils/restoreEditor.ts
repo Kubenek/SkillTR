@@ -46,7 +46,8 @@ export function restoreConnections(connectionLayer: SVGSVGElement, nodeData: Nod
       const x2 = destination.PositionX + (NODE_WIDTH / 2);
       const y2 = destination.PositionY + (NODE_HEIGHT / 2);
 
-      const line = createLineElement("#666", "6", String(x1), String(y1), String(x2), String(y2));
+      const color = connData.Color;
+      const line = createLineElement(color, "6", String(x1), String(y1), String(x2), String(y2));
 
       connectionLayer.appendChild(line);
       connectionVisuals.push({From: sourceElement, To: destinationElement, SVG: line});

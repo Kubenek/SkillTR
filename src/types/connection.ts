@@ -8,4 +8,5 @@ export type Connection = {
 export type ConnectionData = {
     SourceUUID:      string; 
     DestinationUUID: string;
+    Color: string;
 }
