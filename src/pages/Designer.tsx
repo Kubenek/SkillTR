@@ -5,14 +5,14 @@ import { useEffect, useRef, useState } from 'react'
 import { useCanvas } from '../hooks/useCanvas';
 import Navigation from "../components/Navigation"
 
-import { createLineElement } from '../utils/createLineElement';
-import { restoreNodes, restoreConnections, restoreCanvas } from '../utils/restoreEditor';
+import { restoreCanvas } from '../utils/restoreEditor';
 
 import { NODE_WIDTH, NODE_HEIGHT } from '../constants/editor';
 
-import type { Connection, ConnectionData } from '../types/connection';
+import type { ConnectionData } from '../types/connection';
 import type { NodeData } from '../types/node';
 import type { CanvasInteraction } from '../types/canvas';
+import { getNodeCenter } from '../utils/geometry';
 
 export default function Designer() {
 
@@ -96,10 +96,6 @@ export default function Designer() {
   const [lineStart, setLineStart] = useState<{ x: number, y: number } | null>(null);
   const [lineEnd, setLineEnd] = useState<{x: number, y: number} | null>(null);
 
-  const connectionVisuals = useRef<Connection[]>([]);
-  const nodeVisuals = useRef<HTMLDivElement[]>([]);
-  const draggedConnections = useRef<Connection[] | null>(null);
-
   const currentColor = useRef<string>("#666");
   const [colorWheel, setColorWheel] = useState<boolean>(false);
   const [colorDisplay, setColorDisplay] = useState<string>("#666");
@@ -121,29 +117,6 @@ export default function Designer() {
 
   const handleToolOnClick = (id: number) => {
     setActiveTool(id);
-
-    nodeVisuals.current.forEach(node =>
-      node.classList.remove("clickable", "grabbable")
-    )
-
-    connectionVisuals.current.forEach(connData =>
-      connData.SVG.classList.remove("paint-bucket")
-    )
-
-    if(id === 0 || id === 3 || id === 4 || id === 5) {
-      nodeVisuals.current.forEach(node =>
-        node.classList.add("clickable")
-      )
-    } else if(id === 2) {
-      nodeVisuals.current.forEach(node =>
-        node.classList.add("grabbable")
-      )
-    } else if(id === 31) {
-      connectionVisuals.current.forEach(connData =>
-        connData.SVG.classList.add("paint-bucket")
-      )
-    }
-
     localStorage.setItem("ActiveTools", String(id));
   }
 
@@ -242,7 +215,6 @@ export default function Designer() {
       if(activeTool === 4) deletingMouseUp(e);
 
       //! Reset Parameters
-      draggedConnections.current = null;
       disableDragging.current = false;
       dragging.current = false;
       draggedNode.current = null;
@@ -257,14 +229,8 @@ export default function Designer() {
 
       if(e.target instanceof HTMLDivElement && e.target.classList.contains("node")) return;
 
-      const node = document.createElement("div")
-      node.classList.add("node")
-
       const x = e.clientX - (NODE_WIDTH / 2) - (position.current.x)
       const y = e.clientY - (NODE_HEIGHT / 2) - (position.current.y)
-
-      node.style.left = `${x}px`
-      node.style.top  = `${y}px`
 
       const nodeData: NodeData = {
         NodeUUID: crypto.randomUUID(),
@@ -276,12 +242,7 @@ export default function Designer() {
         Description: "No added description"
       };
 
-      node.dataset.nodeId = nodeData.NodeUUID;
-
       setNodes(prev => [...prev, nodeData]);
-      nodeVisuals.current.push(node);
-
-      contentRef.current?.appendChild(node);
     }
 
     //!> node dragging
@@ -301,14 +262,6 @@ export default function Designer() {
       const offsetY = e.clientY - nodeRect.top;
 
       mouseDraggingOffset.current = {x: offsetX, y: offsetY}
-
-      const nodeConnections = connectionVisuals.current.filter((connection) => 
-        connection.From === draggedNode.current ||
-        connection.To === draggedNode.current
-      )
-
-      draggedConnections.current = (nodeConnections.length > 0) ? nodeConnections : null; 
-
     }
 
     const draggingMouseMove = (e: MouseEvent) => {
@@ -319,39 +272,13 @@ export default function Designer() {
       const x = e.clientX - (position.current.x) - (mouseDraggingOffset.current!.x)
       const y = e.clientY - (position.current.y) - (mouseDraggingOffset.current!.y)
 
-      draggedNode.current!.style.left = `${x}px`
-      draggedNode.current!.style.top = `${y}px`
+      const id = draggedNode.current.dataset.nodeId;
+      setNodes(prev => prev.map(n =>
+        n.NodeUUID === id ? {...n, PositionX: x, PositionY: y} : n
+      ))
 
       lastMousePosition.current.x = e.clientX;
       lastMousePosition.current.y = e.clientY;
-
-      //?> Moving connection lines
-
-      if(draggedConnections.current === null) return;
-
-      const rootNode = draggedNode.current;
-      const svgRect = connectionLayer.current!.getBoundingClientRect();
-
-      draggedConnections.current.forEach(connection => {
-        if(connection.From === rootNode) { 
-
-          const posX = rootNode.getBoundingClientRect().left + ( NODE_WIDTH / 2 ) - svgRect.left;
-          const posY = rootNode.getBoundingClientRect().top + ( NODE_HEIGHT / 2 ) - svgRect.top;
-
-          connection.SVG.setAttribute("x1", String(posX));
-          connection.SVG.setAttribute("y1", String(posY));
-
-        }
-        else if(connection.To === rootNode) {
-
-          const posX = rootNode.getBoundingClientRect().left + ( NODE_WIDTH / 2 ) - svgRect.left;
-          const posY = rootNode.getBoundingClientRect().top + ( NODE_HEIGHT / 2 ) - svgRect.top;
-
-          connection.SVG.setAttribute("x2", String(posX));
-          connection.SVG.setAttribute("y2", String(posY));
-
-        }
-      })
 
     }
 
@@ -360,22 +287,8 @@ export default function Designer() {
       const dragged = draggedNode.current;
       if (!dragged) return;
 
-      const nodeId = dragged.dataset.nodeId;
-      if (!nodeId) return;
-
       dragged.classList.remove("grabbing");
       dragged.classList.add("grabbable");
-
-      const x = parseFloat(dragged.style.left);
-      const y = parseFloat(dragged.style.top);
-
-      setNodes(prev =>
-        prev.map(node =>
-          node.NodeUUID === nodeId
-            ? { ...node, PositionX: x, PositionY: y }
-            : node
-        )
-      );
 
     }
 
@@ -403,59 +316,23 @@ export default function Designer() {
 
       } else {
 
-        const nodeOne = connectionNode.current;
-        const nodeTwo = e.target;
+        const nodeOneID = connectionNode.current.dataset.nodeId!;
+        const nodeTwoID = e.target.dataset.nodeId!;
 
-        const exists = connectionVisuals.current.some(
-          connection => 
-            (connection.From === nodeOne && connection.To === nodeTwo) ||
-            (connection.From === nodeTwo && connection.To === nodeOne) ||
-            (nodeOne === nodeTwo)
-        );
-
-        if(exists) {
-          const nodes = contentRef.current?.querySelectorAll(".node");
-
-          nodes?.forEach(node => {
-            node.classList.remove('selected');
+        if(nodeOneID !== nodeTwoID) {
+          setConnectionsData(prev => {
+            const exists = prev.some(c =>
+              (c.SourceUUID === nodeOneID && c.DestinationUUID === nodeTwoID) ||
+              (c.SourceUUID === nodeTwoID && c.DestinationUUID === nodeOneID)
+            );
+            return exists ? prev : [...prev, { SourceUUID: nodeOneID, DestinationUUID: nodeTwoID, Color: "#666" } ]
           })
-
-          connectionNode.current = null;
-          setLineStart(null); setLineEnd(null);
-
-          return;
         }
-
-        const onePosX = nodeOne.getBoundingClientRect().left + ( NODE_WIDTH / 2 ) - svgRect.left;
-        const onePosY = nodeOne.getBoundingClientRect().top + ( NODE_HEIGHT / 2 ) - svgRect.top;
-
-        const twoPosX = nodeTwo.getBoundingClientRect().left + ( NODE_WIDTH / 2 ) - svgRect.left;
-        const twoPosY = nodeTwo.getBoundingClientRect().top + ( NODE_HEIGHT / 2 ) - svgRect.top;
-
-        //?> Line Creation
-        const line = createLineElement("#666", "6", String(onePosX), String(onePosY), String(twoPosX), String(twoPosY))
-
-        connectionLayer.current?.appendChild(line);
-        connectionVisuals.current.push({From: nodeOne, To: nodeTwo, SVG: line});
-        
-        const connData: ConnectionData = {
-          SourceUUID: nodeOne.dataset.nodeId!,
-          DestinationUUID: nodeTwo.dataset.nodeId!,
-          Color: "#666"
-        }
-
-        setConnectionsData(prev => [...prev, connData]);
 
         //? Variable reset
-        const nodes = contentRef.current?.querySelectorAll(".node");
-
-        nodes?.forEach(node => {
-          node.classList.remove('selected');
-        })
-
+        contentRef.current?.querySelectorAll(".node").forEach(n => n.classList.remove('selected'))
         connectionNode.current = null;
         setLineStart(null); setLineEnd(null);
-
       }
 
     }
@@ -476,14 +353,13 @@ export default function Designer() {
     const paintingMouseDown = (e: MouseEvent) => {
       const target = e.target;
       if(! (target instanceof SVGLineElement) ) return;
-
+      
+      const { source, dest } = target.dataset;
       const color = currentColor.current;
-      target.setAttribute("stroke", color);
 
-      const lineVis = connectionVisuals.current.find(connData => connData.SVG === target)!;
       setConnectionsData(prev => 
         prev.map(connData =>
-          connData.SourceUUID === lineVis.From.dataset.nodeId && connData.DestinationUUID === lineVis.To.dataset.nodeId
+          connData.SourceUUID === source && connData.DestinationUUID === dest
             ? {...connData, Color: color}
             : connData
         )
@@ -498,23 +374,9 @@ export default function Designer() {
       if(!( e.target instanceof HTMLDivElement )) return;
       if(!( e.target.classList.contains("node") )) return;
 
-      const deletedNode = e.target;
-
-      contentRef.current?.removeChild(e.target);
-      nodeVisuals.current = nodeVisuals.current.filter(node => node.dataset.nodeId !== deletedNode.dataset.nodeId);
-      setNodes(prev => prev.filter(node => node.NodeUUID !== deletedNode.dataset.nodeId));
-
-      const deletedConnections = connectionVisuals.current.filter(conn =>
-        conn.From === deletedNode || conn.To === deletedNode
-      );
-      deletedConnections.forEach(conn => connectionLayer.current?.removeChild(conn.SVG));
-
-      connectionVisuals.current = connectionVisuals.current.filter(conn => !deletedConnections.includes(conn));
-      setConnectionsData(prev => prev.filter(conn => 
-        conn.SourceUUID !== deletedNode.dataset.nodeId && conn.DestinationUUID !== deletedNode.dataset.nodeId
-      ))
-
-
+      const deletedID = e.target.dataset.nodeId;
+      setNodes( prev => prev.filter(node => node.NodeUUID !== deletedID ));
+      setConnectionsData(prev => prev.filter( conn => conn.SourceUUID !== deletedID && conn.DestinationUUID !== deletedID ))
     }
 
     //!> node view/editing
@@ -528,7 +390,7 @@ export default function Designer() {
       setViewedNode(nodeElement)
       
       const posX = Math.round((window.innerWidth / 2) - nodeRect.left - nodeRect.width / 2);
-      const posY = Math.round((window.innerHeight / 2) - nodeRect.top - nodeRect.width / 2);
+      const posY = Math.round((window.innerHeight / 2) - nodeRect.top - nodeRect.height / 2);
 
       position.current.x += posX;
       position.current.y += posY;  
@@ -586,8 +448,6 @@ export default function Designer() {
     const connectionArea = connectionLayer.current;
     if(!canvasArea || !contentArea || !connectionArea) return;
 
-    nodeVisuals.current = restoreNodes(contentArea, nodes);
-    connectionVisuals.current = restoreConnections(connectionArea, nodes, nodeVisuals.current, connectionsData);
     position.current = restoreCanvas(canvasPositionData, canvasArea, contentArea, connectionArea);
 
     setPositionDisplay({
@@ -609,6 +469,8 @@ export default function Designer() {
     setPositionDisplay,
     setViewedNode
   )
+
+  const nodeCursorClass = [0, 3, 4, 5].includes(activeTool) ? "clickable" : activeTool === 2 ? "grabbable" : "";
 
   return (
     <>
@@ -681,16 +543,58 @@ export default function Designer() {
         
 
         <section className='canvasArea' ref={canvasRef}>
-          <div className='canvasContent' ref={contentRef}></div>
+
+          <div className='canvasContent' ref={contentRef}>
+
+            { nodes.map(node => (
+
+              <div
+                  key={node.NodeUUID}
+                  data-node-id={node.NodeUUID}
+                  className={`node ${nodeCursorClass}`}
+                  style={{ left: node.PositionX, top: node.PositionY }}
+              />
+              
+            ))
+
+            }
+
+          </div>
 
           <svg className='connectionLayer' ref={connectionLayer}>
-              {lineStart && lineEnd && (
+
+            { connectionsData.map(conn => {
+
+              const source      = nodes.find(node => node.NodeUUID === conn.SourceUUID);
+              const destination = nodes.find(node => node.NodeUUID === conn.DestinationUUID);
+              if(!source || !destination) return null;
+
+              return(
                 <line
-                      x1={lineStart.x} y1={lineStart.y}
-                      x2={lineEnd.x}   y2={lineEnd.y}
-                      stroke="#666"
+                    key={`${conn.SourceUUID}-${conn.DestinationUUID}`}
+                    className={ (activeTool == 31) ? "paint-bucket" : ""}
+                    data-source={ conn.SourceUUID }
+                    data-dest={ conn.DestinationUUID }
+                    x1={ getNodeCenter(source).x }
+                    x2={ getNodeCenter(destination).x }
+                    y1={ getNodeCenter(source).y }
+                    y2={ getNodeCenter(destination).y }
+                    stroke={ conn.Color }
+                    strokeWidth={6}
                 />
-              )}
+              );
+
+            })}
+
+            { lineStart && lineEnd && (
+
+              <line
+                    x1={lineStart.x} y1={lineStart.y}
+                    x2={lineEnd.x}   y2={lineEnd.y}
+                    stroke="#666"
+              />
+
+            )}
             </svg>
 
         </section>
