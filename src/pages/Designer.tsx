@@ -3,16 +3,20 @@ import { CursorPointer, Plus, Move, Link, Trash, Redo, Hand, Block, Edit, Paint 
 import { useEffect, useRef, useState } from 'react'
 
 import { useCanvas } from '../hooks/useCanvas';
+import { usePersistentState } from '../hooks/usePresistentState';
 import Navigation from "../components/Navigation"
 
 import { restoreCanvas } from '../utils/restoreEditor';
+import { getNodeCenter } from '../utils/geometry';
+import { TRI, barycentric, hsvToRgb } from '../utils/color';
 
 import { NODE_WIDTH, NODE_HEIGHT } from '../constants/editor';
+import { PICKER_SIZE } from '../constants/colorPicker';
 
 import type { ConnectionData } from '../types/connection';
 import type { NodeData } from '../types/node';
 import type { CanvasInteraction } from '../types/canvas';
-import { getNodeCenter } from '../utils/geometry';
+import type { HSV } from '../types/hsv';
 
 export default function Designer() {
 
@@ -28,64 +32,21 @@ export default function Designer() {
 
   const [positionDisplay, setPositionDisplay] = useState<{x: number, y: number}>({x: 0, y: 0})
   
-  const [forceDDState, setForceDDState] = useState<boolean>(() => {
-    const saved = localStorage.getItem("DisableDrag");
-
-    try {
-      const loadedState: boolean = (saved === null) ? false : JSON.parse(saved);
-      return loadedState
-    } catch {
-      return false;
-    }
-  });
+  const [forceDDState, setForceDDState] = usePersistentState<boolean>("DisableDrag", false);
   const forceDisableDrag = useRef<boolean>(forceDDState);
 
-  const [canvasPositionData, setCanvasPositionData] = useState<{x: number, y: number}>(() => {
-    const saved = localStorage.getItem("CanvasPosition");
-
-    try {
-      const loadedPosition: { x: number, y: number } = (saved === null) ? { x: 0, y: 0 } : JSON.parse(saved);
-      return loadedPosition;
-    } catch {
-      return {x: 0, y: 0}
-    }
-
-  });
-
+  const [canvasPositionData, setCanvasPositionData] = usePersistentState<{x: number, y: number}>("CanvasPosition", {x: 0, y: 0})
   const canvasRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const connectionLayer = useRef<SVGSVGElement>(null);
 
-  const [activeTool, setActiveTool] = useState<number>(() => {
-    
-    const saved = localStorage.getItem("ActiveTools");
-    if(saved === null) return 0;
-    return Number(saved);
-
-  });
+  const [activeTool, setActiveTool] = usePersistentState<number>("ActiveTools", 0)
 
   const draggedNode = useRef<HTMLDivElement | null>(null);
   const mouseDraggingOffset = useRef<{x: number, y: number}>({x: 0, y: 0});
 
-  const [nodes, setNodes] = useState<NodeData[]>(() => {
-
-    const saved = localStorage.getItem("Nodes");
-    if(saved === null) return [];
-
-    try   { return JSON.parse(saved) as NodeData[]; }
-    catch { return []; }
-
-  })
-
-  const [connectionsData, setConnectionsData] = useState<ConnectionData[]>(() => {
-    
-    const saved = localStorage.getItem("Connections");
-    if(saved === null) return [];
-
-    try   { return JSON.parse(saved) as ConnectionData[]; }
-    catch { return []; }
-
-  })
+  const [nodes, setNodes] = usePersistentState<NodeData[]>("Nodes", []);
+  const [connectionsData, setConnectionsData] = usePersistentState<ConnectionData[]>("Connections", []);
 
   const [viewedNode, setViewedNode] = useState<HTMLDivElement | null>(null);
   const selectedViewNode = viewedNode 
@@ -96,12 +57,16 @@ export default function Designer() {
   const [lineStart, setLineStart] = useState<{ x: number, y: number } | null>(null);
   const [lineEnd, setLineEnd] = useState<{x: number, y: number} | null>(null);
 
-  const currentColor = useRef<string>("#666");
-  const [colorWheel, setColorWheel] = useState<boolean>(false);
-  const [colorDisplay, setColorDisplay] = useState<string>("#666");
 
-  const dialRef = useRef<HTMLDivElement | null>(null);
-  const [dialPosition, setDialPosition] = useState<{ x: number, y: number }>({x: 0, y: 0});
+
+  const currentColor = useRef<string>("#666");
+  const [selectedColor, setSelectedColor] = useState<string>("#666");
+
+  const [pickerWindow, setPickerWindow] = useState<boolean>(false);
+
+  const triangleRef = useRef<HTMLCanvasElement>(null);
+  const [hsv, setHsv] = useState<HSV>({h: 250, s: 1, v: 1})
+  const [inputHEX, setInputHEX] = useState<string>("#");
 
 
   const canvasInteraction: CanvasInteraction = {
@@ -113,11 +78,6 @@ export default function Designer() {
     position,
     lastMousePosition,
     draggedNode
-  }
-
-  const handleToolOnClick = (id: number) => {
-    setActiveTool(id);
-    localStorage.setItem("ActiveTools", String(id));
   }
 
   const handleResetView = () => {
@@ -145,44 +105,53 @@ export default function Designer() {
 
   }
 
-  const handleColorSelect = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-
-    const dx = x - centerX;
-    const dy = y - centerY;
-
-    const hue = (Math.atan2(dy, dx) * 180 / Math.PI + 360 + 90) % 360;
-    
-    const color = `hsl(${hue}, 100%, 50%)`
-
-    setColorDisplay(color);
-
-    setDialPosition({
-        x: (x / rect.width) * 100,
-        y: (y / rect.height) * 100
-    });
-};
-
   const toggleDrag = () => {
     setForceDDState(!forceDDState);
   }
-  const toggleColorWheel = () => {
-    setColorWheel(!colorWheel);
+  const togglePickerWindow = () => {
+    setPickerWindow(!pickerWindow);
   }
+
+
+  useEffect(() => {
+    if(activeTool !== 31) return;
+    const canvas = triangleRef.current;
+    if(!canvas) return;
+
+    const ctx = canvas.getContext('2d')!;
+    const img = ctx.createImageData(PICKER_SIZE, PICKER_SIZE);
+    const { H, W, K } = TRI;
+    const [hr, hg, hb] = hsvToRgb(hsv.h, 1, 1);
+
+    for (let y = 0; y < PICKER_SIZE; y++) {
+      for (let x = 0; x < PICKER_SIZE; x++) {
+        const { a, b, c } = barycentric({ x: x + 0.5, y: y + 0.5 }, H, W, K);
+        if (a < 0 || b < 0 || c < 0) continue;
+
+        const i = (y * PICKER_SIZE + x) * 4;
+        img.data[i]     = a * hr + b * 255;
+        img.data[i + 1] = a * hg + b * 255;
+        img.data[i + 2] = a * hb + b * 255;
+        img.data[i + 3] = 255;
+      }
+    }
+
+    ctx.putImageData(img, 0, 0);
+  }, [hsv.h, pickerWindow, activeTool])
+
+  const handleHEXinputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let input = e.target.value;
+
+    input = input.replace(/[^a-zA-Z0-9]/g, "");
+    input = input.toUpperCase();
+    setInputHEX("#"+input)
+    
+  }
+
 
   useEffect(() => {
     forceDisableDrag.current = forceDDState;
   }, [forceDDState])
-
-  useEffect(() => {
-    currentColor.current = colorDisplay;
-  }, [colorDisplay])
 
   //?> toolbar functions
   useEffect(() => {
@@ -430,15 +399,8 @@ export default function Designer() {
       window.removeEventListener("mousemove", handleMouseMove);
     };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTool])
-
-  //?> Saving functionalities
-  useEffect(() => {
-    localStorage.setItem("Nodes", JSON.stringify(nodes));
-    localStorage.setItem("Connections", JSON.stringify(connectionsData));
-    localStorage.setItem("CanvasPosition", JSON.stringify(canvasPositionData));
-    localStorage.setItem("DisableDrag", JSON.stringify(forceDDState));
-  }, [nodes, connectionsData, canvasPositionData, forceDDState]);
 
   //?> loading functionality
   useEffect(() => {
@@ -454,8 +416,6 @@ export default function Designer() {
       x: position.current.x,
       y: position.current.y
     })
-
-    handleToolOnClick(activeTool);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -496,13 +456,13 @@ export default function Designer() {
           onMouseEnter={() => {disableTools.current = true; disableDragging.current = true}}
           onMouseLeave={() => {disableTools.current = false; disableDragging.current = false}}
         >
-          <button data-tooltip="View" className={`toolbarItem ${activeTool == 0 ? "active" : ""}`} onClick={() => handleToolOnClick(0)}> <CursorPointer className='tIcon'/> </button> { /* View */ } 
-          <button data-tooltip="Add" className={`toolbarItem ${activeTool == 1 ? "active" : ""}`} onClick={() => handleToolOnClick(1)}> <Plus className='tIcon'/> </button> { /* Add */ } 
-          <button data-tooltip="Move" className={`toolbarItem ${activeTool == 2 ? "active" : ""}`} onClick={() => handleToolOnClick(2)}> <Move className='tIcon'/> </button> { /* Move */ }
-          <button data-tooltip="Connect" className={`toolbarItem ${activeTool == 3 ? "active" : ""}`} onClick={() => handleToolOnClick(3)}> <Link className='tIcon'/> </button> { /* Connect */ }
-          <button data-tooltip="Colorize" className={`toolbarItem ${activeTool == 31 ? "active" : ""}`} onClick={() => handleToolOnClick(31)}> <Paint className='tIcon'/> </button> { /* Colorize */ } 
-          <button data-tooltip="Delete" className={`toolbarItem ${activeTool == 4 ? "active" : ""}`} onClick={() => handleToolOnClick(4)}> <Trash className='tIcon'/> </button> { /* Delete */ }
-          <button data-tooltip="Edit" className={`toolbarItem ${activeTool == 5 ? "active" : ""}`} onClick={() => handleToolOnClick(5)}> <Edit className='tIcon'/> </button> { /* Edit */ } 
+          <button data-tooltip="View" className={`toolbarItem ${activeTool == 0 ? "active" : ""}`} onClick={() => setActiveTool(0)}> <CursorPointer className='tIcon'/> </button> { /* View */ } 
+          <button data-tooltip="Add" className={`toolbarItem ${activeTool == 1 ? "active" : ""}`} onClick={() => setActiveTool(1)}> <Plus className='tIcon'/> </button> { /* Add */ } 
+          <button data-tooltip="Move" className={`toolbarItem ${activeTool == 2 ? "active" : ""}`} onClick={() => setActiveTool(2)}> <Move className='tIcon'/> </button> { /* Move */ }
+          <button data-tooltip="Connect" className={`toolbarItem ${activeTool == 3 ? "active" : ""}`} onClick={() => setActiveTool(3)}> <Link className='tIcon'/> </button> { /* Connect */ }
+          <button data-tooltip="Colorize" className={`toolbarItem ${activeTool == 31 ? "active" : ""}`} onClick={() => setActiveTool(31)}> <Paint className='tIcon'/>  <div className='paintTooltip' style={{backgroundColor: selectedColor}}/> </button> { /* Colorize */ } 
+          <button data-tooltip="Delete" className={`toolbarItem ${activeTool == 4 ? "active" : ""}`} onClick={() => setActiveTool(4)}> <Trash className='tIcon'/> </button> { /* Delete */ }
+          <button data-tooltip="Edit" className={`toolbarItem ${activeTool == 5 ? "active" : ""}`} onClick={() => setActiveTool(5)}> <Edit className='tIcon'/> </button> { /* Edit */ } 
        </div>
 
         <div className='canvasCoordinates'>
@@ -523,20 +483,27 @@ export default function Designer() {
           </button>
 
           { activeTool === 31 &&
-            <button onClick={toggleColorWheel} className='item' style={{backgroundColor: "#2b2b3e"}} data-tooltip="Set fill"> <i className='itemIcon'> <i className='color-wheel' /> </i> </button>
+            <button onClick={togglePickerWindow} className='item' style={{backgroundColor: "#2b2b3e"}} data-tooltip="Set fill"> <i className='itemIcon'> <i className='color-wheel' /> </i> </button>
           }
 
         </div>
 
-        { colorWheel &&
-          <div className='colorWheelWindow'
+
+
+        { pickerWindow && (activeTool === 31) && 
+          <div className='pickerWindow'
             onMouseEnter={() => { disableTools.current = true; disableDragging.current = true; }}
             onMouseLeave={() => { disableTools.current = false; disableDragging.current = false; }}
           >
 
-            <div className='colorWheel' onClick={handleColorSelect}>
-              <div className='colorDial' style={{ left: `${dialPosition.x}%`, top: `${dialPosition.y}%` }} ref={dialRef}/>
+            <div className='colorPicker'>
+              <div className='hueRing'/>
+              <canvas className='svTriangle' ref={triangleRef} width={PICKER_SIZE} height={PICKER_SIZE}/>
+              <div className='hueDial'/>
+              <div className='svDial'/>
             </div>
+
+            <input type='text' className='hexInput' maxLength={7} value={inputHEX} onChange={handleHEXinputChange}/>
 
           </div>
         }
