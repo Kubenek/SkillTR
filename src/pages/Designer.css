@@ -250,10 +250,38 @@
     z-index: 4;
 }
 
+.connectionLayer .hitArea {
+    stroke: transparent;
+    stroke-width: 30;
+    pointer-events: stroke;
+}
+
 .connectionLayer line {
     stroke-width: 6;
-    pointer-events: stroke;
+    pointer-events: none;
     z-index: 4;
+}
+
+.connectionLayer .flowLayer {       
+    stroke-width: 6;
+    stroke-dasharray: 8 12;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    animation: flow 0.5s linear infinite;
+}
+
+.connectionLayer .flowLayer.disabled {
+    animation: none !important;
+    stroke: transparent;
+}
+
+.connectionLayer .connection-group:hover .flowLayer {
+    opacity: 1;
+}
+
+@keyframes flow {
+    to { stroke-dashoffset: -20; }
 }
 
 .additionalTools {

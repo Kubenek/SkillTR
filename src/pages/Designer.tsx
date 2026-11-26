@@ -8,7 +8,7 @@ import Navigation from "../components/Navigation"
 
 import { restoreCanvas } from '../utils/restoreEditor';
 import { getNodeCenter } from '../utils/geometry';
-import { TRI, barycentric, hsvToRgb, pointToHue, hueToRingPoint, pointToSV, svToPoint, hsvToCss, rgbToHex, hexToRgb, rgbToHsv } from '../utils/color';
+import { TRI, barycentric, hsvToRgb, pointToHue, hueToRingPoint, pointToSV, svToPoint, hsvToCss, rgbToHex, hexToRgb, rgbToHsv, contrastColor } from '../utils/color';
 
 import { NODE_WIDTH, NODE_HEIGHT } from '../constants/editor';
 import { PICKER_CENTER, PICKER_INNER_RADIUS, PICKER_OUTER_RADIUS, PICKER_SIZE } from '../constants/colorPicker';
@@ -360,11 +360,11 @@ export default function Designer() {
     const paintingMouseDown = (e: MouseEvent) => {
       const target = e.target;
       if(! ( (target instanceof SVGLineElement) || ( (target instanceof HTMLDivElement) && (target.classList.contains("node")) ) ) ) return;
-      
-      const { source, dest } = target.dataset;
       const color = currentColor.current;
 
       if (target instanceof SVGLineElement) {
+        const { source, dest } = target.dataset;
+
         setConnectionsData(prev => 
           prev.map(connData =>
             connData.SourceUUID === source && connData.DestinationUUID === dest
@@ -619,19 +619,34 @@ export default function Designer() {
               const destination = nodes.find(node => node.NodeUUID === conn.DestinationUUID);
               if(!source || !destination) return null;
 
+              const x1 = getNodeCenter(source).x
+              const x2 = getNodeCenter(destination).x
+              const y1 = getNodeCenter(source).y
+              const y2 = getNodeCenter(destination).y
+
               return(
-                <line
-                    key={`${conn.SourceUUID}-${conn.DestinationUUID}`}
-                    className={ (activeTool == 31) ? "paint-bucket" : activeTool === 4 ? "clickable" : ""}
+                <g className='connection-group'>
+                  <line
+                    className={ `${(activeTool == 31) ? "paint-bucket" : activeTool === 4 ? "clickable" : ""} hitArea`}
                     data-source={ conn.SourceUUID }
                     data-dest={ conn.DestinationUUID }
-                    x1={ getNodeCenter(source).x }
-                    x2={ getNodeCenter(destination).x }
-                    y1={ getNodeCenter(source).y }
-                    y2={ getNodeCenter(destination).y }
-                    stroke={ conn.Color }
-                    strokeWidth={6}
-                />
+                    x1={x1} x2={x2}
+                    y1={y1} y2={y2} 
+                  />
+                  <line
+                      key={`${conn.SourceUUID}-${conn.DestinationUUID}`}
+                      x1={x1} x2={x2}
+                      y1={y1} y2={y2}
+                      stroke={ conn.Color }
+                      strokeWidth={6}
+                  />
+                  <line
+                    className={ `flowLayer ${activeTool === 31 ? "disabled" : ""}` }
+                    x1={x1} x2={x2}
+                    y1={y1} y2={y2}
+                    stroke={contrastColor( conn.Color )}
+                  />
+                </g>
               );
 
             })}
