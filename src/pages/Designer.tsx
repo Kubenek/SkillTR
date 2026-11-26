@@ -1,5 +1,5 @@
 import './Designer.css'
-import { CursorPointer, Plus, Move, Link, Trash, Redo, Hand, Block, Edit, Paint } from '@boxicons/react';
+import { CursorPointer, Plus, Move, Link, Trash, Redo, Hand, Block, Edit, Paint, RotateCcw, Eyedropper } from '@boxicons/react';
 import React, { useEffect, useRef, useState } from 'react'
 
 import { useCanvas } from '../hooks/useCanvas';
@@ -108,6 +108,10 @@ export default function Designer() {
   }
   const togglePickerWindow = () => {
     setPickerWindow(!pickerWindow);
+  }
+
+  const resetCurrentColor = () => {
+    setHsv({h: 0, s: 0, v: 0.4});
   }
 
   useEffect(() => {
@@ -236,6 +240,7 @@ export default function Designer() {
 
       const nodeData: NodeData = {
         NodeUUID: crypto.randomUUID(),
+        Color: "666",
         PositionX: x,
         PositionY: y,
         Title: "NO DATA",
@@ -351,21 +356,34 @@ export default function Designer() {
 
     }
 
-    //!> connection painting
+    //!> painting
     const paintingMouseDown = (e: MouseEvent) => {
       const target = e.target;
-      if(! (target instanceof SVGLineElement) ) return;
+      if(! ( (target instanceof SVGLineElement) || ( (target instanceof HTMLDivElement) && (target.classList.contains("node")) ) ) ) return;
       
       const { source, dest } = target.dataset;
       const color = currentColor.current;
 
-      setConnectionsData(prev => 
-        prev.map(connData =>
-          connData.SourceUUID === source && connData.DestinationUUID === dest
-            ? {...connData, Color: color}
-            : connData
+      if (target instanceof SVGLineElement) {
+        setConnectionsData(prev => 
+          prev.map(connData =>
+            connData.SourceUUID === source && connData.DestinationUUID === dest
+              ? {...connData, Color: color}
+              : connData
+          )
         )
-      )
+      } else {
+        setNodes(prev =>
+          prev.map(n =>
+            n.NodeUUID === target.dataset.nodeId
+              ? {...n, Color: color}
+              : n
+          )
+        )
+      }
+
+
+
     }
 
     //!> node deletion
@@ -463,7 +481,7 @@ export default function Designer() {
     setViewedNode
   )
 
-  const nodeCursorClass = [0, 3, 4, 5].includes(activeTool) ? "clickable" : activeTool === 2 ? "grabbable" : "";
+  const nodeCursorClass = [0, 3, 4, 5].includes(activeTool) ? "clickable" : activeTool === 2 ? "grabbable" : activeTool === 31 ? "paint-bucket" : "";
 
   const ringPos = hueToRingPoint(hsv.h);
   const ringBG  = hsvToCss({h: hsv.h, s: 1, v: 1})
@@ -542,6 +560,9 @@ export default function Designer() {
             onMouseLeave={() => { disableTools.current = false; disableDragging.current = false; }}
           >
 
+            <button className='pipette'> <Eyedropper className='icon'/> </button>
+            <button className='resetColor' onClick={resetCurrentColor}> <RotateCcw className='icon'/> </button>
+
             <div className='colorPicker'
                  onPointerDown={onPickerDown}
                  onPointerMove={onPickerMove}
@@ -570,7 +591,7 @@ export default function Designer() {
                   key={node.NodeUUID}
                   data-node-id={node.NodeUUID}
                   className={`node ${nodeCursorClass}`}
-                  style={{ left: node.PositionX, top: node.PositionY }}
+                  style={{ left: node.PositionX, top: node.PositionY, backgroundColor: node.Color }}
               />
               
             ))

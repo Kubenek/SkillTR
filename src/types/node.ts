@@ -1,6 +1,7 @@
 
 export type NodeData = {
     NodeUUID:  string;
+    Color: string;
 
     PositionX: number;
     PositionY: number;
