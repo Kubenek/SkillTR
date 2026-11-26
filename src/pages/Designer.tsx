@@ -111,7 +111,7 @@ export default function Designer() {
   }
 
   const resetCurrentColor = () => {
-    setHsv({h: 0, s: 0, v: 0.4});
+    setHsv(prev => ({...prev, s: 0, v: 0.4}));
   }
 
   useEffect(() => {
@@ -386,17 +386,28 @@ export default function Designer() {
 
     }
 
-    //!> node deletion
+    //!> element deletion
     const deletingMouseUp = (e: MouseEvent) => {
       if(disableTools.current) return;
       if(wasDragging.current) return;
 
-      if(!( e.target instanceof HTMLDivElement )) return;
-      if(!( e.target.classList.contains("node") )) return;
+      const target = e.target;
+      if(! ( (target instanceof SVGLineElement) || ( (target instanceof HTMLDivElement) && (target.classList.contains("node")) ) ) ) return;
 
-      const deletedID = e.target.dataset.nodeId;
-      setNodes( prev => prev.filter(node => node.NodeUUID !== deletedID ));
-      setConnectionsData(prev => prev.filter( conn => conn.SourceUUID !== deletedID && conn.DestinationUUID !== deletedID ))
+      if(target instanceof HTMLDivElement) {
+
+        const deletedID = target.dataset.nodeId;
+        setNodes( prev => prev.filter(node => node.NodeUUID !== deletedID ));
+        setConnectionsData(prev => prev.filter( conn => conn.SourceUUID !== deletedID && conn.DestinationUUID !== deletedID ))
+
+      } else {
+
+        const { source, dest } = target.dataset;
+        setConnectionsData(prev => prev.filter(conn =>
+          conn.SourceUUID !== source || conn.DestinationUUID !== dest
+        ));
+
+      }
     }
 
     //!> node view/editing
@@ -611,7 +622,7 @@ export default function Designer() {
               return(
                 <line
                     key={`${conn.SourceUUID}-${conn.DestinationUUID}`}
-                    className={ (activeTool == 31) ? "paint-bucket" : ""}
+                    className={ (activeTool == 31) ? "paint-bucket" : activeTool === 4 ? "clickable" : ""}
                     data-source={ conn.SourceUUID }
                     data-dest={ conn.DestinationUUID }
                     x1={ getNodeCenter(source).x }
