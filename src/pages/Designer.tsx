@@ -1,6 +1,6 @@
 import './Designer.css'
 import { CursorPointer, Plus, Move, Link, Trash, Redo, Hand, Block, Edit, Paint } from '@boxicons/react';
-import { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import { useCanvas } from '../hooks/useCanvas';
 import { usePersistentState } from '../hooks/usePresistentState';
@@ -8,10 +8,10 @@ import Navigation from "../components/Navigation"
 
 import { restoreCanvas } from '../utils/restoreEditor';
 import { getNodeCenter } from '../utils/geometry';
-import { TRI, barycentric, hsvToRgb } from '../utils/color';
+import { TRI, barycentric, hsvToRgb, pointToHue, hueToRingPoint, pointToSV, svToPoint, hsvToCss, rgbToHex, hexToRgb, rgbToHsv } from '../utils/color';
 
 import { NODE_WIDTH, NODE_HEIGHT } from '../constants/editor';
-import { PICKER_SIZE } from '../constants/colorPicker';
+import { PICKER_CENTER, PICKER_INNER_RADIUS, PICKER_OUTER_RADIUS, PICKER_SIZE } from '../constants/colorPicker';
 
 import type { ConnectionData } from '../types/connection';
 import type { NodeData } from '../types/node';
@@ -57,15 +57,13 @@ export default function Designer() {
   const [lineStart, setLineStart] = useState<{ x: number, y: number } | null>(null);
   const [lineEnd, setLineEnd] = useState<{x: number, y: number} | null>(null);
 
-
-
   const currentColor = useRef<string>("#666");
-  const [selectedColor, setSelectedColor] = useState<string>("#666");
 
   const [pickerWindow, setPickerWindow] = useState<boolean>(false);
 
   const triangleRef = useRef<HTMLCanvasElement>(null);
-  const [hsv, setHsv] = useState<HSV>({h: 250, s: 1, v: 1})
+  const dragZone = useRef<"ring" | "triangle" | null>(null);
+  const [hsv, setHsv] = useState<HSV>({h: 0, s: 0, v: 0.4})
   const [inputHEX, setInputHEX] = useState<string>("#");
 
 
@@ -112,7 +110,6 @@ export default function Designer() {
     setPickerWindow(!pickerWindow);
   }
 
-
   useEffect(() => {
     if(activeTool !== 31) return;
     const canvas = triangleRef.current;
@@ -142,12 +139,48 @@ export default function Designer() {
   const handleHEXinputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let input = e.target.value;
 
-    input = input.replace(/[^a-zA-Z0-9]/g, "");
+    input = input.replace(/[^a-fA-F0-9]/g, "");
     input = input.toUpperCase();
-    setInputHEX("#"+input)
-    
+    const text = "#" + input;
+    setInputHEX(text) 
+
+    const rgb = hexToRgb(text);
+    if(rgb) setHsv(prev => rgbToHsv(rgb[0], rgb[1], rgb[2], prev.h));
   }
 
+  const applyPointer = (p: {x: number, y: number}) => {
+    if(dragZone.current === "ring") {
+      setHsv(prev => ({ ...prev, h: pointToHue(p) }));
+    } else if(dragZone.current === "triangle") {
+      const { s, v } = pointToSV(p);
+      setHsv(prev => ({ ...prev, s: s, v: v}));
+    }
+  }
+
+  const toLocal = (e: React.PointerEvent<HTMLDivElement>) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    const k = PICKER_SIZE / r.width;                 
+    return { x: (e.clientX - r.left) * k, y: (e.clientY - r.top) * k }; //? What is the purpose of r and k in these caluclations? Offset?
+  };
+
+
+  const onPickerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    const p = toLocal(e); //? What is the point of toLocal(e)? 
+    const dist = Math.hypot(p.x - PICKER_CENTER, p.y - PICKER_CENTER); //? How does calculating the dist work exactly? Pythagoras?
+    dragZone.current = 
+      dist < PICKER_INNER_RADIUS ? "triangle" :
+      dist <= PICKER_OUTER_RADIUS ? "ring" : null
+
+    if(!dragZone.current) return;
+    e.currentTarget.setPointerCapture(e.pointerId); //? What does setPointerCapture do? why e.pointerId? What is the return type and its functionality?
+    applyPointer(p);
+  }
+
+  const onPickerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (dragZone.current) applyPointer(toLocal(e))
+  }
+
+  const onPickerUp = () => { dragZone.current = null; }
 
   useEffect(() => {
     forceDisableDrag.current = forceDDState;
@@ -432,6 +465,19 @@ export default function Designer() {
 
   const nodeCursorClass = [0, 3, 4, 5].includes(activeTool) ? "clickable" : activeTool === 2 ? "grabbable" : "";
 
+  const ringPos = hueToRingPoint(hsv.h);
+  const ringBG  = hsvToCss({h: hsv.h, s: 1, v: 1})
+  const svPos   = svToPoint(hsv.s, hsv.v);
+
+  const rgbVal = hsvToRgb(hsv.h, hsv.s, hsv.v);
+  const hexVal = rgbToHex(rgbVal[0], rgbVal[1], rgbVal[2]);
+
+  useEffect(() => {
+    currentColor.current = hexVal;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setInputHEX(hexVal.toUpperCase());
+  }, [hexVal])
+
   return (
     <>
       <section className='siteContainer'>
@@ -460,7 +506,7 @@ export default function Designer() {
           <button data-tooltip="Add" className={`toolbarItem ${activeTool == 1 ? "active" : ""}`} onClick={() => setActiveTool(1)}> <Plus className='tIcon'/> </button> { /* Add */ } 
           <button data-tooltip="Move" className={`toolbarItem ${activeTool == 2 ? "active" : ""}`} onClick={() => setActiveTool(2)}> <Move className='tIcon'/> </button> { /* Move */ }
           <button data-tooltip="Connect" className={`toolbarItem ${activeTool == 3 ? "active" : ""}`} onClick={() => setActiveTool(3)}> <Link className='tIcon'/> </button> { /* Connect */ }
-          <button data-tooltip="Colorize" className={`toolbarItem ${activeTool == 31 ? "active" : ""}`} onClick={() => setActiveTool(31)}> <Paint className='tIcon'/>  <div className='paintTooltip' style={{backgroundColor: selectedColor}}/> </button> { /* Colorize */ } 
+          <button data-tooltip="Colorize" className={`toolbarItem ${activeTool == 31 ? "active" : ""}`} onClick={() => setActiveTool(31)}> <Paint className='tIcon'/>  <div className='paintTooltip' style={{backgroundColor: hexVal}}/> </button> { /* Colorize */ } 
           <button data-tooltip="Delete" className={`toolbarItem ${activeTool == 4 ? "active" : ""}`} onClick={() => setActiveTool(4)}> <Trash className='tIcon'/> </button> { /* Delete */ }
           <button data-tooltip="Edit" className={`toolbarItem ${activeTool == 5 ? "active" : ""}`} onClick={() => setActiveTool(5)}> <Edit className='tIcon'/> </button> { /* Edit */ } 
        </div>
@@ -496,14 +542,19 @@ export default function Designer() {
             onMouseLeave={() => { disableTools.current = false; disableDragging.current = false; }}
           >
 
-            <div className='colorPicker'>
+            <div className='colorPicker'
+                 onPointerDown={onPickerDown}
+                 onPointerMove={onPickerMove}
+                 onPointerUp={onPickerUp}
+                 onPointerCancel={onPickerUp}
+            >
               <div className='hueRing'/>
               <canvas className='svTriangle' ref={triangleRef} width={PICKER_SIZE} height={PICKER_SIZE}/>
-              <div className='hueDial'/>
-              <div className='svDial'/>
+              <div className='hueDial' style={{ left: ringPos.x, top: ringPos.y, background: ringBG}}/>
+              <div className='svDial' style={{ left: svPos.x, top: svPos.y, background: hexVal}}/>
             </div>
 
-            <input type='text' className='hexInput' maxLength={7} value={inputHEX} onChange={handleHEXinputChange}/>
+            <input type='text' className='hexInput' maxLength={7} value={inputHEX} onChange={handleHEXinputChange} onBlur={() => setInputHEX(hexVal)}/>
 
           </div>
         }
