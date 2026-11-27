@@ -63,8 +63,10 @@ export default function Designer() {
 
   const triangleRef = useRef<HTMLCanvasElement>(null);
   const dragZone = useRef<"ring" | "triangle" | null>(null);
-  const [hsv, setHsv] = useState<HSV>({h: 0, s: 0, v: 0.4})
+  const [hsv, setHsv] = usePersistentState<HSV>("PickerColor", {h: 0, s: 0, v: 0.4})
   const [inputHEX, setInputHEX] = useState<string>("#");
+
+  const [lastKey, setLastKey] = useState<string>("");
 
 
   const canvasInteraction: CanvasInteraction = {
@@ -115,7 +117,7 @@ export default function Designer() {
   }
 
   useEffect(() => {
-    if(activeTool !== 31) return;
+    if(activeTool !== 6) return;
     const canvas = triangleRef.current;
     if(!canvas) return;
 
@@ -199,7 +201,7 @@ export default function Designer() {
       if(activeTool == 0) viewingMouseDown(e);
       if(activeTool == 2) draggingMouseDown(e);
       if(activeTool == 3) connectingMouseDown(e);
-      if(activeTool == 31) paintingMouseDown(e);
+      if(activeTool == 6) paintingMouseDown(e);
       
     }
 
@@ -482,6 +484,26 @@ export default function Designer() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      setLastKey(e.key);
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => { window.removeEventListener("keydown", handleKeyDown); }
+
+  }, [])
+
+  useEffect(() => {
+    if(["1", "2", "3", "4", "5", "6", "7"].includes(lastKey)) {
+      let number = parseInt(lastKey);
+      number = number - 1;
+      setActiveTool(number);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastKey])
+
   useCanvas(
     canvasRef,
     contentRef,
@@ -492,7 +514,7 @@ export default function Designer() {
     setViewedNode
   )
 
-  const nodeCursorClass = [0, 3, 4, 5].includes(activeTool) ? "clickable" : activeTool === 2 ? "grabbable" : activeTool === 31 ? "paint-bucket" : "";
+  const nodeCursorClass = [0, 3, 4, 5].includes(activeTool) ? "clickable" : activeTool === 2 ? "grabbable" : activeTool === 6 ? "paint-bucket" : "";
 
   const ringPos = hueToRingPoint(hsv.h);
   const ringBG  = hsvToCss({h: hsv.h, s: 1, v: 1})
@@ -534,10 +556,10 @@ export default function Designer() {
           <button data-tooltip="View" className={`toolbarItem ${activeTool == 0 ? "active" : ""}`} onClick={() => setActiveTool(0)}> <CursorPointer className='tIcon'/> </button> { /* View */ } 
           <button data-tooltip="Add" className={`toolbarItem ${activeTool == 1 ? "active" : ""}`} onClick={() => setActiveTool(1)}> <Plus className='tIcon'/> </button> { /* Add */ } 
           <button data-tooltip="Move" className={`toolbarItem ${activeTool == 2 ? "active" : ""}`} onClick={() => setActiveTool(2)}> <Move className='tIcon'/> </button> { /* Move */ }
-          <button data-tooltip="Connect" className={`toolbarItem ${activeTool == 3 ? "active" : ""}`} onClick={() => setActiveTool(3)}> <Link className='tIcon'/> </button> { /* Connect */ }
-          <button data-tooltip="Colorize" className={`toolbarItem ${activeTool == 31 ? "active" : ""}`} onClick={() => setActiveTool(31)}> <Paint className='tIcon'/>  <div className='paintTooltip' style={{backgroundColor: hexVal}}/> </button> { /* Colorize */ } 
+          <button data-tooltip="Connect" className={`toolbarItem ${activeTool == 3 ? "active" : ""}`} onClick={() => setActiveTool(3)}> <Link className='tIcon'/> </button> { /* Connect */ } 
           <button data-tooltip="Delete" className={`toolbarItem ${activeTool == 4 ? "active" : ""}`} onClick={() => setActiveTool(4)}> <Trash className='tIcon'/> </button> { /* Delete */ }
-          <button data-tooltip="Edit" className={`toolbarItem ${activeTool == 5 ? "active" : ""}`} onClick={() => setActiveTool(5)}> <Edit className='tIcon'/> </button> { /* Edit */ } 
+          <button data-tooltip="Edit" className={`toolbarItem ${activeTool == 5 ? "active" : ""}`} onClick={() => setActiveTool(5)}> <Edit className='tIcon'/> </button> { /* Edit */ }
+          <button data-tooltip="Colorize" className={`toolbarItem ${activeTool == 6 ? "active" : ""}`} onClick={() => setActiveTool(6)}> <Paint className='tIcon'/>  <div className='paintTooltip' style={{backgroundColor: hexVal}}/> </button> { /* Colorize */ } 
        </div>
 
         <div className='canvasCoordinates'>
@@ -557,7 +579,7 @@ export default function Designer() {
             { forceDDState && <Block className='itemIcon'/> }
           </button>
 
-          { activeTool === 31 &&
+          { activeTool === 6 &&
             <button onClick={togglePickerWindow} className='item' style={{backgroundColor: "#2b2b3e"}} data-tooltip="Set fill"> <i className='itemIcon'> <i className='color-wheel' /> </i> </button>
           }
 
@@ -565,7 +587,7 @@ export default function Designer() {
 
 
 
-        { pickerWindow && (activeTool === 31) && 
+        { pickerWindow && (activeTool === 6) && 
           <div className='pickerWindow'
             onMouseEnter={() => { disableTools.current = true; disableDragging.current = true; }}
             onMouseLeave={() => { disableTools.current = false; disableDragging.current = false; }}
@@ -627,7 +649,7 @@ export default function Designer() {
               return(
                 <g className='connection-group'>
                   <line
-                    className={ `${(activeTool == 31) ? "paint-bucket" : activeTool === 4 ? "clickable" : ""} hitArea`}
+                    className={ `${(activeTool == 6) ? "paint-bucket" : activeTool === 4 ? "clickable" : ""} hitArea`}
                     data-source={ conn.SourceUUID }
                     data-dest={ conn.DestinationUUID }
                     x1={x1} x2={x2}
@@ -641,7 +663,7 @@ export default function Designer() {
                       strokeWidth={6}
                   />
                   <line
-                    className={ `flowLayer ${activeTool === 31 ? "disabled" : ""}` }
+                    className={ `flowLayer ${activeTool === 6 ? "disabled" : ""}` }
                     x1={x1} x2={x2}
                     y1={y1} y2={y2}
                     stroke={contrastColor( conn.Color )}
